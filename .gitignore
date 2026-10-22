@@ -1,27 +1,59 @@
-*.log
-.DS_Store
+# Environment & credentials
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
+
+# Composer & PHP
+/vendor
+_ide_helper.php
+_ide_helper_models.php
 .phpactor.json
-.phpunit.result.cache
-/.codex
-/.cursor/
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
+
+# NPM & Front-end
 /node_modules
 /public/build
-/public/fonts-manifest.dev.json
 /public/hot
+/public/fonts-manifest.dev.json
+
+# Storage & Uploads
 /public/storage
 /storage/*.key
 /storage/pail
-/vendor
-_ide_helper.php
+/storage/app/public/branding/*
+!/storage/app/public/branding/.gitignore
+/storage/app/backups/*
+!/storage/app/backups/.gitignore
+
+# Database & Backups
+database/*.sqlite
+database/*.sqlite-journal
+*.sqlite
+*.sqlite-journal
+*.sql
+*.sql.gz
+
+# Temporary & imported data files (kecuali folder reference/)
+*.csv
+*.xlsx
+*.xls
+!reference/**
+
+# Testing & Logs
+*.log
+.phpunit.cache
+.phpunit.result.cache
+/coverage
+
+# System & IDE files
+.DS_Store
+Thumbs.db
+/.idea
+/.vscode
+/.fleet
+/.zed
+/.nova
+/.cursor/
+/.codex
 Homestead.json
 Homestead.yaml
-Thumbs.db
+auth.json
