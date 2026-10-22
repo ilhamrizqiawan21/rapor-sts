@@ -18,6 +18,7 @@ class User extends Authenticatable
         'name',
         'username',
         'password',
+        'password_plain',
         'role',
         'nik',
         'nuptk',
@@ -28,6 +29,7 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'password_plain',
         'remember_token',
     ];
 
@@ -35,6 +37,7 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'password_plain' => 'encrypted',
             'role' => Role::class,
             'is_active' => 'boolean',
         ];

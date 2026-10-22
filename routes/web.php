@@ -11,7 +11,6 @@ use App\Http\Controllers\Kepala\TeacherPerformanceController;
 use App\Http\Controllers\Operator\AcademicYearController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
-use App\Http\Controllers\Operator\EnrollmentController;
 use App\Http\Controllers\Operator\KktpDefaultController;
 use App\Http\Controllers\Operator\PeriodController;
 use App\Http\Controllers\Operator\PrintSettingController;
@@ -78,6 +77,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::get('/guru', [TeacherController::class, 'index'])->name('teachers.index');
     Route::post('/guru', [TeacherController::class, 'store'])->name('teachers.store');
     Route::put('/guru/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
+    Route::delete('/guru/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
     Route::post('/guru/{teacher}/toggle', [TeacherController::class, 'toggleStatus'])->name('teachers.toggle');
     Route::get('/guru/template', [TeacherController::class, 'template'])->name('teachers.template');
     Route::post('/guru/import', [TeacherController::class, 'import'])->name('teachers.import');
@@ -89,7 +89,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::post('/siswa/{student}/toggle', [StudentController::class, 'toggleStatus'])->name('students.toggle');
     Route::get('/siswa/template', [StudentController::class, 'template'])->name('students.template');
     Route::post('/siswa/import', [StudentController::class, 'import'])->name('students.import');
-    Route::post('/siswa/{student}/pindah', [EnrollmentController::class, 'move'])->name('students.move');
+    Route::delete('/siswa/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
 
     // Pembagian Mengajar
     Route::get('/mengajar', [TeachingAssignmentController::class, 'index'])->name('mengajar.index');

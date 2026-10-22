@@ -1,0 +1,18 @@
+# Layanan aplikasi dari subfolder: hanya isi public/ yang boleh diakses web.
+# File lain (.env, vendor, docs, dst.) tidak pernah disajikan langsung.
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Aset statis (build, favicon, storage) dari public/
+    RewriteCond %{DOCUMENT_ROOT}/rapor-sts/public/$0 -f
+    RewriteRule ^(?!index\.php$)[^/].*$ public/$0 [L]
+
+    # Selain itu lewat front controller Laravel
+    RewriteRule ^ index.php [L]
+</IfModule>

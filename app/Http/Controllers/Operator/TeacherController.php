@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Operator;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Operator\TeacherRequest;
+use App\Models\Classroom;
+use App\Models\TeachingAssignment;
 use App\Models\User;
 use App\Services\ActivityLogger;
 use App\Services\Import\TeacherImporter;
@@ -42,6 +44,7 @@ class TeacherController extends Controller
     {
         $data = $request->validated();
         $data['role'] = Role::Guru;
+        $data['password_plain'] = $data['password'];
         $data['password'] = Hash::make($data['password']);
 
         $teacher = User::create($data);
@@ -56,6 +59,7 @@ class TeacherController extends Controller
         $data = $request->validated();
 
         if (! empty($data['password'])) {
+            $data['password_plain'] = $data['password'];
             $data['password'] = Hash::make($data['password']);
         } else {
             unset($data['password']);
@@ -76,6 +80,26 @@ class TeacherController extends Controller
         ActivityLogger::log('toggle_teacher_status', "Status guru {$teacher->name} {$statusText}", $teacher);
 
         return redirect()->back()->with('success', "Guru {$teacher->name} berhasil {$statusText}.");
+    }
+
+    public function destroy(User $teacher): RedirectResponse
+    {
+        abort_unless($teacher->role === Role::Guru, 404);
+
+        $inUse = TeachingAssignment::where('teacher_id', $teacher->id)->exists()
+            || Classroom::where('homeroom_teacher_id', $teacher->id)->exists();
+
+        if ($inUse) {
+            return redirect()->back()->withErrors([
+                'delete' => "Guru {$teacher->name} tidak dapat dihapus karena masih memiliki data mengajar atau menjadi wali kelas. Hapus data mengajar / ganti wali kelas terlebih dahulu, atau gunakan Nonaktifkan.",
+            ]);
+        }
+
+        $teacher->delete();
+
+        ActivityLogger::log('delete_teacher', "Menghapus data guru {$teacher->name}");
+
+        return redirect()->back()->with('success', "Data guru {$teacher->name} berhasil dihapus.");
     }
 
     public function template(TemplateBuilder $builder): StreamedResponse

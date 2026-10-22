@@ -134,6 +134,24 @@ class StudentController extends Controller
         return redirect()->back()->with('success', "Siswa {$student->name} berhasil {$statusText}.");
     }
 
+    public function destroy(Student $student): RedirectResponse
+    {
+        $name = $student->name;
+
+        DB::transaction(function () use ($student) {
+            $student->summativeScores()->delete();
+            $student->stsScores()->delete();
+            $student->competencyOverrides()->delete();
+            $student->homeroomRecords()->delete();
+            $student->enrollments()->delete();
+            $student->delete();
+        });
+
+        ActivityLogger::log('delete_student', "Menghapus siswa {$name} beserta seluruh nilainya");
+
+        return redirect()->back()->with('success', "Data siswa {$name} berhasil dihapus.");
+    }
+
     public function template(Request $request, TemplateBuilder $builder): StreamedResponse
     {
         $classroomId = $request->query('classroom_id');

@@ -90,6 +90,7 @@ class DemoSeeder extends Seeder
                 [
                     'name' => $t['name'],
                     'password' => Hash::make('password'),
+                    'password_plain' => 'password',
                     'role' => Role::Guru,
                     'nik' => '320400000000100'.($idx + 1),
                     'nuptk' => '123456789012345'.($idx + 1),
@@ -200,5 +201,7 @@ class DemoSeeder extends Seeder
                 );
             }
         }
+
+        $this->call(DemoScoresSeeder::class);
     }
 }

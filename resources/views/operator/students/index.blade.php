@@ -97,12 +97,16 @@
                             <td>
                                 <div style="display: flex; gap: 4px; flex-wrap: wrap">
                                     <button type="button" class="btn b-pri" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick='openEditModal(@json($s), {{ $currentClass?->id ?? "null" }})'>Edit</button>
-                                    <button type="button" class="btn b-sec" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick="openMoveModal({{ $s->id }}, '{{ addslashes($s->name) }}')">Pindah</button>
                                     <form method="POST" action="{{ route('operator.students.toggle', $s) }}" style="display: inline">
                                         @csrf
                                         <button type="submit" class="btn {{ $s->is_active ? 'b-war' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px" title="{{ $s->is_active ? 'Nonaktifkan Siswa' : 'Aktifkan Siswa' }}">
                                             {{ $s->is_active ? 'Nonaktif' : 'Aktif' }}
                                         </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('operator.students.destroy', $s) }}" style="display: inline" onsubmit="return confirm('Hapus siswa {{ addslashes($s->name) }} beserta seluruh nilainya? Tindakan ini tidak dapat dibatalkan.')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
                                     </form>
                                 </div>
                             </td>
@@ -202,27 +206,6 @@
         </x-slot:footer>
     </x-modal>
 
-    {{-- Modal Pindah Kelas --}}
-    <x-modal id="modalPindahKelas" title="Pindah Kelas Siswa">
-        <form method="POST" id="formPindahKelas" action="">
-            @csrf
-            <p id="moveStudentText" style="margin: 0 0 12px; font-weight: 600"></p>
-            <div class="f">
-                <label for="target_classroom_id">Pilih Kelas Baru</label>
-                <select id="target_classroom_id" name="target_classroom_id" class="in" required>
-                    @foreach($classrooms as $c)
-                        <option value="{{ $c->id }}">{{ $c->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </form>
-
-        <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalPindahKelas').close()">Batal</button>
-            <button type="button" class="btn b-pri" onclick="document.getElementById('formPindahKelas').submit()">Pindahkan Siswa</button>
-        </x-slot:footer>
-    </x-modal>
-
     {{-- Modal Edit Siswa --}}
     <x-modal id="modalEditSiswa" title="Edit Data Siswa">
         <form method="POST" id="formEditSiswa" action="">
@@ -290,11 +273,6 @@
             document.getElementById('modalEditSiswa').showModal();
         }
 
-        function openMoveModal(studentId, studentName) {
-            document.getElementById('formPindahKelas').action = '/operator/siswa/' + studentId + '/pindah';
-            document.getElementById('moveStudentText').innerText = 'Pindahkan siswa: ' + studentName;
-            document.getElementById('modalPindahKelas').showModal();
-        }
     </script>
 </x-layout.app>
 

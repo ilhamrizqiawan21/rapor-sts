@@ -74,6 +74,7 @@ class TeacherImporter
                 'nip' => $nip !== '' ? $nip : null,
                 'gender' => $gender,
                 'password' => Hash::make($plainPassword),
+                'password_plain' => $plainPassword,
                 'role' => Role::Guru,
                 'is_active' => true,
             ];

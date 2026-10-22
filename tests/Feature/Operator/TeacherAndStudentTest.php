@@ -2,10 +2,14 @@
 
 namespace Tests\Feature\Operator;
 
+use App\Enums\Role;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
+use App\Models\Period;
 use App\Models\Student;
+use App\Models\Subject;
+use App\Models\TeachingAssignment;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -157,34 +161,59 @@ class TeacherAndStudentTest extends TestCase
         @unlink($tempPath);
     }
 
-    public function test_operator_can_move_student_to_different_classroom(): void
+    public function test_operator_can_delete_student_with_scores(): void
     {
         $operator = User::where('username', 'admin')->first();
         $year = AcademicYear::factory()->create();
-        $classA = Classroom::factory()->create(['academic_year_id' => $year->id, 'name' => 'VII.A']);
-        $classB = Classroom::factory()->create(['academic_year_id' => $year->id, 'name' => 'VII.B']);
-
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
         $student = Student::factory()->create();
         Enrollment::create([
             'academic_year_id' => $year->id,
-            'classroom_id' => $classA->id,
+            'classroom_id' => $classroom->id,
             'student_id' => $student->id,
         ]);
 
-        $response = $this->actingAs($operator)->post(route('operator.students.move', $student), [
-            'target_classroom_id' => $classB->id,
+        $this->actingAs($operator)->delete(route('operator.students.destroy', $student))->assertRedirect();
+
+        $this->assertDatabaseMissing('students', ['id' => $student->id]);
+        $this->assertDatabaseMissing('enrollments', ['student_id' => $student->id]);
+    }
+
+    public function test_operator_can_delete_unused_teacher_and_password_is_visible(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+
+        $this->actingAs($operator)->post(route('operator.teachers.store'), [
+            'name' => 'Guru Baru',
+            'username' => '3204999999999999',
+            'password' => 'rahasia123',
+            'gender' => 'L',
+        ])->assertRedirect();
+
+        $teacher = User::where('username', '3204999999999999')->firstOrFail();
+        $this->assertSame('rahasia123', $teacher->password_plain);
+        $this->actingAs($operator)->get(route('operator.teachers.index'))->assertSee('rahasia123');
+
+        $this->actingAs($operator)->delete(route('operator.teachers.destroy', $teacher))->assertRedirect();
+        $this->assertDatabaseMissing('users', ['id' => $teacher->id]);
+    }
+
+    public function test_teacher_with_teaching_assignment_cannot_be_deleted(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+        $teacher = User::factory()->create(['role' => Role::Guru]);
+        $classroom = Classroom::factory()->create();
+        TeachingAssignment::create([
+            'period_id' => Period::factory()->create(['academic_year_id' => $classroom->academic_year_id])->id,
+            'classroom_id' => $classroom->id,
+            'subject_id' => Subject::first()->id,
+            'teacher_id' => $teacher->id,
         ]);
 
-        $response->assertRedirect();
+        $this->actingAs($operator)->delete(route('operator.teachers.destroy', $teacher))
+            ->assertSessionHasErrors('delete');
 
-        $this->assertDatabaseHas('enrollments', [
-            'academic_year_id' => $year->id,
-            'classroom_id' => $classB->id,
-            'student_id' => $student->id,
-        ]);
-
-        // Pastikan tidak ada duplikasi enrollment pada tahun yang sama
-        $this->assertCount(1, $student->fresh()->enrollments);
+        $this->assertDatabaseHas('users', ['id' => $teacher->id]);
     }
 
     public function test_operator_can_update_student_data(): void

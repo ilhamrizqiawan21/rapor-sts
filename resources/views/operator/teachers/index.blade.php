@@ -39,10 +39,11 @@
                         <th style="width: 40px">#</th>
                         <th>Nama Guru</th>
                         <th>Username (NIK/NUPTK)</th>
+                        <th>Password</th>
                         <th>NIP</th>
                         <th>L/P</th>
                         <th>Status</th>
-                        <th style="width: 140px">Aksi</th>
+                        <th style="width: 200px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,6 +52,7 @@
                             <td>{{ $teachers->firstItem() + $idx }}</td>
                             <td><b>{{ $t->name }}</b></td>
                             <td>{{ $t->username }}</td>
+                            <td>@if($t->password_plain)<code>{{ $t->password_plain }}</code>@else<span class="n" title="Password diubah di luar aplikasi / belum tercatat">-</span>@endif</td>
                             <td>{{ $t->nip ?? '-' }}</td>
                             <td>{{ $t->gender }}</td>
                             <td>
@@ -67,11 +69,16 @@
                                         {{ $t->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                                     </button>
                                 </form>
+                                <form method="POST" action="{{ route('operator.teachers.destroy', $t) }}" style="display: inline" onsubmit="return confirm('Hapus guru {{ addslashes($t->name) }}? Tindakan ini tidak dapat dibatalkan.')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
+                                </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="n cs">Belum ada data guru.</td>
+                            <td colspan="8" class="n cs">Belum ada data guru.</td>
                         </tr>
                     @endforelse
                 </tbody>
