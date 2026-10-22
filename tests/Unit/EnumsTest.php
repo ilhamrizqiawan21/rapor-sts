@@ -60,4 +60,3 @@ class EnumsTest extends TestCase
         $this->assertSame('sangat baik', Achievement::SangatBaik->descriptorWord());
     }
 }
-

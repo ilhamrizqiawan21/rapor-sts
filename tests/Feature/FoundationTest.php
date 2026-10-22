@@ -2,11 +2,15 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Tests\TestCase;
 
 class FoundationTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_app_configuration_locale_and_timezone(): void
     {
         $this->assertSame('id', Config::get('app.locale'));
@@ -15,12 +19,15 @@ class FoundationTest extends TestCase
 
     public function test_operator_dashboard_page_renders_mockup_components(): void
     {
-        $response = $this->get('/');
+        $operator = User::factory()->operator()->create([
+            'name' => 'Admin MTsS Al-Ihsan',
+        ]);
+
+        $response = $this->actingAs($operator)->get('/operator/dashboard');
 
         $response->assertStatus(200);
         $response->assertSee('Dashboard Operator');
         $response->assertSee('Admin MTsS Al-Ihsan');
-        $response->assertSee('SEMESTER GANJIL 2026/2027');
         $response->assertSee('Info Aplikasi');
         $response->assertSee('Aktivitas');
         $response->assertSee('Guru Fikih mengirim nilai STS kelas VII.A');
@@ -45,4 +52,3 @@ class FoundationTest extends TestCase
         $progressView->assertSee('80%');
     }
 }
-

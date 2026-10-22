@@ -57,7 +57,10 @@
     </a>
 
     <div class="sec">Akun</div>
-    <a href="#">
+    <form method="POST" action="{{ route('logout') }}" id="logout-form-guru" style="display: none;">
+        @csrf
+    </form>
+    <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form-guru').submit();">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h5v18h-5M10 17l-5-5 5-5M5 12h11"/></svg>
         <span>Logout</span>
     </a>

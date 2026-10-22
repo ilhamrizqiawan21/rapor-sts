@@ -20,4 +20,3 @@ enum Semester: int
         return 'Semester '.$this->label();
     }
 }
-

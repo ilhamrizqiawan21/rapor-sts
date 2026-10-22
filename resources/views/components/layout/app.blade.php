@@ -1,21 +1,44 @@
 @props([
     'title' => 'Rapor STS',
     'breadcrumbs' => [],
-    'userRole' => 'operator',
-    'userName' => 'Admin MTsS Al-Ihsan',
-    'userInitials' => 'AD',
-    'brandName' => 'Rapor STS',
-    'brandSub' => 'MTsS Al-Ihsan',
-    'semesterBadge' => 'SEMESTER GANJIL 2026/2027',
+    'userRole' => null,
+    'userName' => null,
+    'userInitials' => null,
+    'brandName' => null,
+    'brandSub' => null,
+    'semesterBadge' => null,
     'topbarColor' => null,
 ])
 
+@php
+    $currentUser = auth()->user();
+    $role = $userRole ?? ($currentUser?->role instanceof \App\Enums\Role ? $currentUser->role->value : ($currentUser?->role ?? 'operator'));
+    $displayName = $userName ?? ($currentUser?->name ?? 'Admin MTsS Al-Ihsan');
+
+    if (! $userInitials) {
+        $words = explode(' ', trim($displayName));
+        $initials = '';
+        foreach (array_slice($words, 0, 2) as $w) {
+            $initials .= strtoupper(substr($w, 0, 1));
+        }
+        $userInitials = $initials ?: 'AD';
+    }
+
+    $activePeriod = $activePeriod ?? (app()->bound('activePeriod') ? app('activePeriod') : null);
+    $badge = $semesterBadge ?? ($activePeriod ? $activePeriod->badge_text : 'SEMESTER GANJIL 2026/2027');
+
+    $appSetting = \Illuminate\Support\Facades\Schema::hasTable('app_settings') ? \App\Models\AppSetting::first() : null;
+    $brand = $brandName ?? ($appSetting->app_name ?? 'Rapor STS');
+    $sub = $brandSub ?? ($appSetting->app_subtitle ?? 'MTsS Al-Ihsan');
+    $topbar = $topbarColor ?? ($appSetting->topbar_color ?? null);
+@endphp
+
 <!doctype html>
-<html lang="id" @if($topbarColor) style="--topbar: {{ $topbarColor }}" @endif>
+<html lang="id" @if($topbar) style="--topbar: {{ $topbar }}" @endif>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title }} — Rapor STS</title>
+    <title>{{ $title }} — {{ $brand }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -26,19 +49,19 @@
         <div class="brand">
             <div class="logo">RS</div>
             <div>
-                <div class="bname">{{ $brandName }}</div>
-                <div class="bsub">{{ $brandSub }}</div>
+                <div class="bname">{{ $brand }}</div>
+                <div class="bsub">{{ $sub }}</div>
             </div>
         </div>
 
-        <div class="sem">{{ $semesterBadge }}</div>
+        <div class="sem">{{ $badge }}</div>
 
         @if(isset($sidebar))
             {{ $sidebar }}
         @else
-            @if($userRole === 'guru')
+            @if($role === 'guru')
                 <x-sidebar.guru />
-            @elseif($userRole === 'kepala')
+            @elseif($role === 'kepala')
                 <x-sidebar.kepala />
             @else
                 <x-sidebar.operator />
@@ -54,10 +77,12 @@
 
             @if(isset($topbarLeft))
                 {{ $topbarLeft }}
+            @elseif($role === 'kepala')
+                <span class="ro">HANYA LIHAT</span>
             @endif
 
             <div class="user">
-                <span>{{ $userName }}</span>
+                <span>{{ $displayName }}</span>
                 <div class="ava">{{ $userInitials }}</div>
             </div>
         </header>
@@ -83,11 +108,10 @@
         </div>
 
         <footer class="foot">
-            <div>{{ $brandName }} Versi 1.0 © {{ date('Y') }}</div>
+            <div>{{ $brand }} Versi 1.0 © {{ date('Y') }}</div>
             <div>Bukan aplikasi resmi Kementerian Agama</div>
         </footer>
     </main>
 </div>
 </body>
 </html>
-

@@ -13,11 +13,11 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - Selesai bila: halaman kosong ber-layout persis mockup 02 tampil; `php artisan test` & Pint lulus.
 
 ## Tahap 1 — Skema, seed, auth
-- [ ] Migrasi semua tabel 03-ERD + constraint §2. Model + relasi + factory.
-- [ ] Seeder: profil & app_settings placeholder, operator `admin`, mapel MTs bawaan; `DemoSeeder`.
-- [ ] Login custom (FR-AUTH-01..05), rate limit, middleware `SetActivePeriod`, `EnsureRole`,
+- [x] Migrasi semua tabel 03-ERD + constraint §2. Model + relasi + factory.
+- [x] Seeder: profil & app_settings placeholder, operator `admin`, mapel MTs bawaan; `DemoSeeder`.
+- [x] Login custom (FR-AUTH-01..05), rate limit, middleware `SetActivePeriod`, `EnsureRole`,
       `ReadOnlyForHeadmaster`.
-- [ ] Test: login sukses/gagal/nonaktif, redirect per role, kepala → 403 untuk POST apa pun.
+- [x] Test: login sukses/gagal/nonaktif, redirect per role, kepala → 403 untuk POST apa pun.
 - Selesai bila: mockup 01 berfungsi dengan data seed; badge semester tampil.
 
 ## Tahap 2 — Master data operator
