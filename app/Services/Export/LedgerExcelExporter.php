@@ -5,12 +5,14 @@ namespace App\Services\Export;
 use App\Models\Classroom;
 use App\Models\Period;
 use App\Services\Report\ReportCardBuilder;
+use Illuminate\Support\Collection;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class LedgerExcelExporter
 {
@@ -23,138 +25,232 @@ class LedgerExcelExporter
         $data = $this->builder->buildLedgerData($classroom, $period);
 
         $spreadsheet = new Spreadsheet;
-        $sheet = $spreadsheet->getActiveSheet();
 
-        $sheetTitle = substr(preg_replace('/[^A-Za-z0-9_-]/', '', 'Leger_'.$classroom->name), 0, 31);
-        $sheet->setTitle($sheetTitle ?: 'Leger');
+        // Sheet 1: Pengetahuan
+        $sheetPengetahuan = $spreadsheet->getActiveSheet();
+        $sheetPengetahuan->setTitle('Pengetahuan');
+        $this->renderSheet(
+            sheet: $sheetPengetahuan,
+            title: 'LEGGER NILAI PENGETAHUAN',
+            classroom: $classroom,
+            period: $period,
+            data: $data,
+            rows: $data['rowsPengetahuan'],
+            classAverages: $data['classAveragesPengetahuan'],
+            overallAverage: $data['overallAveragePengetahuan']
+        );
 
-        $cols = $data['subjectColumns'];
-        $rows = $data['rows'];
+        // Sheet 2: Keterampilan
+        $sheetKeterampilan = $spreadsheet->createSheet();
+        $sheetKeterampilan->setTitle('Keterampilan');
+        $this->renderSheet(
+            sheet: $sheetKeterampilan,
+            title: 'LEGGER NILAI KETERAMPILAN',
+            classroom: $classroom,
+            period: $period,
+            data: $data,
+            rows: $data['rowsKeterampilan'],
+            classAverages: $data['classAveragesKeterampilan'],
+            overallAverage: $data['overallAverageKeterampilan']
+        );
 
-        $totalCols = 3 + count($cols) + 3; // No, NISN, Nama + subjects + Jumlah, Rerata, Rank
-        $lastColLetter = Coordinate::stringFromColumnIndex($totalCols);
+        // Set active sheet back to Sheet 1
+        $spreadsheet->setActiveSheetIndex(0);
 
-        // Baris 1: Judul
-        $sheet->setCellValue('A1', 'LEGER NILAI SUMATIF TENGAH SEMESTER');
-        $sheet->mergeCells('A1:'.$lastColLetter.'1');
+        return $spreadsheet;
+    }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @param  Collection<int, array>  $rows
+     * @param  array<int, string>  $classAverages
+     */
+    protected function renderSheet(
+        Worksheet $sheet,
+        string $title,
+        Classroom $classroom,
+        Period $period,
+        array $data,
+        $rows,
+        array $classAverages,
+        string $overallAverage
+    ): void {
+        $profile = $data['profile'];
+        $columnGroups = $data['columnGroups'] ?? [];
+        $leafCols = $data['subjectColumns'] ?? [];
+
+        // Row 1: Judul Utama
+        $sheet->setCellValue('A1', $title);
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        // Baris 2: Sub-judul
-        $subTitle = 'Kelas: '.$classroom->name.' | Semester: '.$period->semester->label().' | Tahun Pelajaran: '.$period->academicYear->name;
-        $sheet->setCellValue('A2', $subTitle);
-        $sheet->mergeCells('A2:'.$lastColLetter.'2');
-        $sheet->getStyle('A2')->getFont()->setSize(11);
-        $sheet->getStyle('A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        // Row 2: Metadata Kelas & Semester
+        $sheet->setCellValue('A2', 'Kelas:');
+        $sheet->setCellValue('B2', $classroom->name);
+        $sheet->setCellValue('D2', 'Semester:');
+        $sheet->setCellValue('E2', $period->semester->label());
+        $sheet->getStyle('A2')->getFont()->setBold(true);
+        $sheet->getStyle('D2')->getFont()->setBold(true);
 
-        // Baris 4: Header tabel
-        $headerRow = 4;
-        $sheet->setCellValue('A'.$headerRow, 'No');
-        $sheet->setCellValue('B'.$headerRow, 'NISN');
-        $sheet->setCellValue('C'.$headerRow, 'Nama Siswa');
+        // Row 3: Metadata Madrasah & Tahun Ajaran
+        $sheet->setCellValue('A3', 'Madrasah:');
+        $sheet->setCellValue('B3', $profile->name ?? 'Madrasah');
+        $sheet->setCellValue('D3', 'Tahun Ajaran:');
+        $sheet->setCellValue('E3', $period->academicYear->name);
+        $sheet->getStyle('A3')->getFont()->setBold(true);
+        $sheet->getStyle('D3')->getFont()->setBold(true);
 
-        $colIdx = 4;
-        foreach ($cols as $subjectCol) {
-            $colLetter = Coordinate::stringFromColumnIndex($colIdx);
-            $sheet->setCellValue($colLetter.$headerRow, $subjectCol['code']);
-            $colIdx++;
+        // Header baris 6 & 7
+        // Kolom identitas: No, NIS, Nisn, Nama, JK (5 kolom: A, B, C, D, E)
+        $sheet->mergeCells('A6:A7');
+        $sheet->setCellValue('A6', 'No');
+
+        $sheet->mergeCells('B6:B7');
+        $sheet->setCellValue('B6', 'NIS');
+
+        $sheet->mergeCells('C6:C7');
+        $sheet->setCellValue('C6', 'Nisn');
+
+        $sheet->mergeCells('D6:D7');
+        $sheet->setCellValue('D6', 'Nama');
+
+        $sheet->mergeCells('E6:E7');
+        $sheet->setCellValue('E6', 'JK');
+
+        // Susun kolom mapel berdasar columnGroups
+        $colIdx = 6; // Mulai dari Kolom F
+        foreach ($columnGroups as $cg) {
+            if (! empty($cg['is_group'])) {
+                $subCols = $cg['columns'] ?? [];
+                $subCount = count($subCols);
+                if ($subCount > 0) {
+                    $startLetter = Coordinate::stringFromColumnIndex($colIdx);
+                    $endLetter = Coordinate::stringFromColumnIndex($colIdx + $subCount - 1);
+
+                    if ($startLetter !== $endLetter) {
+                        $sheet->mergeCells("{$startLetter}6:{$endLetter}6");
+                    }
+                    $sheet->setCellValue("{$startLetter}6", $cg['code']);
+
+                    foreach ($subCols as $sc) {
+                        $cLetter = Coordinate::stringFromColumnIndex($colIdx);
+                        $sheet->setCellValue("{$cLetter}7", $sc['code']);
+                        $colIdx++;
+                    }
+                }
+            } else {
+                $cLetter = Coordinate::stringFromColumnIndex($colIdx);
+                $sheet->mergeCells("{$cLetter}6:{$cLetter}7");
+                $sheet->setCellValue("{$cLetter}6", $cg['code']);
+                $colIdx++;
+            }
         }
 
+        // Kolom ringkasan: Jumlah, Rerata, Rank
         $colJumlahLetter = Coordinate::stringFromColumnIndex($colIdx++);
         $colRerataLetter = Coordinate::stringFromColumnIndex($colIdx++);
         $colRankLetter = Coordinate::stringFromColumnIndex($colIdx++);
 
-        $sheet->setCellValue($colJumlahLetter.$headerRow, 'Jumlah');
-        $sheet->setCellValue($colRerataLetter.$headerRow, 'Rerata');
-        $sheet->setCellValue($colRankLetter.$headerRow, 'Rank');
+        $sheet->mergeCells("{$colJumlahLetter}6:{$colJumlahLetter}7");
+        $sheet->setCellValue("{$colJumlahLetter}6", 'Jumlah');
 
-        // Style header baris 4
-        $headerRange = 'A'.$headerRow.':'.$lastColLetter.$headerRow;
+        $sheet->mergeCells("{$colRerataLetter}6:{$colRerataLetter}7");
+        $sheet->setCellValue("{$colRerataLetter}6", 'Rerata');
+
+        $sheet->mergeCells("{$colRankLetter}6:{$colRankLetter}7");
+        $sheet->setCellValue("{$colRankLetter}6", 'Rank');
+
+        $lastColLetter = Coordinate::stringFromColumnIndex($colIdx - 1);
+        $totalCols = $colIdx - 1;
+
+        // Styling Header Range
+        $headerRange = "A6:{$lastColLetter}7";
         $sheet->getStyle($headerRange)->getFont()->setBold(true);
         $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF1F3F5');
         $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle($headerRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
 
-        // Baris data mulai baris 5
-        $currentRow = 5;
+        // Baris data mulai baris 8
+        $currentRow = 8;
         $no = 1;
 
         foreach ($rows as $item) {
             $student = $item['student'];
 
-            $sheet->setCellValue('A'.$currentRow, $no++);
-            $sheet->setCellValueExplicit('B'.$currentRow, $student->nisn, DataType::TYPE_STRING);
-            $sheet->setCellValue('C'.$currentRow, $student->name);
+            $sheet->setCellValue("A{$currentRow}", $no++);
+            $sheet->setCellValueExplicit("B{$currentRow}", (string) $student->nis, DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit("C{$currentRow}", (string) $student->nisn, DataType::TYPE_STRING);
+            $sheet->setCellValue("D{$currentRow}", $student->name);
+            $sheet->setCellValue("E{$currentRow}", $student->gender ?? '–');
 
-            $subjectColIdx = 4;
-            foreach ($cols as $subjectCol) {
-                $colLetter = Coordinate::stringFromColumnIndex($subjectColIdx);
-                $scoreData = $item['scores'][$subjectCol['id']] ?? null;
+            $subjectColIdx = 6;
+            foreach ($leafCols as $col) {
+                $cLetter = Coordinate::stringFromColumnIndex($subjectColIdx);
+                $scoreData = $item['scores'][$col['id']] ?? null;
                 $score = $scoreData ? $scoreData['score'] : null;
 
                 if ($score !== null) {
-                    $sheet->setCellValue($colLetter.$currentRow, $score);
-                    // Tandai bila di bawah KKTP
+                    $sheet->setCellValue("{$cLetter}{$currentRow}", $score);
                     if ($scoreData['is_below'] ?? false) {
-                        $sheet->getStyle($colLetter.$currentRow)->getFill()
+                        $sheet->getStyle("{$cLetter}{$currentRow}")->getFill()
                             ->setFillType(Fill::FILL_SOLID)
-                            ->getStartColor()->setARGB('FFF8D7DA'); // Soft red / pink
+                            ->getStartColor()->setARGB('FFF8D7DA');
                     }
                 } else {
-                    $sheet->setCellValue($colLetter.$currentRow, '–');
+                    $sheet->setCellValue("{$cLetter}{$currentRow}", '–');
                 }
-                $sheet->getStyle($colLetter.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("{$cLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
                 $subjectColIdx++;
             }
 
-            $sheet->setCellValue($colJumlahLetter.$currentRow, $item['total']);
-            $sheet->setCellValue($colRerataLetter.$currentRow, $item['formatted_average']);
-            $sheet->setCellValue($colRankLetter.$currentRow, $item['rank']);
+            $sheet->setCellValue("{$colJumlahLetter}{$currentRow}", $item['total']);
+            $sheet->setCellValue("{$colRerataLetter}{$currentRow}", $item['formatted_average']);
+            $sheet->setCellValue("{$colRankLetter}{$currentRow}", $item['rank']);
 
-            $sheet->getStyle('A'.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('B'.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle($colJumlahLetter.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle($colRerataLetter.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle($colRankLetter.$currentRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("A{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("B{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("C{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("E{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("{$colJumlahLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("{$colRerataLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("{$colRankLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             $currentRow++;
         }
 
         // Baris Rata-rata Kelas
         $avgRow = $currentRow;
-        $sheet->setCellValue('A'.$avgRow, 'Rata-rata Kelas');
-        $sheet->mergeCells('A'.$avgRow.':C'.$avgRow);
-        $sheet->getStyle('A'.$avgRow)->getFont()->setBold(true);
-        $sheet->getStyle('A'.$avgRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->mergeCells("A{$avgRow}:E{$avgRow}");
+        $sheet->setCellValue("A{$avgRow}", 'Rata-rata Kelas');
+        $sheet->getStyle("A{$avgRow}")->getFont()->setBold(true);
+        $sheet->getStyle("A{$avgRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $subjectColIdx = 4;
-        foreach ($cols as $subjectCol) {
-            $colLetter = Coordinate::stringFromColumnIndex($subjectColIdx);
-            $sheet->setCellValue($colLetter.$avgRow, $data['classAverages'][$subjectCol['id']] ?? '–');
-            $sheet->getStyle($colLetter.$avgRow)->getFont()->setBold(true);
-            $sheet->getStyle($colLetter.$avgRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $subjectColIdx = 6;
+        foreach ($leafCols as $col) {
+            $cLetter = Coordinate::stringFromColumnIndex($subjectColIdx);
+            $sheet->setCellValue("{$cLetter}{$avgRow}", $classAverages[$col['id']] ?? '–');
+            $sheet->getStyle("{$cLetter}{$avgRow}")->getFont()->setBold(true);
+            $sheet->getStyle("{$cLetter}{$avgRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $subjectColIdx++;
         }
 
-        $sheet->setCellValue($colJumlahLetter.$avgRow, '');
-        $sheet->setCellValue($colRerataLetter.$avgRow, $data['overallAverage']);
-        $sheet->getStyle($colRerataLetter.$avgRow)->getFont()->setBold(true);
-        $sheet->getStyle($colRerataLetter.$avgRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $sheet->setCellValue($colRankLetter.$avgRow, '');
+        $sheet->setCellValue("{$colJumlahLetter}{$avgRow}", '');
+        $sheet->setCellValue("{$colRerataLetter}{$avgRow}", $overallAverage);
+        $sheet->getStyle("{$colRerataLetter}{$avgRow}")->getFont()->setBold(true);
+        $sheet->getStyle("{$colRerataLetter}{$avgRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->setCellValue("{$colRankLetter}{$avgRow}", '');
 
-        $sheet->getStyle('A'.$avgRow.':'.$lastColLetter.$avgRow)->getFill()
+        $sheet->getStyle("A{$avgRow}:{$lastColLetter}{$avgRow}")->getFill()
             ->setFillType(Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFF8F9FA');
 
         // Border seluruh tabel
-        $tableRange = 'A'.$headerRow.':'.$lastColLetter.$avgRow;
+        $tableRange = "A6:{$lastColLetter}{$avgRow}";
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
         // Auto size columns
         for ($i = 1; $i <= $totalCols; $i++) {
             $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($i))->setAutoSize(true);
         }
-
-        return $spreadsheet;
     }
 }

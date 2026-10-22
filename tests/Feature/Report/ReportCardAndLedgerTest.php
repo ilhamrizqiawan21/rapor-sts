@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Services\Report\ReportCardBuilder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use Tests\TestCase;
 
 class ReportCardAndLedgerTest extends TestCase
@@ -172,6 +173,27 @@ class ReportCardAndLedgerTest extends TestCase
         $responseExcel = $this->actingAs($teacher)->get(route('rapor.leger.excel', $classroom));
         $responseExcel->assertStatus(200);
         $this->assertStringContainsString('Leger_STS_VII.A.xlsx', (string) $responseExcel->headers->get('Content-Disposition'));
+
+        // Verifikasi struktur berkas Excel Leger multi-sheet
+        $tempExcel = tempnam(sys_get_temp_dir(), 'leger_test_').'.xlsx';
+        file_put_contents($tempExcel, $responseExcel->streamedContent());
+        $loadedExcel = IOFactory::load($tempExcel);
+
+        $this->assertTrue($loadedExcel->sheetNameExists('Pengetahuan'));
+        $this->assertTrue($loadedExcel->sheetNameExists('Keterampilan'));
+
+        $sheetP = $loadedExcel->getSheetByName('Pengetahuan');
+        $this->assertEquals('LEGGER NILAI PENGETAHUAN', $sheetP->getCell('A1')->getValue());
+        $this->assertEquals('No', $sheetP->getCell('A6')->getValue());
+        $this->assertEquals('NIS', $sheetP->getCell('B6')->getValue());
+        $this->assertEquals('Nisn', $sheetP->getCell('C6')->getValue());
+        $this->assertEquals('Nama', $sheetP->getCell('D6')->getValue());
+        $this->assertEquals('JK', $sheetP->getCell('E6')->getValue());
+
+        $sheetK = $loadedExcel->getSheetByName('Keterampilan');
+        $this->assertEquals('LEGGER NILAI KETERAMPILAN', $sheetK->getCell('A1')->getValue());
+
+        unlink($tempExcel);
     }
 
     public function test_unauthorized_teacher_cannot_access_report_card(): void
