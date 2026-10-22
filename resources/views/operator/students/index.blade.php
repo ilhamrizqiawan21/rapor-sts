@@ -65,7 +65,7 @@
                         <th>L/P</th>
                         <th>Kelas Aktif</th>
                         <th>Status</th>
-                        <th style="width: 180px">Aksi</th>
+                        <th style="width: 220px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -95,13 +95,19 @@
                                 @endif
                             </td>
                             <td>
-                                <div style="display: flex; gap: 4px">
+                                <div style="display: flex; gap: 4px; flex-wrap: wrap">
+                                    <button type="button" class="btn b-pri" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick='openEditModal(@json($s), {{ $currentClass?->id ?? "null" }})'>Edit</button>
                                     <button type="button" class="btn b-sec" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick="openMoveModal({{ $s->id }}, '{{ addslashes($s->name) }}')">Pindah</button>
                                     <form method="POST" action="{{ route('operator.students.toggle', $s) }}" style="display: inline">
                                         @csrf
-                                        <button type="submit" class="btn {{ $s->is_active ? 'b-dan' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px">
+                                        <button type="submit" class="btn {{ $s->is_active ? 'b-war' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px" title="{{ $s->is_active ? 'Nonaktifkan Siswa' : 'Aktifkan Siswa' }}">
                                             {{ $s->is_active ? 'Nonaktif' : 'Aktif' }}
                                         </button>
+                                    </form>
+                                    <form method="POST" action="{{ route('operator.students.destroy', $s) }}" style="display: inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($s->name) }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
                                     </form>
                                 </div>
                             </td>
@@ -222,7 +228,73 @@
         </x-slot:footer>
     </x-modal>
 
+    {{-- Modal Edit Siswa --}}
+    <x-modal id="modalEditSiswa" title="Edit Data Siswa">
+        <form method="POST" id="formEditSiswa" action="">
+            @csrf
+            @method('PUT')
+            <div class="f">
+                <label for="edit_nisn">NISN (10 Digit, Wajib Unik)</label>
+                <input id="edit_nisn" name="nisn" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_nis">NIS (Nomor Induk Siswa)</label>
+                <input id="edit_nis" name="nis" class="in">
+            </div>
+            <div class="f">
+                <label for="edit_name">Nama Lengkap Siswa</label>
+                <input id="edit_name" name="name" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_gender">Jenis Kelamin</label>
+                <select id="edit_gender" name="gender" class="in" required>
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+            <div class="f">
+                <label for="edit_birth_place">Tempat Lahir</label>
+                <input id="edit_birth_place" name="birth_place" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_birth_date">Tanggal Lahir</label>
+                <input id="edit_birth_date" name="birth_date" type="date" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_classroom_id">Penempatan Kelas</label>
+                <select id="edit_classroom_id" name="classroom_id" class="in">
+                    <option value="">- Belum Ditentukan -</option>
+                    @foreach($classrooms as $c)
+                        <option value="{{ $c->id }}">{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="f">
+                <label for="edit_address">Alamat Tempat Tinggal</label>
+                <input id="edit_address" name="address" class="in">
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalEditSiswa').close()">Batal</button>
+            <button type="button" class="btn b-pri" onclick="document.getElementById('formEditSiswa').submit()">Simpan Perubahan</button>
+        </x-slot:footer>
+    </x-modal>
+
     <script>
+        function openEditModal(student, currentClassId) {
+            document.getElementById('formEditSiswa').action = '/operator/siswa/' + student.id;
+            document.getElementById('edit_nisn').value = student.nisn || '';
+            document.getElementById('edit_nis').value = student.nis || '';
+            document.getElementById('edit_name').value = student.name || '';
+            document.getElementById('edit_gender').value = student.gender || 'L';
+            document.getElementById('edit_birth_place').value = student.birth_place || '';
+            document.getElementById('edit_birth_date').value = student.birth_date ? student.birth_date.substring(0, 10) : '';
+            document.getElementById('edit_classroom_id').value = currentClassId || '';
+            document.getElementById('edit_address').value = student.address || '';
+            document.getElementById('modalEditSiswa').showModal();
+        }
+
         function openMoveModal(studentId, studentName) {
             document.getElementById('formPindahKelas').action = '/operator/siswa/' + studentId + '/pindah';
             document.getElementById('moveStudentText').innerText = 'Pindahkan siswa: ' + studentName;
@@ -230,3 +302,4 @@
         }
     </script>
 </x-layout.app>
+

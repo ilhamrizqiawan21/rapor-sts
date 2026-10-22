@@ -5,7 +5,11 @@ namespace Tests\Feature\Operator;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
+use App\Models\Period;
+use App\Models\StsScore;
 use App\Models\Student;
+use App\Models\Subject;
+use App\Models\TeachingAssignment;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -185,5 +189,98 @@ class TeacherAndStudentTest extends TestCase
 
         // Pastikan tidak ada duplikasi enrollment pada tahun yang sama
         $this->assertCount(1, $student->fresh()->enrollments);
+    }
+
+    public function test_operator_can_update_student_data(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+        $classroom = Classroom::factory()->create();
+        $student = Student::factory()->create([
+            'nisn' => '0098765432',
+            'name' => 'Budi Santoso',
+        ]);
+
+        $response = $this->actingAs($operator)->put(route('operator.students.update', $student), [
+            'nis' => '12345',
+            'nisn' => '0098765432',
+            'name' => 'Budi Santoso Update',
+            'gender' => 'L',
+            'birth_place' => 'Jakarta',
+            'birth_date' => '2011-05-10',
+            'classroom_id' => $classroom->id,
+            'address' => 'Jl. Merdeka No. 10',
+        ]);
+
+        $response->assertRedirect();
+
+        $this->assertDatabaseHas('students', [
+            'id' => $student->id,
+            'name' => 'Budi Santoso Update',
+            'birth_place' => 'Jakarta',
+        ]);
+
+        $this->assertDatabaseHas('enrollments', [
+            'student_id' => $student->id,
+            'classroom_id' => $classroom->id,
+        ]);
+    }
+
+    public function test_operator_can_delete_student_without_scores(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+        $student = Student::factory()->create();
+        $classroom = Classroom::factory()->create();
+        $enrollment = Enrollment::create([
+            'academic_year_id' => $classroom->academic_year_id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        $response = $this->actingAs($operator)->delete(route('operator.students.destroy', $student));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseMissing('students', ['id' => $student->id]);
+        $this->assertDatabaseMissing('enrollments', ['id' => $enrollment->id]);
+    }
+
+    public function test_operator_cannot_delete_student_with_existing_scores(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+        $year = AcademicYear::factory()->create();
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'semester' => 1, 'is_active' => true]);
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+        $teacher = User::factory()->guru()->create();
+        $subject = Subject::first();
+        $assignment = TeachingAssignment::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+        ]);
+
+        $student = Student::factory()->create();
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        // Berikan nilai STS kepada siswa
+        StsScore::create([
+            'period_id' => $period->id,
+            'teaching_assignment_id' => $assignment->id,
+            'student_id' => $student->id,
+            'score' => 85.00,
+        ]);
+
+        $response = $this->actingAs($operator)->delete(route('operator.students.destroy', $student));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+
+        // Siswa tidak boleh terhapus dari database
+        $this->assertDatabaseHas('students', ['id' => $student->id]);
     }
 }

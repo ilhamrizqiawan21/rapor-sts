@@ -54,6 +54,20 @@ class TeachingAssignmentTest extends TestCase
         ]);
     }
 
+    public function test_mengajar_page_displays_kktp_column_and_default_value(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+        $year = AcademicYear::factory()->create();
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'semester' => 1, 'is_active' => true]);
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id, 'level' => 7]);
+
+        $response = $this->actingAs($operator)->get(route('operator.mengajar.index', ['classroom_id' => $classroom->id]));
+
+        $response->assertStatus(200);
+        $response->assertSee('KKTP / KKM');
+        $response->assertSee('name="kktp"', false);
+    }
+
     public function test_copy_teaching_assignments_does_not_overwrite_existing_assignments(): void
     {
         $operator = User::where('username', 'admin')->first();

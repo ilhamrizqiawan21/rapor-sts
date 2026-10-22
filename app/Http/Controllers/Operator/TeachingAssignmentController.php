@@ -9,6 +9,7 @@ use App\Models\AppSetting;
 use App\Models\Classroom;
 use App\Models\Period;
 use App\Models\Subject;
+use App\Models\SubjectKktpDefault;
 use App\Models\TeachingAssignment;
 use App\Models\User;
 use App\Services\ActivityLogger;
@@ -51,9 +52,15 @@ class TeachingAssignmentController extends Controller
 
         // Ambil assignment yang sudah ada di kelas & periode ini
         $existingAssignments = [];
+        $subjectKktpDefaults = [];
         if ($activePeriod && $selectedClass) {
             $existingAssignments = TeachingAssignment::where('period_id', $activePeriod->id)
                 ->where('classroom_id', $selectedClass->id)
+                ->get()
+                ->keyBy('subject_id');
+
+            $subjectKktpDefaults = SubjectKktpDefault::where('academic_year_id', $academicYearId)
+                ->where('level', $selectedClass->level)
                 ->get()
                 ->keyBy('subject_id');
         }
@@ -71,6 +78,7 @@ class TeachingAssignmentController extends Controller
             'teachers',
             'subjects',
             'existingAssignments',
+            'subjectKktpDefaults',
             'defaultKktp',
             'otherPeriods'
         ));

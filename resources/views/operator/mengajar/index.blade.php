@@ -46,6 +46,7 @@
                                 <th>Mata Pelajaran</th>
                                 <th>Induk</th>
                                 <th>Kelompok</th>
+                                <th style="width: 90px">KKTP / KKM</th>
                                 <th style="width: 80px">JTM</th>
                                 <th>Guru Pengampu</th>
                                 <th style="width: 140px">Aksi</th>
@@ -56,6 +57,7 @@
                                 @php
                                     $isParent = $sbj->isParent();
                                     $assignment = $existingAssignments[$sbj->id] ?? null;
+                                    $kktpVal = $assignment?->kktp ?? ($subjectKktpDefaults[$sbj->id]->kktp ?? $defaultKktp);
                                 @endphp
                                 <tr>
                                     <td>{{ $idx + 1 }}</td>
@@ -73,14 +75,17 @@
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                        <td></td>
                                     @else
                                         <form method="POST" action="{{ route('operator.mengajar.store') }}" id="formAssignment{{ $sbj->id }}">
                                             @csrf
                                             <input type="hidden" name="period_id" value="{{ $activePeriod->id }}">
                                             <input type="hidden" name="classroom_id" value="{{ $selectedClass->id }}">
                                             <input type="hidden" name="subject_id" value="{{ $sbj->id }}">
-                                            <input type="hidden" name="kktp" value="{{ $assignment?->kktp ?? $defaultKktp }}">
 
+                                            <td>
+                                                <input type="number" step="0.01" min="0" max="100" name="kktp" class="in" style="width: 75px; height: 32px" value="{{ (float) $kktpVal }}" required>
+                                            </td>
                                             <td>
                                                 <input type="number" name="hours_per_week" class="in" style="width: 60px; height: 32px" value="{{ $assignment?->hours_per_week ?? 2 }}" min="0">
                                             </td>
@@ -144,3 +149,4 @@
         </x-slot:footer>
     </x-modal>
 </x-layout.app>
+
