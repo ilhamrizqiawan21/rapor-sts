@@ -30,9 +30,9 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - [x] Test: unique constraints, import valid/invalid, salin mengajar tidak menimpa.
 
 ## Tahap 3 — Grading engine (tanpa UI)
-- [ ] `GradeCalculator`, `AchievementResolver`, `CompetencyDescriber`, `ClassGradeSheet`
+- [x] `GradeCalculator`, `AchievementResolver`, `CompetencyDescriber`, `ClassGradeSheet`
       sesuai 07-CALCULATION.
-- [ ] Unit test E1–E11, predikat KKTP 70 & 75, deskripsi D1–D2, presisi BCMath.
+- [x] Unit test E1–E11, predikat KKTP 70 & 75, deskripsi D1–D2, presisi BCMath.
 - Selesai bila: semua contoh 07 §6 lulus.
 
 ## Tahap 4 — Penilaian guru
