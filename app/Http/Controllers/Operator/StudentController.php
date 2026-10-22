@@ -124,30 +124,6 @@ class StudentController extends Controller
         return redirect()->back()->with('success', "Data siswa {$student->name} berhasil diperbarui.");
     }
 
-    public function destroy(Student $student): RedirectResponse
-    {
-        $hasScores = $student->summativeScores()->exists()
-            || $student->stsScores()->exists()
-            || $student->homeroomRecords()->exists();
-
-        if ($hasScores) {
-            return redirect()->back()->with('error', "Siswa {$student->name} tidak dapat dihapus karena sudah memiliki riwayat penilaian rapor. Silakan gunakan opsi Nonaktifkan.");
-        }
-
-        $name = $student->name;
-        $nisn = $student->nisn;
-
-        DB::transaction(function () use ($student) {
-            $student->enrollments()->delete();
-            $student->competencyOverrides()->delete();
-            $student->delete();
-        });
-
-        ActivityLogger::log('delete_student', "Menghapus data siswa {$name} (NISN: {$nisn})");
-
-        return redirect()->back()->with('success', "Data siswa {$name} berhasil dihapus.");
-    }
-
     public function toggleStatus(Student $student): RedirectResponse
     {
         $student->update(['is_active' => ! $student->is_active]);

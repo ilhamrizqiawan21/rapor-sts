@@ -5,11 +5,7 @@ namespace Tests\Feature\Operator;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
-use App\Models\Period;
-use App\Models\StsScore;
 use App\Models\Student;
-use App\Models\Subject;
-use App\Models\TeachingAssignment;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -223,64 +219,5 @@ class TeacherAndStudentTest extends TestCase
             'student_id' => $student->id,
             'classroom_id' => $classroom->id,
         ]);
-    }
-
-    public function test_operator_can_delete_student_without_scores(): void
-    {
-        $operator = User::where('username', 'admin')->first();
-        $student = Student::factory()->create();
-        $classroom = Classroom::factory()->create();
-        $enrollment = Enrollment::create([
-            'academic_year_id' => $classroom->academic_year_id,
-            'classroom_id' => $classroom->id,
-            'student_id' => $student->id,
-        ]);
-
-        $response = $this->actingAs($operator)->delete(route('operator.students.destroy', $student));
-
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
-
-        $this->assertDatabaseMissing('students', ['id' => $student->id]);
-        $this->assertDatabaseMissing('enrollments', ['id' => $enrollment->id]);
-    }
-
-    public function test_operator_cannot_delete_student_with_existing_scores(): void
-    {
-        $operator = User::where('username', 'admin')->first();
-        $year = AcademicYear::factory()->create();
-        $period = Period::factory()->create(['academic_year_id' => $year->id, 'semester' => 1, 'is_active' => true]);
-        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
-        $teacher = User::factory()->guru()->create();
-        $subject = Subject::first();
-        $assignment = TeachingAssignment::create([
-            'period_id' => $period->id,
-            'classroom_id' => $classroom->id,
-            'subject_id' => $subject->id,
-            'teacher_id' => $teacher->id,
-        ]);
-
-        $student = Student::factory()->create();
-        Enrollment::create([
-            'academic_year_id' => $year->id,
-            'classroom_id' => $classroom->id,
-            'student_id' => $student->id,
-        ]);
-
-        // Berikan nilai STS kepada siswa
-        StsScore::create([
-            'period_id' => $period->id,
-            'teaching_assignment_id' => $assignment->id,
-            'student_id' => $student->id,
-            'score' => 85.00,
-        ]);
-
-        $response = $this->actingAs($operator)->delete(route('operator.students.destroy', $student));
-
-        $response->assertRedirect();
-        $response->assertSessionHas('error');
-
-        // Siswa tidak boleh terhapus dari database
-        $this->assertDatabaseHas('students', ['id' => $student->id]);
     }
 }

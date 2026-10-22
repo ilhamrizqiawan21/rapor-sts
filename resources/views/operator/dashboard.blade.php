@@ -33,7 +33,7 @@
     <div class="card" style="overflow: hidden">
         <div style="background: #e0a10e; color: #3b2a00; padding: 10px 16px; font-weight: 700; font-size: 13px">Info Aplikasi</div>
         <x-alert variant="warning" style="border-radius: 0; padding: 16px">
-            Selamat datang di aplikasi pengolahan nilai Sumatif Tengah Semester (STS). Nilai sumatif lingkup materi yang diinput guru di sini dipakai untuk rapor STS, dan dapat diekspor ke template Excel RDM saat akhir semester.<br><br>
+            Selamat datang di aplikasi pengolahan nilai Sumatif Tengah Semester (STS). Nilai sumatif lingkup materi yang diinput guru di sini dipakai untuk rapor STS, dan dapat diekspor ke template Excel saat akhir semester.<br><br>
             <b>Periode Aktif:</b> {{ $activePeriod ? $activePeriod->badge_text : 'Belum ada periode aktif yang dipilih.' }}
         </x-alert>
     </div>

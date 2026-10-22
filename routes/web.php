@@ -66,7 +66,6 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::get('/siswa', [StudentController::class, 'index'])->name('students.index');
     Route::post('/siswa', [StudentController::class, 'store'])->name('students.store');
     Route::put('/siswa/{student}', [StudentController::class, 'update'])->name('students.update');
-    Route::delete('/siswa/{student}', [StudentController::class, 'destroy'])->name('students.destroy');
     Route::post('/siswa/{student}/toggle', [StudentController::class, 'toggleStatus'])->name('students.toggle');
     Route::get('/siswa/template', [StudentController::class, 'template'])->name('students.template');
     Route::post('/siswa/import', [StudentController::class, 'import'])->name('students.import');

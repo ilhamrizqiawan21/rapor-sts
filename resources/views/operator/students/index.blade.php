@@ -104,11 +104,6 @@
                                             {{ $s->is_active ? 'Nonaktif' : 'Aktif' }}
                                         </button>
                                     </form>
-                                    <form method="POST" action="{{ route('operator.students.destroy', $s) }}" style="display: inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data siswa {{ addslashes($s->name) }}?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>

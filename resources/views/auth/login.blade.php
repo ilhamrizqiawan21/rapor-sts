@@ -34,7 +34,7 @@
         </div>
 
         <div style="font-size: 15px; line-height: 1.5; max-width: 560px">
-            Pengolahan nilai Sumatif Tengah Semester. Nilai yang diinput di sini dapat diekspor ke format template RDM saat akhir semester.
+            Pengolahan nilai Sumatif Tengah Semester. Nilai yang diinput di sini dapat diekspor ke format template Excel saat akhir semester.
         </div>
     </div>
 
