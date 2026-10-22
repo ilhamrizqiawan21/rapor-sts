@@ -40,6 +40,7 @@
                     <button type="button" class="btn b-suc" onclick="document.getElementById('modalUploadSumatif').showModal()">Upload</button>
                 @endif
                 <a class="btn b-war" href="{{ route('guru.sumatif.template', $teachingAssignment) }}">Export Template</a>
+                <button type="button" class="btn b-inf" onclick="document.getElementById('modalExportRdmSumatif').showModal()">Export RDM</button>
             </div>
         </div>
 
@@ -225,6 +226,44 @@
         <x-slot:footer>
             <button type="button" class="btn b-dan" onclick="document.getElementById('modalUploadSumatif').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formUploadSumatif').submit()">Upload & Proses</button>
+        </x-slot:footer>
+    </x-modal>
+
+    {{-- Modal Export RDM Sumatif --}}
+    <x-modal id="modalExportRdmSumatif" title="Export Nilai Sumatif ke Template RDM">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+            <div class="alert a-lt" style="margin: 0">
+                Nilai Lingkup Materi (LM) dapat diisi langsung ke template Excel asli yang diunduh dari RDM madrasah Anda (agar token ID siswa RDM tetap cocok), atau diunduh langsung menggunakan format RDM v3.1.
+            </div>
+
+            <div style="background: var(--c-surface, #f8f9fa); border: 1px solid var(--c-border, #e9ecef); border-radius: 6px; padding: 12px">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px">Opsi 1: Isi Template Asli RDM (Direkomendasikan)</h4>
+                <p class="cs" style="margin: 0 0 10px 0; font-size: 12px">
+                    Unggah berkas template kosong yang Anda unduh dari menu Penilaian RDM resmi madrasah Anda. Sistem akan mengisi kolom Nilai (sheet SUM 1, SUM 2, dst) dan ringkasan materi secara otomatis.
+                </p>
+                <form method="POST" action="{{ route('guru.rdm.sumatif.fill', $teachingAssignment) }}" enctype="multipart/form-data" id="formFillRdmSumatif">
+                    @csrf
+                    <div class="f" style="margin-bottom: 10px">
+                        <label for="rdmSumatifTemplateFile" style="font-size: 12px; font-weight: bold">Pilih File Template dari RDM (.xlsx)</label>
+                        <input id="rdmSumatifTemplateFile" name="template_file" type="file" accept=".xlsx" class="in" style="padding: 4px 8px" required>
+                    </div>
+                    <button type="submit" class="btn b-pri" style="width: 100%">Isi & Unduh Template RDM</button>
+                </form>
+            </div>
+
+            <div style="background: var(--c-surface, #f8f9fa); border: 1px solid var(--c-border, #e9ecef); border-radius: 6px; padding: 12px">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px">Opsi 2: Unduh Format RDM Terisi Langsung</h4>
+                <p class="cs" style="margin: 0 0 10px 0; font-size: 12px">
+                    Unduh berkas template RDM v3.1 yang telah terisi data siswa kelas ini dan seluruh nilai Lingkup Materi yang ada saat ini.
+                </p>
+                <a href="{{ route('guru.rdm.sumatif.export', $teachingAssignment) }}" class="btn b-war" style="display: block; text-align: center; text-decoration: none">
+                    Unduh Langsung Format RDM
+                </a>
+            </div>
+        </div>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalExportRdmSumatif').close()">Tutup</button>
         </x-slot:footer>
     </x-modal>
 

@@ -58,8 +58,12 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - [x] Kinerja input guru (daftar guru: mapel-kelas, % terkirim, terakhir aktif).
 - [x] Test: semua route tulis 403 untuk kepala; dashboard tanpa N+1 (assert jumlah query).
 
-## Tahap 7 — Export template RDM (DIBLOKIR sampai template asli tersedia)
-- [ ] Lihat 08-IMPORT-EXPORT §4.
+## Tahap 7 — Export template RDM (Selesai — Template Asli RDM 3.1 Terpasang)
+- [x] Analisis template RDM asli v3.1 (Sumatif 15 sheet & PAT 1 sheet) di `reference/rdm-template/`.
+- [x] Konfigurasi pemetaan `config/rdm_export.php` per versi RDM.
+- [x] `RdmExporter` mengisi nilai LM & STS, mempertahankan token ID siswa kolom B, proteksi lembar, dan password hash `8619`.
+- [x] UI & Modal: download langsung dan pengisian template upload di view penilaian guru (Sumatif & STS).
+- [x] Feature test `RdmExportTest`: verifikasi pengisian sel, token kolom B utuh, proteksi lembar, dan otorisasi guru.
 
 ## Tahap 8 — Rilis
 - [ ] Backup (FR-ADM-02), kelola akun (FR-ADM-03), ganti password.

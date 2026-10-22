@@ -33,6 +33,8 @@
             <div class="acts grp">
                 <a class="btn b-pri" href="{{ route('guru.sumatif.index', $teachingAssignment) }}">Sumatif</a>
                 <a class="btn b-inf" href="{{ route('guru.sts.index', $teachingAssignment) }}">STS</a>
+                <a class="btn b-war" href="{{ route('guru.rdm.sumatif.export', $teachingAssignment) }}" title="Unduh nilai Sumatif LM format template RDM">RDM Sumatif</a>
+                <a class="btn b-war" href="{{ route('guru.rdm.sts.export', $teachingAssignment) }}" title="Unduh nilai STS format template RDM">RDM STS</a>
 
                 @if($isSubmitted)
                     <span class="btn b-suc" style="cursor: default" title="Terkirim pada {{ $teachingAssignment->submitted_at->format('d/m/Y H:i') }}">✓ Terkirim</span>

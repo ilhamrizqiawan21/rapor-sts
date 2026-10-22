@@ -28,6 +28,7 @@ use App\Http\Controllers\Teacher\CompetencyOverrideController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
 use App\Http\Controllers\Teacher\ImportController;
 use App\Http\Controllers\Teacher\LearningScopeController;
+use App\Http\Controllers\Teacher\RdmExportController;
 use App\Http\Controllers\Teacher\StsScoreController;
 use App\Http\Controllers\Teacher\SubmissionController;
 use App\Http\Controllers\Teacher\WeightController;
@@ -143,6 +144,12 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     // Override Capaian Kompetensi (FR-NIL-09)
     Route::put('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'update'])->name('capaian.update');
     Route::delete('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'destroy'])->name('capaian.destroy');
+
+    // Export Nilai ke Format Template RDM (ADR-016 & docs/08 §4)
+    Route::get('/mengajar/{teachingAssignment}/rdm/sumatif', [RdmExportController::class, 'exportSummative'])->name('rdm.sumatif.export');
+    Route::post('/mengajar/{teachingAssignment}/rdm/sumatif/fill', [RdmExportController::class, 'fillSummativeTemplate'])->name('rdm.sumatif.fill');
+    Route::get('/mengajar/{teachingAssignment}/rdm/sts', [RdmExportController::class, 'exportSts'])->name('rdm.sts.export');
+    Route::post('/mengajar/{teachingAssignment}/rdm/sts/fill', [RdmExportController::class, 'fillStsTemplate'])->name('rdm.sts.fill');
 });
 
 // Wali Kelas Routes (FR-WAL-*)

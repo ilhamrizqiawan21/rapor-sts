@@ -37,6 +37,7 @@
             <div class="acts grp">
                 <a class="btn b-dan" href="{{ route('guru.penilaian.index', $teachingAssignment) }}">← Kembali</a>
                 <a class="btn b-war" href="{{ route('guru.sts.template', $teachingAssignment) }}">Template Excel</a>
+                <button type="button" class="btn b-inf" onclick="document.getElementById('modalExportRdmSts').showModal()">Export RDM</button>
                 @if(! $isLocked)
                     <button type="button" class="btn b-suc" onclick="document.getElementById('modalUploadSts').showModal()">Upload</button>
                     <button type="button" class="btn b-pri" onclick="document.getElementById('formSts').submit()">Simpan</button>
@@ -131,6 +132,44 @@
         <x-slot:footer>
             <button type="button" class="btn b-dan" onclick="document.getElementById('modalUploadSts').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formUploadSts').submit()">Upload & Proses</button>
+        </x-slot:footer>
+    </x-modal>
+
+    {{-- Modal Export RDM STS --}}
+    <x-modal id="modalExportRdmSts" title="Export Nilai Tes / STS ke Template RDM">
+        <div style="display: flex; flex-direction: column; gap: 16px">
+            <div class="alert a-lt" style="margin: 0">
+                Nilai Tes STS dapat diisi langsung ke template Excel asli PAT/PAS/STS yang diunduh dari RDM madrasah Anda, atau diunduh langsung menggunakan format RDM v3.1.
+            </div>
+
+            <div style="background: var(--c-surface, #f8f9fa); border: 1px solid var(--c-border, #e9ecef); border-radius: 6px; padding: 12px">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px">Opsi 1: Isi Template Asli RDM (Direkomendasikan)</h4>
+                <p class="cs" style="margin: 0 0 10px 0; font-size: 12px">
+                    Unggah berkas template PAT/PAS/STS kosong dari RDM madrasah Anda. Sistem akan mengisi kolom Nilai (Kolom F) secara otomatis tanpa mengubah token ID siswa.
+                </p>
+                <form method="POST" action="{{ route('guru.rdm.sts.fill', $teachingAssignment) }}" enctype="multipart/form-data" id="formFillRdmSts">
+                    @csrf
+                    <div class="f" style="margin-bottom: 10px">
+                        <label for="rdmStsTemplateFile" style="font-size: 12px; font-weight: bold">Pilih File Template Tes dari RDM (.xlsx)</label>
+                        <input id="rdmStsTemplateFile" name="template_file" type="file" accept=".xlsx" class="in" style="padding: 4px 8px" required>
+                    </div>
+                    <button type="submit" class="btn b-pri" style="width: 100%">Isi & Unduh Template RDM</button>
+                </form>
+            </div>
+
+            <div style="background: var(--c-surface, #f8f9fa); border: 1px solid var(--c-border, #e9ecef); border-radius: 6px; padding: 12px">
+                <h4 style="margin: 0 0 8px 0; font-size: 14px">Opsi 2: Unduh Format RDM Terisi Langsung</h4>
+                <p class="cs" style="margin: 0 0 10px 0; font-size: 12px">
+                    Unduh berkas template RDM v3.1 yang telah terisi data siswa dan nilai tes STS saat ini.
+                </p>
+                <a href="{{ route('guru.rdm.sts.export', $teachingAssignment) }}" class="btn b-war" style="display: block; text-align: center; text-decoration: none">
+                    Unduh Langsung Format RDM
+                </a>
+            </div>
+        </div>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalExportRdmSts').close()">Tutup</button>
         </x-slot:footer>
     </x-modal>
 
