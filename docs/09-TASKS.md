@@ -4,12 +4,12 @@ Satu tahap = satu sesi Gemini = satu branch = satu review. Jangan memulai tahap 
 tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" berarti test lulus.
 
 ## Tahap 0 — Fondasi
-- [ ] `laravel new` (Laravel 13), PHP 8.3+, MySQL. Hapus scaffolding yang tidak dipakai.
-- [ ] Konfigurasi locale `id`, timezone `Asia/Jakarta`, `Model::preventLazyLoading()` di non-produksi.
-- [ ] Pasang dependency ADR saja: phpspreadsheet, dompdf (cek kompatibilitas — ADR-008).
-- [ ] Port CSS dari `mockup/` ke `resources/css/app.css` (tokens 04-DESIGN §1), Vite build.
-- [ ] Blade components layout & sidebar per role (04-DESIGN §3) dengan data dummy.
-- [ ] Enum: Role, Semester, Curriculum, Achievement.
+- [x] `laravel new` (Laravel 13), PHP 8.3+, MySQL. Hapus scaffolding yang tidak dipakai.
+- [x] Konfigurasi locale `id`, timezone `Asia/Jakarta`, `Model::preventLazyLoading()` di non-produksi.
+- [x] Pasang dependency ADR saja: phpspreadsheet, dompdf (cek kompatibilitas — ADR-008).
+- [x] Port CSS dari `mockup/` ke `resources/css/app.css` (tokens 04-DESIGN §1), Vite build.
+- [x] Blade components layout & sidebar per role (04-DESIGN §3) dengan data dummy.
+- [x] Enum: Role, Semester, Curriculum, Achievement.
 - Selesai bila: halaman kosong ber-layout persis mockup 02 tampil; `php artisan test` & Pint lulus.
 
 ## Tahap 1 — Skema, seed, auth
