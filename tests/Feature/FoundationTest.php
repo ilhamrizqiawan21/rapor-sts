@@ -45,3 +45,4 @@ class FoundationTest extends TestCase
         $progressView->assertSee('80%');
     }
 }
+

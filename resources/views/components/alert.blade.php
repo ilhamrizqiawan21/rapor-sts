@@ -15,3 +15,4 @@
 <div {{ $attributes->merge(['class' => 'alert ' . $variantClass]) }}>
     {{ $slot }}
 </div>
+

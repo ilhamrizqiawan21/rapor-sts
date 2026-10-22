@@ -17,3 +17,4 @@ enum Role: string
         };
     }
 }
+

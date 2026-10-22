@@ -40,3 +40,4 @@
 <span {{ $attributes->merge(['class' => 'pill']) }} style="background: {{ $config['bg'] }}">
     {{ $config['icon'] }} {{ $displayLabel }}
 </span>
+
