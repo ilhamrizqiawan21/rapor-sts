@@ -228,9 +228,13 @@ class ReportCardAndLedgerTest extends TestCase
         Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
         $classroom = Classroom::factory()->create([
             'academic_year_id' => $year->id,
+            'name' => 'VII.A',
             'homeroom_teacher_id' => $teacher->id,
         ]);
-        $otherClassroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+        $otherClassroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'name' => 'VII.B',
+        ]);
 
         $outsider = Student::factory()->create();
         Enrollment::create(['academic_year_id' => $year->id, 'classroom_id' => $otherClassroom->id, 'student_id' => $outsider->id]);

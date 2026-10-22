@@ -125,18 +125,13 @@ window.toggleSidebar = function() {
         var isOpen = sidebar.classList.toggle('open');
         if (backdrop) backdrop.classList.toggle('active', isOpen);
     } else {
-        var isCollapsed = sidebar.classList.toggle('collapsed');
-        try { localStorage.setItem('sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e) {}
+        sidebar.classList.toggle('collapsed');
     }
 };
 
-if (window.innerWidth > 768) {
-    try {
-        if (localStorage.getItem('sidebar_collapsed') === '1') {
-            document.getElementById('appSidebar')?.classList.add('collapsed');
-        }
-    } catch(e) {}
-}
+try {
+    localStorage.removeItem('sidebar_collapsed');
+} catch(e) {}
 </script>
 </body>
 </html>

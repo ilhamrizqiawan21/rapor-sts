@@ -10,10 +10,7 @@ function toggleSidebar() {
             backdrop.classList.toggle('active', isOpen);
         }
     } else {
-        const isCollapsed = sidebar.classList.toggle('collapsed');
-        try {
-            localStorage.setItem('sidebar_collapsed', isCollapsed ? '1' : '0');
-        } catch (e) {}
+        sidebar.classList.toggle('collapsed');
     }
 }
 
@@ -51,14 +48,9 @@ function initSidebar() {
         });
     }
 
-    // Restore desktop collapsed state
-    if (window.innerWidth > 768) {
-        try {
-            if (localStorage.getItem('sidebar_collapsed') === '1') {
-                document.getElementById('appSidebar')?.classList.add('collapsed');
-            }
-        } catch (e) {}
-    }
+    try {
+        localStorage.removeItem('sidebar_collapsed');
+    } catch (e) {}
 }
 
 if (document.readyState === 'loading') {
