@@ -93,7 +93,7 @@ class TemplateBuilder
         $sheet->setCellValue('D4', 'L');
         $sheet->setCellValue('E4', 'Bandung');
         $sheet->setCellValue('F4', '15-05-2012');
-        $sheet->setCellValue('G4', 'Jl. Galanggang No. 10');
+        $sheet->setCellValue('G4', 'Jl. Contoh No. 10');
 
         foreach ($cols as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);

@@ -70,7 +70,7 @@
 <body>
 
 <div class="header">
-    <div class="inst">{{ $profile->parent_institution ?? 'KEMENTERIAN AGAMA REPUBLIK INDONESIA' }}</div>
+    <div class="inst">{{ $profile->parent_institution ?? '' }}</div>
     <div class="title">{{ $profile->name }}</div>
     <div class="sub">
         LAPORAN REKAPITULASI PROGRES & NILAI SUMATIF TENGAH SEMESTER<br>
@@ -118,7 +118,7 @@
     <tr>
         <td style="width: 60%"></td>
         <td style="width: 40%; text-align: center">
-            {{ $printSetting->print_place ?? 'Bandung Barat' }}, {{ Carbon\Carbon::parse($printSetting->print_date)->translatedFormat('d F Y') }}<br>
+            {{ $printSetting->print_place ?? '-' }}, {{ Carbon\Carbon::parse($printSetting->print_date)->translatedFormat('d F Y') }}<br>
             Kepala Madrasah
             <div style="height: 50px"></div>
             <b>{{ $profile->headmaster_name ?? '[Nama Kepala Madrasah]' }}</b><br>

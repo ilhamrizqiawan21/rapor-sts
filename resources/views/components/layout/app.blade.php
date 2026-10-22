@@ -13,7 +13,7 @@
 @php
     $currentUser = auth()->user();
     $role = $userRole ?? ($currentUser?->role instanceof \App\Enums\Role ? $currentUser->role->value : ($currentUser?->role ?? 'operator'));
-    $displayName = $userName ?? ($currentUser?->name ?? 'Admin MTsS Al-Ihsan');
+    $displayName = $userName ?? ($currentUser?->name ?? 'Pengguna');
 
     if (! $userInitials) {
         $words = explode(' ', trim($displayName));
@@ -29,7 +29,7 @@
 
     $appSetting = \Illuminate\Support\Facades\Schema::hasTable('app_settings') ? \App\Models\AppSetting::first() : null;
     $brand = $brandName ?? ($appSetting->app_name ?? 'Rapor STS');
-    $sub = $brandSub ?? ($appSetting->app_subtitle ?? 'MTsS Al-Ihsan');
+    $sub = $brandSub ?? ($appSetting->app_subtitle ?? '');
     $topbar = $topbarColor ?? ($appSetting->topbar_color ?? null);
 @endphp
 

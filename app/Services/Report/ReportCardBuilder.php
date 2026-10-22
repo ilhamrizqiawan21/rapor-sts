@@ -42,19 +42,18 @@ class ReportCardBuilder
     public function buildClassReportData(Classroom $classroom, Period $period, ?Student $targetStudent = null): array
     {
         $profile = MadrasahProfile::first() ?? new MadrasahProfile([
-            'parent_institution' => 'KEMENTERIAN AGAMA REPUBLIK INDONESIA',
-            'name' => 'MTSS AL-IHSAN',
-            'address' => 'Jl. Galanggang No. 69 RT. 01 RW. 18',
-            'district' => 'Batujajar',
-            'regency' => 'Bandung Barat',
-            'province' => 'Jawa Barat',
+            'name' => 'Nama Madrasah',
+            'address' => '-',
+            'district' => '-',
+            'regency' => '-',
+            'province' => '-',
         ]);
 
         $printSetting = PrintSetting::firstOrCreate(
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
-                'print_place' => $profile->regency ?? 'Bandung Barat',
+                'print_place' => $profile->regency ?? '-',
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai STS',
                 'paper_size' => 'A4',
@@ -262,7 +261,7 @@ class ReportCardBuilder
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
-                'print_place' => $profile->regency ?? 'Bandung Barat',
+                'print_place' => $profile->regency ?? '-',
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai STS',
                 'paper_size' => 'A4',

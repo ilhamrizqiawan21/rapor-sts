@@ -75,7 +75,12 @@ Dengan KKTP 70: Cukup 70–79, Baik 80–89, Sangat Baik 90–100. Perlu dicocok
 **ADR-015 · Proposed · Rumus nilai rapor STS = bobot Sumatif LM : STS**
 Lihat 07-CALCULATION §2. Menunggu konfirmasi praktik madrasah klien (Q2).
 
-**ADR-016 · Accepted · Export ke template RDM berbasis template asli v3.1**
-Template asli RDM v3.1 untuk Sumatif (15 sheet) dan Tes/PAT (1 sheet) telah tersedia di `reference/rdm-template/`.
-`RdmExporter` mengisi salinan template asli tanpa merusak struktur, formula, proteksi lembar (hash 8619),
-maupun token enkripsi ID Siswa pada Kolom B. Konfigurasi posisi kolom dan sel dipusatkan pada `config/rdm_export.php`.
+**ADR-016 · Accepted · Export ke template RDM ditunda sampai ada template asli**
+Lihat 08-IMPORT-EXPORT §4. Tidak boleh menebak format kolom RDM.
+
+**ADR-017 · Proposed · Export template RDM v3.1 memakai template asli di `reference/rdm-template/`**
+Mengusulkan perubahan ADR-016: template asli RDM v3.1 untuk Sumatif (15 sheet) dan Tes/PAT (1 sheet) kini
+tersedia di `reference/rdm-template/`. `RdmExporter` mengisi salinan template tanpa merusak struktur, formula,
+proteksi lembar (sandi proteksi adalah bawaan template asli, tidak diubah), maupun token ID siswa kolom B.
+Posisi kolom/sel dipusatkan di `config/rdm_export.php`.
+Menunggu persetujuan pemilik, termasuk lisensi/izin menyertakan berkas template RDM di repositori.

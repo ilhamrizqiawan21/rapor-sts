@@ -1,10 +1,10 @@
 @props([
-    'parentInstitution' => 'KEMENTERIAN AGAMA REPUBLIK INDONESIA',
-    'madrasahName' => 'MTSS AL-IHSAN',
-    'address' => 'JL. GALANGGANG NO. 69 RT. 01 RW. 18',
-    'district' => 'Batujajar',
-    'regency' => 'Bandung Barat',
-    'province' => 'Jawa Barat',
+    'parentInstitution' => null,
+    'madrasahName' => 'Nama Madrasah',
+    'address' => null,
+    'district' => null,
+    'regency' => null,
+    'province' => null,
     'logoLeft' => null,
     'logoRight' => null,
 ])

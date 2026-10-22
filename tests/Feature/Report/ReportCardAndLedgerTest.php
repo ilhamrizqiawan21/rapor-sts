@@ -220,4 +220,23 @@ class ReportCardAndLedgerTest extends TestCase
         $responseOp = $this->actingAs($operator)->get(route('rapor.student.pdf', [$classroom, $student]));
         $responseOp->assertStatus(200);
     }
+
+    public function test_single_report_card_for_student_outside_classroom_returns_404(): void
+    {
+        $teacher = User::factory()->guru()->create();
+        $year = AcademicYear::factory()->create();
+        Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'homeroom_teacher_id' => $teacher->id,
+        ]);
+        $otherClassroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+
+        $outsider = Student::factory()->create();
+        Enrollment::create(['academic_year_id' => $year->id, 'classroom_id' => $otherClassroom->id, 'student_id' => $outsider->id]);
+
+        $response = $this->actingAs($teacher)->get(route('rapor.student.pdf', [$classroom, $outsider]));
+
+        $response->assertNotFound();
+    }
 }

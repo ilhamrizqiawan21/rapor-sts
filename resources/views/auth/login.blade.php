@@ -20,8 +20,8 @@
                 @endif
             </div>
             <div>
-                <div style="font-size: 30px; font-weight: 700; line-height: 1.1">{{ $profile->name ?? 'MTsS AL-IHSAN' }}</div>
-                <div style="font-size: 16px; opacity: .92">{{ $profile->district ?? 'Batujajar' }} · {{ $profile->regency ?? 'Bandung Barat' }}</div>
+                <div style="font-size: 30px; font-weight: 700; line-height: 1.1">{{ $profile->name ?? 'Nama Madrasah' }}</div>
+                <div style="font-size: 16px; opacity: .92">{{ $profile->district ?? '' }} · {{ $profile->regency ?? '' }}</div>
             </div>
         </div>
 
@@ -48,7 +48,7 @@
                 </div>
                 <div>
                     <div style="font-size: 20px; font-weight: 700; color: #1d5c2e; line-height: 1.1">{{ $setting->app_name ?? 'Rapor STS' }}</div>
-                    <div style="font-size: 13px; color: #555">{{ $setting->app_subtitle ?? 'MTsS Al-Ihsan' }}</div>
+                    <div style="font-size: 13px; color: #555">{{ $setting->app_subtitle ?? '' }}</div>
                 </div>
             </div>
 

@@ -16,7 +16,7 @@ class ProfileController extends Controller
     public function edit(): View
     {
         $profile = MadrasahProfile::firstOrCreate(['id' => 1], [
-            'name' => 'MTsS AL-IHSAN',
+            'name' => 'Nama Madrasah',
             'level' => 'MTs',
             'nsm' => '-',
             'npsn' => '-',
@@ -29,7 +29,7 @@ class ProfileController extends Controller
 
         $setting = AppSetting::firstOrCreate(['id' => 1], [
             'app_name' => 'Rapor STS',
-            'app_subtitle' => 'MTsS Al-Ihsan',
+            'app_subtitle' => 'Nama Madrasah',
             'topbar_color' => '#628b0d',
             'default_kktp' => 70.00,
         ]);

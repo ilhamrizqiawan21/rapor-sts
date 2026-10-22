@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Operator;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Operator\PrintSettingRequest;
+use App\Models\MadrasahProfile;
 use App\Models\Period;
 use App\Models\PrintSetting;
 use App\Services\ActivityLogger;
@@ -21,7 +22,7 @@ class PrintSettingController extends Controller
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
-                'print_place' => 'Bandung Barat',
+                'print_place' => MadrasahProfile::first()?->regency ?? '-',
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai STS',
                 'paper_size' => 'A4',

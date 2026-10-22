@@ -103,6 +103,12 @@ class ReportCardController extends Controller
         /** @var Period $period */
         $period = app('activePeriod');
 
+        $isEnrolled = $classroom->enrollments()
+            ->where('academic_year_id', $period->academic_year_id)
+            ->where('student_id', $student->id)
+            ->exists();
+        abort_unless($isEnrolled, 404);
+
         $reportData = $builder->buildClassReportData($classroom, $period, $student);
         $paperSize = $reportData['printSetting']->paper_size ?? 'A4';
 

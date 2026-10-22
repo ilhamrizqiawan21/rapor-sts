@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('period_id')->constrained()->cascadeOnDelete();
             $table->string('report_title')->default('LAPORAN HASIL SUMATIF TENGAH SEMESTER');
-            $table->string('print_place')->default('Bandung Barat');
+            $table->string('print_place')->default('-');
             $table->date('print_date');
             $table->string('score_label')->default('Nilai STS');
             $table->string('paper_size')->default('A4'); // A4, F4

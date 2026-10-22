@@ -149,7 +149,7 @@ if (isset($pdf)) {
                 @endif
             </td>
             <td class="kop-text">
-                <div class="kop-inst">{{ $profile->parent_institution ?? 'KEMENTERIAN AGAMA REPUBLIK INDONESIA' }}</div>
+                <div class="kop-inst">{{ $profile->parent_institution ?? '' }}</div>
                 <div class="kop-name">{{ $profile->name }}</div>
                 <div class="kop-addr">{{ $profile->address }}</div>
                 <div class="kop-addr">Kecamatan {{ $profile->district ?? '–' }}, Kabupaten {{ $profile->regency ?? '–' }} - {{ $profile->province ?? '–' }}</div>

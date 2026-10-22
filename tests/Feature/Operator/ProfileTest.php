@@ -28,7 +28,7 @@ class ProfileTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Profil Madrasah');
-        $response->assertSee('MTSS AL-IHSAN');
+        $response->assertSee('Nama Madrasah');
         $response->assertSee('Branding Aplikasi');
     }
 
