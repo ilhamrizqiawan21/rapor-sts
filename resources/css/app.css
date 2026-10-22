@@ -63,6 +63,23 @@ a:hover {
   min-width: 240px;
 }
 
+@media (max-width: 768px) {
+  .side {
+    position: fixed;
+    top: 0;
+    left: -270px;
+    bottom: 0;
+    width: 260px;
+    z-index: 1000;
+    transition: left 0.25s ease;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+  }
+  .side.open {
+    left: 0;
+  }
+}
+
 .brand {
   height: 56px;
   background: #fff;
@@ -126,22 +143,60 @@ a:hover {
   flex-direction: column;
 }
 
-.nav a {
+.nav a,
+.nav-toggle {
   display: flex;
   align-items: center;
+  width: 100%;
   gap: 12px;
   padding: 10px 18px;
   min-height: 24px;
   color: var(--sidebar-text);
   text-decoration: none;
+  background: transparent;
+  border: 0;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  cursor: pointer;
+  text-align: left;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-.nav a:hover {
+.nav a:hover,
+.nav-toggle:hover {
   color: #fff;
 }
 
-.nav a.on {
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--semester-badge);
+  outline-offset: -2px;
+}
+
+.nav a.on,
+.nav-toggle.on {
   background: var(--primary);
+  color: #fff;
+}
+
+.nav-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-group .nav-sub {
+  display: none;
+}
+
+.nav-group.open .nav-sub {
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-group.open > .nav-toggle {
   color: #fff;
 }
 
@@ -149,6 +204,11 @@ a:hover {
   padding-left: 48px;
   background: var(--sidebar-sub);
   font-size: 13.5px;
+}
+
+.nav a.sub:hover {
+  background: #252c36;
+  color: #fff;
 }
 
 .nav a.sub.on {
@@ -162,6 +222,13 @@ a:hover {
 
 .chev {
   margin-left: auto;
+  transition: transform 0.2s ease;
+  transform: rotate(-90deg);
+}
+
+.nav-group.open > .nav-toggle .chev,
+.nav-group.open > a .chev {
+  transform: rotate(0deg);
 }
 
 .st {

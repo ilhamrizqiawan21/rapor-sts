@@ -45,50 +45,71 @@
             ->where('homeroom_teacher_id', $user->id)
             ->first();
     }
+
+    $currentRoute = request()->route()?->getName();
+    $activeKey = $active;
+    if ($activeKey === 'dashboard' && !request()->routeIs('guru.dashboard')) {
+        if (request()->routeIs('wali.kehadiran.*')) $activeKey = 'wali_kehadiran';
+        elseif (request()->routeIs('wali.status.*')) $activeKey = 'wali_status';
+        elseif (request()->routeIs('wali.rapor.*')) $activeKey = 'wali_rapor';
+    }
+
+    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']);
 @endphp
 
 <nav class="nav" aria-label="Menu guru">
-    <a href="{{ route('guru.dashboard') }}" class="{{ $active === 'dashboard' ? 'on' : '' }}">
+    <a href="{{ route('guru.dashboard') }}" class="{{ $activeKey === 'dashboard' ? 'on' : '' }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg>
         <span>Dashboard</span>
     </a>
 
     {{-- Mapel yang diampu --}}
     @foreach($teachingClasses as $subject)
-        <a href="#">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM8 7h8"/></svg>
-            <span>{{ $subject['code'] }} - {{ $subject['name'] }}</span>
-            <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-        </a>
-        @foreach($subject['classes'] as $cls)
-            <a href="{{ $cls['url'] ?? '#' }}" class="sub {{ ($cls['is_active'] ?? false) ? 'on' : '' }}">
-                <span>{{ $cls['name'] }}</span>
-                @if($cls['submitted'] ?? false)
-                    <span class="st" style="background: #1e7e34" aria-label="Terkirim">✓</span>
-                @else
-                    <span class="st" style="background: #c82333" aria-label="Belum kirim">✕</span>
-                @endif
-            </a>
-        @endforeach
+        @php
+            $isSubjectOpen = collect($subject['classes'])->contains(fn($c) => !empty($c['is_active']));
+        @endphp
+        <div class="nav-group {{ $isSubjectOpen ? 'open' : '' }}">
+            <button type="button" class="nav-toggle" aria-expanded="{{ $isSubjectOpen ? 'true' : 'false' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM8 7h8"/></svg>
+                <span>{{ $subject['code'] }} - {{ $subject['name'] }}</span>
+                <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="nav-sub">
+                @foreach($subject['classes'] as $cls)
+                    <a href="{{ $cls['url'] ?? '#' }}" class="sub {{ ($cls['is_active'] ?? false) ? 'on' : '' }}">
+                        <span>{{ $cls['name'] }}</span>
+                        @if($cls['submitted'] ?? false)
+                            <span class="st" style="background: #1e7e34" aria-label="Terkirim">✓</span>
+                        @else
+                            <span class="st" style="background: #c82333" aria-label="Belum kirim">✕</span>
+                        @endif
+                    </a>
+                @endforeach
+            </div>
+        </div>
     @endforeach
 
     {{-- Tugas tambahan bila wali kelas (FR-WAL-01) --}}
     @if($homeroomClass)
         <div class="sec">Tugas Tambahan</div>
-        <a href="#" class="{{ in_array($active, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']) ? 'on' : '' }}">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/></svg>
-            <span>Wali Kelas {{ $homeroomClass->name }}</span>
-            <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-        </a>
-        <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $active === 'wali_kehadiran' ? 'on' : '' }}">
-            <span>Kehadiran &amp; Catatan</span>
-        </a>
-        <a href="{{ route('wali.status.index') }}" class="sub {{ $active === 'wali_status' ? 'on' : '' }}">
-            <span>Status Nilai</span>
-        </a>
-        <a href="{{ route('wali.rapor.index') }}" class="sub {{ $active === 'wali_rapor' ? 'on' : '' }}">
-            <span>Cetak Rapor STS</span>
-        </a>
+        <div class="nav-group {{ $waliOpen ? 'open' : '' }}">
+            <button type="button" class="nav-toggle" aria-expanded="{{ $waliOpen ? 'true' : 'false' }}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/></svg>
+                <span>Wali Kelas {{ $homeroomClass->name }}</span>
+                <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="nav-sub">
+                <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $activeKey === 'wali_kehadiran' ? 'on' : '' }}">
+                    <span>Kehadiran &amp; Catatan</span>
+                </a>
+                <a href="{{ route('wali.status.index') }}" class="sub {{ $activeKey === 'wali_status' ? 'on' : '' }}">
+                    <span>Status Nilai</span>
+                </a>
+                <a href="{{ route('wali.rapor.index') }}" class="sub {{ $activeKey === 'wali_rapor' ? 'on' : '' }}">
+                    <span>Cetak Rapor STS</span>
+                </a>
+            </div>
+        </div>
     @endif
 
     <div class="sec">Akun</div>
