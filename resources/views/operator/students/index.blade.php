@@ -1,0 +1,232 @@
+<x-layout.app title="Data Siswa" userRole="operator">
+    <x-slot:sidebar>
+        <x-sidebar.operator active="students" />
+    </x-slot:sidebar>
+
+    <x-slot:breadcrumb>
+        <a href="{{ route('operator.dashboard') }}">Home</a> / <a href="#">Admin</a> / <span>Data Siswa</span>
+    </x-slot:breadcrumb>
+
+    @if(session('success'))
+        <x-alert variant="info">{{ session('success') }}</x-alert>
+    @endif
+    @if($errors->any())
+        <x-alert variant="warning">
+            @foreach($errors->all() as $err)
+                <div>{!! $err !!}</div>
+            @endforeach
+        </x-alert>
+    @endif
+
+    <x-card title="Data Siswa Madrasah">
+        <x-slot:actions>
+            <div class="grp">
+                <button type="button" class="btn b-pri" onclick="document.getElementById('modalTambahSiswa').showModal()">+ Tambah Siswa</button>
+                <button type="button" class="btn b-suc" onclick="document.getElementById('modalImportSiswa').showModal()">Upload Excel</button>
+                <a href="{{ route('operator.students.template', ['classroom_id' => $selectedClassId]) }}" class="btn b-war">Unduh Template</a>
+            </div>
+        </x-slot:actions>
+
+        {{-- Filter Tahun & Kelas --}}
+        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 16px">
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center">
+                <label for="yearFilter" style="font-weight: 600">Tahun:</label>
+                <select id="yearFilter" class="sel" style="min-width: 140px" onchange="location.href = '{{ route('operator.students.index') }}?academic_year_id=' + this.value">
+                    @foreach($academicYears as $y)
+                        <option value="{{ $y->id }}" @selected($selectedYearId == $y->id)>{{ $y->name }}</option>
+                    @endforeach
+                </select>
+
+                <label for="classFilter" style="font-weight: 600">Kelas:</label>
+                <select id="classFilter" class="sel" style="min-width: 140px" onchange="location.href = '{{ route('operator.students.index') }}?academic_year_id={{ $selectedYearId }}&classroom_id=' + this.value">
+                    <option value="">- Semua Kelas -</option>
+                    @foreach($classrooms as $c)
+                        <option value="{{ $c->id }}" @selected($selectedClassId == $c->id)>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <form method="GET" action="{{ route('operator.students.index') }}" style="display: flex; gap: 8px">
+                <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
+                <input type="hidden" name="classroom_id" value="{{ $selectedClassId }}">
+                <input name="search" class="in" style="width: 220px; height: 34px" placeholder="Cari nama, NISN..." value="{{ $search }}">
+                <button type="submit" class="btn b-sec" style="min-height: 34px">Cari</button>
+            </form>
+        </div>
+
+        <div class="tb">
+            <table class="t">
+                <thead>
+                    <tr>
+                        <th style="width: 40px">#</th>
+                        <th>NIS</th>
+                        <th>NISN</th>
+                        <th>Nama Siswa</th>
+                        <th>L/P</th>
+                        <th>Kelas Aktif</th>
+                        <th>Status</th>
+                        <th style="width: 180px">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($students as $idx => $s)
+                        @php
+                            $currentEnrollment = $s->enrollments->first();
+                            $currentClass = $currentEnrollment?->classroom;
+                        @endphp
+                        <tr>
+                            <td>{{ $students->firstItem() + $idx }}</td>
+                            <td>{{ $s->nis ?? '-' }}</td>
+                            <td><b>{{ $s->nisn }}</b></td>
+                            <td>{{ $s->name }}</td>
+                            <td>{{ $s->gender }}</td>
+                            <td>
+                                @if($currentClass)
+                                    <span class="pill" style="background: #1b6ec2">{{ $currentClass->name }}</span>
+                                @else
+                                    <span class="cs">- Belum Masuk Kelas -</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($s->is_active)
+                                    <span class="pill" style="background: #1e7e34">Aktif</span>
+                                @else
+                                    <span class="pill" style="background: #6c757d">Nonaktif</span>
+                                @endif
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 4px">
+                                    <button type="button" class="btn b-sec" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick="openMoveModal({{ $s->id }}, '{{ addslashes($s->name) }}')">Pindah</button>
+                                    <form method="POST" action="{{ route('operator.students.toggle', $s) }}" style="display: inline">
+                                        @csrf
+                                        <button type="submit" class="btn {{ $s->is_active ? 'b-dan' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px">
+                                            {{ $s->is_active ? 'Nonaktif' : 'Aktif' }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="8" class="n cs">Belum ada data siswa untuk filter ini.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        @if($students->hasPages())
+            <div class="pg">
+                {{ $students->links() }}
+            </div>
+        @endif
+    </x-card>
+
+    {{-- Modal Tambah Siswa --}}
+    <x-modal id="modalTambahSiswa" title="Tambah Data Siswa">
+        <form method="POST" action="{{ route('operator.students.store') }}" id="formTambahSiswa">
+            @csrf
+            <div class="f">
+                <label for="nisn">NISN (10 Digit, Wajib Unik)</label>
+                <input id="nisn" name="nisn" class="in" required>
+            </div>
+            <div class="f">
+                <label for="nis">NIS (Nomor Induk Siswa)</label>
+                <input id="nis" name="nis" class="in">
+            </div>
+            <div class="f">
+                <label for="name">Nama Lengkap Siswa</label>
+                <input id="name" name="name" class="in" required>
+            </div>
+            <div class="f">
+                <label for="gender">Jenis Kelamin</label>
+                <select id="gender" name="gender" class="in" required>
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+            <div class="f">
+                <label for="birth_place">Tempat Lahir</label>
+                <input id="birth_place" name="birth_place" class="in" required>
+            </div>
+            <div class="f">
+                <label for="birth_date">Tanggal Lahir</label>
+                <input id="birth_date" name="birth_date" type="date" class="in" required>
+            </div>
+            <div class="f">
+                <label for="classroom_id">Penempatan Kelas</label>
+                <select id="classroom_id" name="classroom_id" class="in">
+                    <option value="">- Belum Ditentukan -</option>
+                    @foreach($classrooms as $c)
+                        <option value="{{ $c->id }}" @selected($selectedClassId == $c->id)>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="f">
+                <label for="address">Alamat Tempat Tinggal</label>
+                <input id="address" name="address" class="in">
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahSiswa').close()">Batal</button>
+            <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahSiswa').submit()">Simpan</button>
+        </x-slot:footer>
+    </x-modal>
+
+    {{-- Modal Upload Excel Siswa --}}
+    <x-modal id="modalImportSiswa" title="Upload File Excel Siswa Per Kelas">
+        <form method="POST" action="{{ route('operator.students.import') }}" enctype="multipart/form-data" id="formImportSiswa">
+            @csrf
+            <div class="alert a-lt" style="margin-bottom: 12px">
+                Data siswa yang diimpor akan otomatis terdaftar dan ditempatkan pada kelas target yang Anda pilih di bawah.
+            </div>
+            <div class="f">
+                <label for="import_classroom_id">Target Kelas Penempatan</label>
+                <select id="import_classroom_id" name="classroom_id" class="in" required>
+                    @foreach($classrooms as $c)
+                        <option value="{{ $c->id }}" @selected($selectedClassId == $c->id)>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="f">
+                <label for="sfile">File Excel (.xlsx)</label>
+                <input id="sfile" name="file" type="file" accept=".xlsx" class="in" style="padding: 4px 10px" required>
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalImportSiswa').close()">Batal</button>
+            <button type="button" class="btn b-suc" onclick="document.getElementById('formImportSiswa').submit()">Upload & Proses</button>
+        </x-slot:footer>
+    </x-modal>
+
+    {{-- Modal Pindah Kelas --}}
+    <x-modal id="modalPindahKelas" title="Pindah Kelas Siswa">
+        <form method="POST" id="formPindahKelas" action="">
+            @csrf
+            <p id="moveStudentText" style="margin: 0 0 12px; font-weight: 600"></p>
+            <div class="f">
+                <label for="target_classroom_id">Pilih Kelas Baru</label>
+                <select id="target_classroom_id" name="target_classroom_id" class="in" required>
+                    @foreach($classrooms as $c)
+                        <option value="{{ $c->id }}">{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-dan" onclick="document.getElementById('modalPindahKelas').close()">Batal</button>
+            <button type="button" class="btn b-pri" onclick="document.getElementById('formPindahKelas').submit()">Pindahkan Siswa</button>
+        </x-slot:footer>
+    </x-modal>
+
+    <script>
+        function openMoveModal(studentId, studentName) {
+            document.getElementById('formPindahKelas').action = '/operator/siswa/' + studentId + '/pindah';
+            document.getElementById('moveStudentText').innerText = 'Pindahkan siswa: ' + studentName;
+            document.getElementById('modalPindahKelas').showModal();
+        }
+    </script>
+</x-layout.app>

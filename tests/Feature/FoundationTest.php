@@ -29,8 +29,7 @@ class FoundationTest extends TestCase
         $response->assertSee('Dashboard Operator');
         $response->assertSee('Admin MTsS Al-Ihsan');
         $response->assertSee('Info Aplikasi');
-        $response->assertSee('Aktivitas');
-        $response->assertSee('Guru Fikih mengirim nilai STS kelas VII.A');
+        $response->assertSee('Aktivitas Terbaru');
     }
 
     public function test_blade_components_render_correctly(): void

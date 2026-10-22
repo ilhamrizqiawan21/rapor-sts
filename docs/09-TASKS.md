@@ -21,13 +21,13 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - Selesai bila: mockup 01 berfungsi dengan data seed; badge semester tampil.
 
 ## Tahap 2 — Master data operator
-- [ ] Profil & branding + upload logo + pratinjau kop (FR-PRF-*).
-- [ ] Tahun pelajaran & periode aktif (FR-LMB-01).
-- [ ] Mata pelajaran (FR-LMB-02/03), kelas + "Tambah Sekaligus" (FR-LMB-04).
-- [ ] Guru + upload template (FR-GRU-01), siswa + upload per kelas (FR-SIS-*), pindah kelas.
-- [ ] Data mengajar + salin mengajar (FR-GRU-02..04). KKTP default (FR-RAP-02).
-- [ ] Dashboard operator + activity log (FR-ADM-01).
-- [ ] Test: unique constraints, import valid/invalid, salin mengajar tidak menimpa.
+- [x] Profil & branding + upload logo + pratinjau kop (FR-PRF-*).
+- [x] Tahun pelajaran & periode aktif (FR-LMB-01).
+- [x] Mata pelajaran (FR-LMB-02/03), kelas + "Tambah Sekaligus" (FR-LMB-04).
+- [x] Guru + upload template (FR-GRU-01), siswa + upload per kelas (FR-SIS-*), pindah kelas.
+- [x] Data mengajar + salin mengajar (FR-GRU-02..04). KKTP default (FR-RAP-02).
+- [x] Dashboard operator + activity log (FR-ADM-01).
+- [x] Test: unique constraints, import valid/invalid, salin mengajar tidak menimpa.
 
 ## Tahap 3 — Grading engine (tanpa UI)
 - [ ] `GradeCalculator`, `AchievementResolver`, `CompetencyDescriber`, `ClassGradeSheet`
