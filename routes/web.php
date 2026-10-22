@@ -12,6 +12,14 @@ use App\Http\Controllers\Operator\StudentController;
 use App\Http\Controllers\Operator\SubjectController;
 use App\Http\Controllers\Operator\TeacherController;
 use App\Http\Controllers\Operator\TeachingAssignmentController;
+use App\Http\Controllers\Teacher\AssessmentController;
+use App\Http\Controllers\Teacher\CompetencyOverrideController;
+use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\ImportController;
+use App\Http\Controllers\Teacher\LearningScopeController;
+use App\Http\Controllers\Teacher\StsScoreController;
+use App\Http\Controllers\Teacher\SubmissionController;
+use App\Http\Controllers\Teacher\WeightController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -84,9 +92,33 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
 
 // Guru Routes
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('guru.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
+
+    // Penilaian Ringkasan & Kirim Nilai (Mockup 09)
+    Route::get('/mengajar/{teachingAssignment}', [AssessmentController::class, 'index'])->name('penilaian.index');
+    Route::post('/mengajar/{teachingAssignment}/kirim', [SubmissionController::class, 'submit'])->name('penilaian.submit');
+
+    // Bobot Nilai (Mockup 08)
+    Route::get('/mengajar/{teachingAssignment}/bobot', [WeightController::class, 'edit'])->name('bobot.edit');
+    Route::put('/mengajar/{teachingAssignment}/bobot', [WeightController::class, 'update'])->name('bobot.update');
+
+    // Nilai Sumatif LM (Mockup 10 & 11)
+    Route::get('/mengajar/{teachingAssignment}/sumatif', [LearningScopeController::class, 'index'])->name('sumatif.index');
+    Route::post('/mengajar/{teachingAssignment}/sumatif', [LearningScopeController::class, 'store'])->name('sumatif.store');
+    Route::put('/mengajar/{teachingAssignment}/sumatif/{learningScope}', [LearningScopeController::class, 'update'])->name('sumatif.update');
+    Route::delete('/mengajar/{teachingAssignment}/sumatif/{learningScope}', [LearningScopeController::class, 'destroy'])->name('sumatif.destroy');
+    Route::get('/mengajar/{teachingAssignment}/sumatif/template', [ImportController::class, 'sumatifTemplate'])->name('sumatif.template');
+    Route::post('/mengajar/{teachingAssignment}/sumatif/import', [ImportController::class, 'sumatifImport'])->name('sumatif.import');
+
+    // Nilai Tes STS (Mockup 12)
+    Route::get('/mengajar/{teachingAssignment}/sts', [StsScoreController::class, 'index'])->name('sts.index');
+    Route::put('/mengajar/{teachingAssignment}/sts', [StsScoreController::class, 'update'])->name('sts.update');
+    Route::get('/mengajar/{teachingAssignment}/sts/template', [ImportController::class, 'stsTemplate'])->name('sts.template');
+    Route::post('/mengajar/{teachingAssignment}/sts/import', [ImportController::class, 'stsImport'])->name('sts.import');
+
+    // Override Capaian Kompetensi (FR-NIL-09)
+    Route::put('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'update'])->name('capaian.update');
+    Route::delete('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'destroy'])->name('capaian.destroy');
 });
 
 // Kepala Routes (Read-Only)

@@ -36,13 +36,13 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - Selesai bila: semua contoh 07 §6 lulus.
 
 ## Tahap 4 — Penilaian guru
-- [ ] Sidebar guru + status (FR-NIL-01). Bobot (FR-NIL-02).
-- [ ] Sumatif: daftar LM (mockup 10), modal tambah/edit (mockup 11), hapus (FR-NIL-03..05),
+- [x] Sidebar guru + status (FR-NIL-01). Bobot (FR-NIL-02).
+- [x] Sumatif: daftar LM (mockup 10), modal tambah/edit (mockup 11), hapus (FR-NIL-03..05),
       JS ketercapaian & "isi semua".
-- [ ] STS (FR-NIL-06). Ringkasan penilaian + override capaian (FR-NIL-08/09).
-- [ ] Template & upload LM / STS (FR-NIL-12, 08 §2).
-- [ ] Kirim (FR-NIL-10) dengan peringatan sel kosong.
-- [ ] Test policy: guru lain 403, setelah kirim 403, kelas dikunci 403.
+- [x] STS (FR-NIL-06). Ringkasan penilaian + override capaian (FR-NIL-08/09).
+- [x] Template & upload LM / STS (FR-NIL-12, 08 §2).
+- [x] Kirim (FR-NIL-10) dengan peringatan sel kosong.
+- [x] Test policy: guru lain 403, setelah kirim 403, kelas dikunci 403.
 
 ## Tahap 5 — Wali kelas & cetak
 - [ ] Kehadiran & catatan + massal + upload (FR-WAL-02/03).
