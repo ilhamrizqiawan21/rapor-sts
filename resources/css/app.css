@@ -613,6 +613,24 @@ textarea.in {
   color: #495057;
 }
 
+.pgn { display: flex; flex-wrap: wrap; gap: 4px; }
+.pgn-i {
+  display: inline-block;
+  min-width: 32px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  text-align: center;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 13px;
+}
+a.pgn-i:hover { background: #eef; }
+.pgn-cur { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 600; }
+.pgn-off { color: #6c757d; background: #f1f3f5; }
+
 /* Alerts */
 .alert {
   padding: 12px 16px;

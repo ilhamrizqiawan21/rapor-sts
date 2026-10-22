@@ -65,7 +65,7 @@
                             <td>
                                 <form method="POST" action="{{ route('operator.teachers.toggle', $t) }}" style="display: inline">
                                     @csrf
-                                    <button type="submit" class="btn {{ $t->is_active ? 'b-dan' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px">
+                                    <button type="submit" class="btn {{ $t->is_active ? 'b-war' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px">
                                         {{ $t->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                                     </button>
                                 </form>
