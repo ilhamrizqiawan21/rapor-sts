@@ -54,9 +54,9 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - Selesai bila: PDF contoh dari DemoSeeder dibandingkan berdampingan dengan mockup 14–15 oleh pemilik.
 
 ## Tahap 6 — Kepala madrasah
-- [ ] Dashboard (FR-KPL-01..04), leger (FR-KPL-05), lihat rapor & unduh rekap (FR-KPL-06).
-- [ ] Kinerja input guru (daftar guru: mapel-kelas, % terkirim, terakhir aktif).
-- [ ] Test: semua route tulis 403 untuk kepala; dashboard tanpa N+1 (assert jumlah query).
+- [x] Dashboard (FR-KPL-01..04), leger (FR-KPL-05), lihat rapor & unduh rekap (FR-KPL-06).
+- [x] Kinerja input guru (daftar guru: mapel-kelas, % terkirim, terakhir aktif).
+- [x] Test: semua route tulis 403 untuk kepala; dashboard tanpa N+1 (assert jumlah query).
 
 ## Tahap 7 — Export template RDM (DIBLOKIR sampai template asli tersedia)
 - [ ] Lihat 08-IMPORT-EXPORT §4.

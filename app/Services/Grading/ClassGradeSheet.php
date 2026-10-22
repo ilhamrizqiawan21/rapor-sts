@@ -47,10 +47,20 @@ class ClassGradeSheet
         $describer ??= new CompetencyDescriber;
 
         // Eager load relasi yang diperlukan bila belum ter-load
+        if (! $assignment->relationLoaded('period')) {
+            $assignment->load('period');
+        }
+        if (! $assignment->relationLoaded('classroom') || ! $assignment->classroom->relationLoaded('enrollments')) {
+            $assignment->loadMissing([
+                'classroom.enrollments' => fn ($q) => $q->where('academic_year_id', $assignment->period->academic_year_id)->with('student'),
+            ]);
+        }
+        if (! $assignment->relationLoaded('learningScopes')) {
+            $assignment->loadMissing([
+                'learningScopes' => fn ($q) => $q->orderBy('sequence')->with('scores'),
+            ]);
+        }
         $assignment->loadMissing([
-            'period',
-            'classroom.enrollments' => fn ($q) => $q->where('academic_year_id', $assignment->period->academic_year_id)->with('student'),
-            'learningScopes' => fn ($q) => $q->orderBy('sequence')->with('scores'),
             'stsScores',
             'competencyOverrides',
         ]);

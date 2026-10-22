@@ -4,6 +4,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Homeroom\HomeroomRecordController;
 use App\Http\Controllers\Homeroom\LockController as HomeroomLockController;
 use App\Http\Controllers\Homeroom\StatusController as HomeroomStatusController;
+use App\Http\Controllers\Kepala\DashboardController as KepalaDashboardController;
+use App\Http\Controllers\Kepala\LegerController as KepalaLegerController;
+use App\Http\Controllers\Kepala\ReportController as KepalaReportController;
+use App\Http\Controllers\Kepala\TeacherPerformanceController;
 use App\Http\Controllers\Operator\AcademicYearController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
@@ -170,7 +174,10 @@ Route::middleware('auth')->prefix('rapor')->name('rapor.')->group(function () {
 
 // Kepala Routes (Read-Only)
 Route::middleware(['auth', 'role:kepala', 'headmaster.readonly'])->prefix('kepala')->name('kepala.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('kepala.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [KepalaDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/leger', [KepalaLegerController::class, 'index'])->name('leger.index');
+    Route::get('/kinerja-guru', [TeacherPerformanceController::class, 'index'])->name('kinerja.index');
+    Route::get('/rapor', [KepalaReportController::class, 'index'])->name('rapor.index');
+    Route::get('/unduh/excel', [KepalaReportController::class, 'downloadExcel'])->name('unduh.excel');
+    Route::get('/unduh/pdf', [KepalaReportController::class, 'downloadPdf'])->name('unduh.pdf');
 });
