@@ -113,13 +113,17 @@
 
             {{-- Brand Logo Aplikasi --}}
             <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 4px">
-                <div style="width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #1b5e20, #2f7d32); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; box-shadow: 0 4px 10px rgba(47, 125, 50, 0.25); flex-shrink: 0">
-                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                        <path d="M9 8h6"/>
-                        <path d="M9 12h4"/>
-                    </svg>
+                <div style="width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, #1b5e20, #2f7d32); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; box-shadow: 0 4px 10px rgba(47, 125, 50, 0.25); flex-shrink: 0; overflow: hidden">
+                    @if(!empty($setting?->app_logo_path) && file_exists(storage_path('app/public/' . $setting->app_logo_path)))
+                        <img src="{{ asset('storage/' . $setting->app_logo_path) }}" alt="Logo Aplikasi" style="max-width: 40px; max-height: 40px; object-fit: contain">
+                    @else
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                            <path d="M9 8h6"/>
+                            <path d="M9 12h4"/>
+                        </svg>
+                    @endif
                 </div>
                 <div>
                     <div style="font-size: 21px; font-weight: 700; color: #1b5e20; line-height: 1.1">{{ $setting->app_name ?? 'Rapor STS' }}</div>
