@@ -1,0 +1,449 @@
+<?php
+
+namespace App\Services\Report;
+
+use App\Models\Classroom;
+use App\Models\HomeroomRecord;
+use App\Models\MadrasahProfile;
+use App\Models\Period;
+use App\Models\PrintSetting;
+use App\Models\Student;
+use App\Models\TeachingAssignment;
+use App\Services\Grading\AchievementResolver;
+use App\Services\Grading\ClassGradeSheet;
+use App\Services\Grading\CompetencyDescriber;
+use App\Services\Grading\GradeCalculator;
+use Carbon\Carbon;
+use Illuminate\Support\Collection;
+
+class ReportCardBuilder
+{
+    public function __construct(
+        protected GradeCalculator $calculator = new GradeCalculator,
+        protected AchievementResolver $resolver = new AchievementResolver,
+        protected CompetencyDescriber $describer = new CompetencyDescriber
+    ) {}
+
+    /**
+     * Membangun payload lengkap rapor STS untuk semua siswa di kelas (atau satu siswa bila $targetStudent diisi).
+     *
+     * @return array{
+     *     profile: MadrasahProfile,
+     *     printSetting: PrintSetting,
+     *     classroom: Classroom,
+     *     period: Period,
+     *     isLocked: bool,
+     *     isDraft: bool,
+     *     watermarkText: ?string,
+     *     formattedDate: string,
+     *     studentsData: Collection<int, array>
+     * }
+     */
+    public function buildClassReportData(Classroom $classroom, Period $period, ?Student $targetStudent = null): array
+    {
+        $profile = MadrasahProfile::first() ?? new MadrasahProfile([
+            'parent_institution' => 'KEMENTERIAN AGAMA REPUBLIK INDONESIA',
+            'name' => 'MTSS AL-IHSAN',
+            'address' => 'Jl. Galanggang No. 69 RT. 01 RW. 18',
+            'district' => 'Batujajar',
+            'regency' => 'Bandung Barat',
+            'province' => 'Jawa Barat',
+        ]);
+
+        $printSetting = PrintSetting::firstOrCreate(
+            ['period_id' => $period->id],
+            [
+                'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
+                'print_place' => $profile->regency ?? 'Bandung Barat',
+                'print_date' => now()->toDateString(),
+                'score_label' => 'Nilai STS',
+                'paper_size' => 'A4',
+                'watermark_text' => null,
+                'sections' => [
+                    'show_competency' => true,
+                    'show_attendance' => true,
+                    'show_note' => true,
+                    'show_parent_response' => true,
+                    'show_extracurricular' => false,
+                    'show_achievement' => false,
+                    'show_total_score' => false,
+                    'show_qr' => false,
+                ],
+            ]
+        );
+
+        $classroom->loadMissing([
+            'academicYear',
+            'homeroomTeacher',
+            'enrollments' => fn ($q) => $q->where('academic_year_id', $period->academic_year_id)->with('student'),
+        ]);
+
+        $period->loadMissing('academicYear');
+
+        $isLocked = $classroom->isLockedInPeriod($period->id);
+        $isDraft = ! $isLocked;
+
+        $watermarkText = $isDraft ? 'DRAFT' : ($printSetting->watermark_text ?: null);
+
+        $formattedDate = Carbon::parse($printSetting->print_date)->translatedFormat('d F Y');
+
+        // Ambil penugasan mengajar di kelas ini
+        $assignments = TeachingAssignment::with([
+            'subject.parent',
+            'teacher',
+            'period',
+            'classroom.enrollments' => fn ($q) => $q->where('academic_year_id', $period->academic_year_id)->with('student'),
+            'learningScopes.scores',
+            'stsScores',
+            'competencyOverrides',
+        ])
+            ->where('classroom_id', $classroom->id)
+            ->where('period_id', $period->id)
+            ->get();
+
+        // Hitung grade sheet untuk setiap penugasan
+        $assignmentGradeSheets = [];
+        foreach ($assignments as $assignment) {
+            $sheet = ClassGradeSheet::forAssignment($assignment, $this->calculator, $this->resolver, $this->describer);
+            $assignmentGradeSheets[$assignment->id] = $sheet->rows->keyBy(fn ($r) => $r->student->id);
+        }
+
+        // Strukturkan mapel: Kelompokkan PAI dan sub-mapel, serta mapel mandiri
+        $orderedSubjectGroups = $this->structureAssignments($assignments);
+
+        // Ambil siswa aktif
+        $enrolledStudents = $classroom->enrollments
+            ->pluck('student')
+            ->filter(fn ($s) => $s !== null && $s->is_active)
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+
+        if ($targetStudent) {
+            $enrolledStudents = $enrolledStudents->filter(fn ($s) => $s->id === $targetStudent->id)->values();
+        }
+
+        // Ambil catatan & kehadiran wali kelas
+        $homeroomRecords = HomeroomRecord::where('period_id', $period->id)
+            ->where('classroom_id', $classroom->id)
+            ->get()
+            ->keyBy('student_id');
+
+        $studentsData = collect();
+
+        foreach ($enrolledStudents as $student) {
+            $subjectRows = [];
+            $totalScore = 0;
+            $gradedCount = 0;
+            $mainNumber = 1;
+
+            foreach ($orderedSubjectGroups as $group) {
+                if ($group['is_parent']) {
+                    // Header mapel induk (tanpa nilai)
+                    $subjectRows[] = [
+                        'is_parent' => true,
+                        'number' => (string) $mainNumber++,
+                        'letter' => '',
+                        'subject_name' => $group['name'],
+                        'score' => null,
+                        'formatted_score' => '',
+                        'description' => '',
+                        'is_below_kktp' => false,
+                    ];
+
+                    $childLetterIdx = 0;
+                    foreach ($group['assignments'] as $childAssignment) {
+                        $studentRow = $assignmentGradeSheets[$childAssignment->id][$student->id] ?? null;
+                        $finalScore = $studentRow?->finalScore;
+                        $isBelow = $finalScore !== null && $finalScore < $childAssignment->kktp;
+
+                        if ($finalScore !== null) {
+                            $totalScore += $finalScore;
+                            $gradedCount++;
+                        }
+
+                        $letter = chr(65 + $childLetterIdx++).'.';
+
+                        $subjectRows[] = [
+                            'is_parent' => false,
+                            'number' => '',
+                            'letter' => $letter,
+                            'subject_name' => $childAssignment->subject->name,
+                            'score' => $finalScore,
+                            'formatted_score' => $studentRow?->getFormattedFinalScore('–') ?? '–',
+                            'description' => $studentRow?->description ?? '–',
+                            'is_below_kktp' => $isBelow,
+                        ];
+                    }
+                } else {
+                    // Mapel mandiri
+                    $assignment = $group['assignment'];
+                    $studentRow = $assignmentGradeSheets[$assignment->id][$student->id] ?? null;
+                    $finalScore = $studentRow?->finalScore;
+                    $isBelow = $finalScore !== null && $finalScore < $assignment->kktp;
+
+                    if ($finalScore !== null) {
+                        $totalScore += $finalScore;
+                        $gradedCount++;
+                    }
+
+                    $subjectRows[] = [
+                        'is_parent' => false,
+                        'number' => (string) $mainNumber++,
+                        'letter' => '',
+                        'subject_name' => $assignment->subject->name,
+                        'score' => $finalScore,
+                        'formatted_score' => $studentRow?->getFormattedFinalScore('–') ?? '–',
+                        'description' => $studentRow?->description ?? '–',
+                        'is_below_kktp' => $isBelow,
+                    ];
+                }
+            }
+
+            $homeroomRecord = $homeroomRecords->get($student->id);
+
+            $averageScore = $gradedCount > 0 ? round($totalScore / $gradedCount, 1) : null;
+            $formattedAverage = $averageScore !== null ? number_format($averageScore, 1, ',', '.') : '–';
+
+            $studentsData->push([
+                'student' => $student,
+                'nis_nisn' => ($student->nis ? $student->nis.' / ' : '').$student->nisn,
+                'subjectRows' => $subjectRows,
+                'totalScore' => $gradedCount > 0 ? $totalScore : null,
+                'averageScore' => $averageScore,
+                'formattedAverage' => $formattedAverage,
+                'gradedCount' => $gradedCount,
+                'sick' => $homeroomRecord ? $homeroomRecord->sick : 0,
+                'permit' => $homeroomRecord ? $homeroomRecord->permit : 0,
+                'absent' => $homeroomRecord ? $homeroomRecord->absent : 0,
+                'note' => $homeroomRecord?->note ?? '',
+            ]);
+        }
+
+        return [
+            'profile' => $profile,
+            'printSetting' => $printSetting,
+            'classroom' => $classroom,
+            'period' => $period,
+            'isLocked' => $isLocked,
+            'isDraft' => $isDraft,
+            'watermarkText' => $watermarkText,
+            'formattedDate' => $formattedDate,
+            'studentsData' => $studentsData,
+        ];
+    }
+
+    /**
+     * Membangun payload data leger kelas untuk tampilan cetak PDF dan Excel.
+     *
+     * @return array{
+     *     profile: MadrasahProfile,
+     *     printSetting: PrintSetting,
+     *     classroom: Classroom,
+     *     period: Period,
+     *     subjectColumns: array<int, array{id: int, code: string, name: string, kktp: float}>,
+     *     rows: Collection<int, array>,
+     *     classAverages: array<int, string>,
+     *     overallAverage: string
+     * }
+     */
+    public function buildLedgerData(Classroom $classroom, Period $period): array
+    {
+        $profile = MadrasahProfile::first() ?? new MadrasahProfile;
+        $printSetting = PrintSetting::firstOrCreate(
+            ['period_id' => $period->id],
+            [
+                'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
+                'print_place' => $profile->regency ?? 'Bandung Barat',
+                'print_date' => now()->toDateString(),
+                'score_label' => 'Nilai STS',
+                'paper_size' => 'A4',
+            ]
+        );
+
+        $classroom->loadMissing([
+            'academicYear',
+            'homeroomTeacher',
+            'enrollments' => fn ($q) => $q->where('academic_year_id', $period->academic_year_id)->with('student'),
+        ]);
+
+        $assignments = TeachingAssignment::with([
+            'subject.parent',
+            'classroom.enrollments' => fn ($q) => $q->where('academic_year_id', $period->academic_year_id)->with('student'),
+            'learningScopes.scores',
+            'stsScores',
+            'competencyOverrides',
+        ])
+            ->where('classroom_id', $classroom->id)
+            ->where('period_id', $period->id)
+            ->get();
+
+        // Urutkan kolom mapel
+        $orderedColumns = [];
+        $structured = $this->structureAssignments($assignments);
+        foreach ($structured as $group) {
+            if ($group['is_parent']) {
+                foreach ($group['assignments'] as $a) {
+                    $orderedColumns[] = [
+                        'id' => $a->id,
+                        'code' => $a->subject->code,
+                        'name' => $a->subject->name,
+                        'kktp' => (float) $a->kktp,
+                    ];
+                }
+            } else {
+                $a = $group['assignment'];
+                $orderedColumns[] = [
+                    'id' => $a->id,
+                    'code' => $a->subject->code,
+                    'name' => $a->subject->name,
+                    'kktp' => (float) $a->kktp,
+                ];
+            }
+        }
+
+        $assignmentGradeSheets = [];
+        foreach ($assignments as $assignment) {
+            $sheet = ClassGradeSheet::forAssignment($assignment, $this->calculator, $this->resolver, $this->describer);
+            $assignmentGradeSheets[$assignment->id] = $sheet->rows->keyBy(fn ($r) => $r->student->id);
+        }
+
+        $enrolledStudents = $classroom->enrollments
+            ->pluck('student')
+            ->filter(fn ($s) => $s !== null && $s->is_active)
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+
+        $rows = collect();
+        $subjectScoresList = []; // [assignment_id => [scores]]
+
+        foreach ($orderedColumns as $col) {
+            $subjectScoresList[$col['id']] = [];
+        }
+
+        foreach ($enrolledStudents as $student) {
+            $studentScores = [];
+            $total = 0;
+            $gradedCount = 0;
+
+            foreach ($orderedColumns as $col) {
+                $assignmentId = $col['id'];
+                $sheetRow = $assignmentGradeSheets[$assignmentId][$student->id] ?? null;
+                $score = $sheetRow?->finalScore;
+
+                $studentScores[$assignmentId] = [
+                    'score' => $score,
+                    'formatted' => $score !== null ? (string) $score : '–',
+                    'is_below' => ($score !== null && $score < $col['kktp']),
+                ];
+
+                if ($score !== null) {
+                    $total += $score;
+                    $gradedCount++;
+                    $subjectScoresList[$assignmentId][] = $score;
+                }
+            }
+
+            $avg = $gradedCount > 0 ? round($total / $gradedCount, 1) : null;
+
+            $rows->push([
+                'student' => $student,
+                'scores' => $studentScores,
+                'total' => $gradedCount > 0 ? $total : 0,
+                'average' => $avg,
+                'formatted_average' => $avg !== null ? number_format($avg, 1, ',', '.') : '–',
+                'rank' => 0,
+            ]);
+        }
+
+        // Hitung peringkat berdasarkan Total nilai descending
+        $sortedForRank = $rows->sortByDesc('total')->values();
+        $ranksByStudentId = [];
+        $currentRank = 1;
+        foreach ($sortedForRank as $idx => $r) {
+            $ranksByStudentId[$r['student']->id] = $currentRank++;
+        }
+
+        $rows = $rows->map(function ($r) use ($ranksByStudentId) {
+            $r['rank'] = $ranksByStudentId[$r['student']->id] ?? 0;
+
+            return $r;
+        });
+
+        // Hitung rata-rata kelas per mapel
+        $classAverages = [];
+        $totalAllScores = 0;
+        $totalAllScoreCount = 0;
+
+        foreach ($orderedColumns as $col) {
+            $scores = $subjectScoresList[$col['id']];
+            if (count($scores) > 0) {
+                $avg = round(array_sum($scores) / count($scores), 1);
+                $classAverages[$col['id']] = number_format($avg, 1, ',', '.');
+                $totalAllScores += array_sum($scores);
+                $totalAllScoreCount += count($scores);
+            } else {
+                $classAverages[$col['id']] = '–';
+            }
+        }
+
+        $overallAverage = $totalAllScoreCount > 0
+            ? number_format(round($totalAllScores / $totalAllScoreCount, 1), 1, ',', '.')
+            : '–';
+
+        return [
+            'profile' => $profile,
+            'printSetting' => $printSetting,
+            'classroom' => $classroom,
+            'period' => $period,
+            'subjectColumns' => $orderedColumns,
+            'rows' => $rows,
+            'classAverages' => $classAverages,
+            'overallAverage' => $overallAverage,
+        ];
+    }
+
+    /**
+     * Mengelompokkan penugasan: Mapel Induk PAI (beserta sub-mapelnya) dan Mapel mandiri.
+     *
+     * @param  Collection<int, TeachingAssignment>  $assignments
+     * @return array<int, array>
+     */
+    protected function structureAssignments(Collection $assignments): array
+    {
+        $parentGroups = []; // [parent_id => ['is_parent' => true, 'name' => string, 'sort_order' => int, 'assignments' => []]]
+        $standalone = [];   // [['is_parent' => false, 'assignment' => TeachingAssignment, 'sort_order' => int]]
+
+        foreach ($assignments as $a) {
+            $subject = $a->subject;
+            if ($subject->parent_id && $subject->parent) {
+                $parent = $subject->parent;
+                if (! isset($parentGroups[$parent->id])) {
+                    $parentGroups[$parent->id] = [
+                        'is_parent' => true,
+                        'name' => $parent->name,
+                        'sort_order' => $parent->sort_order,
+                        'assignments' => [],
+                    ];
+                }
+                $parentGroups[$parent->id]['assignments'][] = $a;
+            } else {
+                $standalone[] = [
+                    'is_parent' => false,
+                    'assignment' => $a,
+                    'sort_order' => $subject->sort_order,
+                ];
+            }
+        }
+
+        // Urutkan sub-mapel di setiap kelompok induk
+        foreach ($parentGroups as &$pg) {
+            usort($pg['assignments'], fn ($x, $y) => $x->subject->sort_order <=> $y->subject->sort_order);
+        }
+        unset($pg);
+
+        $merged = array_merge(array_values($parentGroups), $standalone);
+        usort($merged, fn ($a, $b) => $a['sort_order'] <=> $b['sort_order']);
+
+        return $merged;
+    }
+}

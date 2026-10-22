@@ -41,4 +41,3 @@ class SubmissionController extends Controller
         );
     }
 }
-

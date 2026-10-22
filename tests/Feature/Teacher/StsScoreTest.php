@@ -103,4 +103,3 @@ class StsScoreTest extends TestCase
         $response->assertSessionHasErrors('scores.'.$student->id);
     }
 }
-

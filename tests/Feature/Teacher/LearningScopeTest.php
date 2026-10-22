@@ -184,4 +184,3 @@ class LearningScopeTest extends TestCase
         $this->assertDatabaseMissing('summative_scores', ['id' => $score->id]);
     }
 }
-

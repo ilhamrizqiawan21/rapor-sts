@@ -45,12 +45,12 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - [x] Test policy: guru lain 403, setelah kirim 403, kelas dikunci 403.
 
 ## Tahap 5 — Wali kelas & cetak
-- [ ] Kehadiran & catatan + massal + upload (FR-WAL-02/03).
-- [ ] Status nilai, kunci/buka, batal kirim (FR-WAL-04/05, FR-NIL-11).
-- [ ] Pengaturan cetak (FR-RAP-01).
-- [ ] PDF rapor per siswa & semua (04-DESIGN §6), watermark DRAFT.
-- [ ] Leger PDF & Excel.
-- [ ] Test: data rapor (ReportCardBuilder) sesuai contoh; kunci hanya jika semua terkirim.
+- [x] Kehadiran & catatan + massal + upload (FR-WAL-02/03).
+- [x] Status nilai, kunci/buka, batal kirim (FR-WAL-04/05, FR-NIL-11).
+- [x] Pengaturan cetak (FR-RAP-01).
+- [x] PDF rapor per siswa & semua (04-DESIGN §6), watermark DRAFT.
+- [x] Leger PDF & Excel.
+- [x] Test: data rapor (ReportCardBuilder) sesuai contoh; kunci hanya jika semua terkirim.
 - Selesai bila: PDF contoh dari DemoSeeder dibandingkan berdampingan dengan mockup 14–15 oleh pemilik.
 
 ## Tahap 6 — Kepala madrasah

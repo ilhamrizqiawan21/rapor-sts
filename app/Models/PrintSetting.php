@@ -33,4 +33,23 @@ class PrintSetting extends Model
     {
         return $this->belongsTo(Period::class);
     }
+
+    public function isSectionVisible(string $key, bool $default = true): bool
+    {
+        $sections = $this->sections ?? [];
+
+        // Support aliases
+        if (! isset($sections[$key])) {
+            if ($key === 'show_note' && isset($sections['show_notes'])) {
+                return (bool) $sections['show_notes'];
+            }
+            if ($key === 'show_total_score' && isset($sections['show_total'])) {
+                return (bool) $sections['show_total'];
+            }
+
+            return $default;
+        }
+
+        return (bool) $sections[$key];
+    }
 }

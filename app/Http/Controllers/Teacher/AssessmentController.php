@@ -18,4 +18,3 @@ class AssessmentController extends Controller
         return view('guru.penilaian', compact('teachingAssignment', 'sheet'));
     }
 }
-

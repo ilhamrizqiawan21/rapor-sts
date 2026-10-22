@@ -1,17 +1,24 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Homeroom\HomeroomRecordController;
+use App\Http\Controllers\Homeroom\LockController as HomeroomLockController;
+use App\Http\Controllers\Homeroom\StatusController as HomeroomStatusController;
 use App\Http\Controllers\Operator\AcademicYearController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
 use App\Http\Controllers\Operator\EnrollmentController;
 use App\Http\Controllers\Operator\KktpDefaultController;
 use App\Http\Controllers\Operator\PeriodController;
+use App\Http\Controllers\Operator\PrintSettingController;
 use App\Http\Controllers\Operator\ProfileController;
+use App\Http\Controllers\Operator\StatusController as OperatorStatusController;
 use App\Http\Controllers\Operator\StudentController;
 use App\Http\Controllers\Operator\SubjectController;
 use App\Http\Controllers\Operator\TeacherController;
 use App\Http\Controllers\Operator\TeachingAssignmentController;
+use App\Http\Controllers\Report\LedgerController;
+use App\Http\Controllers\Report\ReportCardController;
 use App\Http\Controllers\Teacher\AssessmentController;
 use App\Http\Controllers\Teacher\CompetencyOverrideController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
@@ -88,6 +95,19 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     // KKTP Default
     Route::get('/kktp', [KktpDefaultController::class, 'index'])->name('kktp.index');
     Route::post('/kktp', [KktpDefaultController::class, 'storeOrUpdate'])->name('kktp.store');
+
+    // Pengaturan Cetak Rapor STS (Mockup 05)
+    Route::get('/pengaturan-cetak', [PrintSettingController::class, 'edit'])->name('print-settings.edit');
+    Route::post('/pengaturan-cetak', [PrintSettingController::class, 'update'])->name('print-settings.update');
+
+    // Status Nilai Operator (Mockup 06)
+    Route::get('/status-nilai', [OperatorStatusController::class, 'index'])->name('status.index');
+    Route::post('/status-nilai/kunci/{classroom}', [HomeroomLockController::class, 'lock'])->name('status.lock');
+    Route::post('/status-nilai/buka/{classroom}', [HomeroomLockController::class, 'unlock'])->name('status.unlock');
+    Route::post('/status-nilai/batal-kirim/{teachingAssignment}', [HomeroomStatusController::class, 'unsubmit'])->name('status.unsubmit');
+
+    // Cetak Rapor Operator (Mockup 07)
+    Route::get('/cetak-rapor', [ReportCardController::class, 'operatorIndex'])->name('rapor.index');
 });
 
 // Guru Routes
@@ -119,6 +139,33 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     // Override Capaian Kompetensi (FR-NIL-09)
     Route::put('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'update'])->name('capaian.update');
     Route::delete('/mengajar/{teachingAssignment}/capaian/{student}', [CompetencyOverrideController::class, 'destroy'])->name('capaian.destroy');
+});
+
+// Wali Kelas Routes (FR-WAL-*)
+Route::middleware(['auth', 'role:guru'])->prefix('wali')->name('wali.')->group(function () {
+    // Kehadiran & Catatan (Mockup 13)
+    Route::get('/kehadiran', [HomeroomRecordController::class, 'index'])->name('kehadiran.index');
+    Route::post('/kehadiran', [HomeroomRecordController::class, 'update'])->name('kehadiran.update');
+    Route::post('/kehadiran/massal', [HomeroomRecordController::class, 'batchNote'])->name('kehadiran.batch_note');
+    Route::get('/kehadiran/template', [HomeroomRecordController::class, 'template'])->name('kehadiran.template');
+    Route::post('/kehadiran/import', [HomeroomRecordController::class, 'import'])->name('kehadiran.import');
+
+    // Status Nilai & Kunci (Mockup 06)
+    Route::get('/status', [HomeroomStatusController::class, 'index'])->name('status.index');
+    Route::post('/status/kunci/{classroom}', [HomeroomLockController::class, 'lock'])->name('status.lock');
+    Route::post('/status/buka/{classroom}', [HomeroomLockController::class, 'unlock'])->name('status.unlock');
+    Route::post('/status/batal-kirim/{teachingAssignment}', [HomeroomStatusController::class, 'unsubmit'])->name('status.unsubmit');
+
+    // Cetak Rapor STS (Mockup 07)
+    Route::get('/rapor', [ReportCardController::class, 'homeroomIndex'])->name('rapor.index');
+});
+
+// Rapor Cetak PDF & Leger (Shared Download Routes)
+Route::middleware('auth')->prefix('rapor')->name('rapor.')->group(function () {
+    Route::get('/{classroom}/siswa/{student}/pdf', [ReportCardController::class, 'downloadSinglePdf'])->name('student.pdf');
+    Route::get('/{classroom}/semua/pdf', [ReportCardController::class, 'downloadAllPdf'])->name('classroom.pdf');
+    Route::get('/{classroom}/leger/pdf', [LedgerController::class, 'downloadPdf'])->name('leger.pdf');
+    Route::get('/{classroom}/leger/excel', [LedgerController::class, 'downloadExcel'])->name('leger.excel');
 });
 
 // Kepala Routes (Read-Only)

@@ -66,4 +66,3 @@ class StsScoreController extends Controller
         return redirect()->back()->with('success', 'Nilai STS berhasil disimpan.');
     }
 }
-

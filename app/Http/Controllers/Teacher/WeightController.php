@@ -39,4 +39,3 @@ class WeightController extends Controller
         return redirect()->back()->with('success', 'Bobot nilai berhasil diperbarui.');
     }
 }
-

@@ -75,9 +75,19 @@
     {{-- Tugas tambahan bila wali kelas (FR-WAL-01) --}}
     @if($homeroomClass)
         <div class="sec">Tugas Tambahan</div>
-        <a href="#" class="{{ $active === 'wali' ? 'on' : '' }}">
+        <a href="#" class="{{ in_array($active, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']) ? 'on' : '' }}">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/></svg>
             <span>Wali Kelas {{ $homeroomClass->name }}</span>
+            <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+        <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $active === 'wali_kehadiran' ? 'on' : '' }}">
+            <span>Kehadiran &amp; Catatan</span>
+        </a>
+        <a href="{{ route('wali.status.index') }}" class="sub {{ $active === 'wali_status' ? 'on' : '' }}">
+            <span>Status Nilai</span>
+        </a>
+        <a href="{{ route('wali.rapor.index') }}" class="sub {{ $active === 'wali_rapor' ? 'on' : '' }}">
+            <span>Cetak Rapor STS</span>
         </a>
     @endif
 

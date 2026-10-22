@@ -3,6 +3,8 @@
 namespace App\Services\Import;
 
 use App\Models\Classroom;
+use App\Models\HomeroomRecord;
+use App\Models\Period;
 use App\Models\TeachingAssignment;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -247,6 +249,71 @@ class TemplateBuilder
             if ($score !== null) {
                 $sheet->setCellValue('E'.$row, (float) $score);
             }
+            $row++;
+        }
+
+        foreach ($cols as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        return $spreadsheet;
+    }
+
+    public function buildHomeroomTemplate(Classroom $classroom, Period $period): Spreadsheet
+    {
+        $classroom->loadMissing([
+            'enrollments' => fn ($q) => $q->where('academic_year_id', $period->academic_year_id)->with('student'),
+        ]);
+
+        $students = $classroom->enrollments
+            ->pluck('student')
+            ->filter(fn ($s) => $s !== null && $s->is_active)
+            ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
+            ->values();
+
+        $records = HomeroomRecord::where('period_id', $period->id)
+            ->where('classroom_id', $classroom->id)
+            ->get()
+            ->keyBy('student_id');
+
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Kehadiran_Catatan');
+
+        // Baris 1: Judul
+        $sheet->setCellValue('A1', 'TEMPLATE KEHADIRAN & CATATAN WALI KELAS — '.$classroom->name);
+        $sheet->mergeCells('A1:G1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+        // Baris 2: Keterangan
+        $sheet->setCellValue('A2', 'Petunjuk: Masukkan jumlah sakit, izin, alpa (bilangan bulat >= 0) dan catatan wali kelas (maks 500 karakter). Data mulai baris 4.');
+        $sheet->mergeCells('A2:G2');
+        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(11);
+
+        // Header baris 3
+        $headers = ['ID', 'NISN', 'Nama', 'Sakit', 'Izin', 'Alpa', 'Catatan'];
+        $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+        foreach ($headers as $idx => $h) {
+            $cell = $cols[$idx].'3';
+            $sheet->setCellValue($cell, $h);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF1F3F5');
+            $sheet->getStyle($cell)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        }
+
+        // Baris data mulai baris 4
+        $row = 4;
+        foreach ($students as $student) {
+            $record = $records->get($student->id);
+
+            $sheet->setCellValue('A'.$row, $student->id);
+            $sheet->setCellValueExplicit('B'.$row, $student->nisn, DataType::TYPE_STRING);
+            $sheet->setCellValue('C'.$row, $student->name);
+            $sheet->setCellValue('D'.$row, $record ? $record->sick : 0);
+            $sheet->setCellValue('E'.$row, $record ? $record->permit : 0);
+            $sheet->setCellValue('F'.$row, $record ? $record->absent : 0);
+            $sheet->setCellValue('G'.$row, $record?->note ?? '');
             $row++;
         }
 

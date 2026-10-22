@@ -55,4 +55,3 @@ class CompetencyOverrideController extends Controller
         return redirect()->back()->with('success', "Deskripsi capaian siswa {$student->name} berhasil dikembalikan ke otomatis.");
     }
 }
-

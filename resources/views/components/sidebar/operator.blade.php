@@ -55,13 +55,22 @@
     </a>
 
     {{-- Rapor --}}
-    <a href="{{ route('operator.kktp.index') }}" class="{{ in_array($active, ['kktp', 'status_nilai', 'cetak_rapor']) ? 'on' : '' }}">
+    <a href="{{ route('operator.kktp.index') }}" class="{{ in_array($active, ['kktp', 'print_settings', 'status_nilai', 'cetak_rapor']) ? 'on' : '' }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM14 2v6h6"/></svg>
         <span>Rapor</span>
         <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
     </a>
     <a href="{{ route('operator.kktp.index') }}" class="sub {{ $active === 'kktp' ? 'on' : '' }}">
         <span>Nilai KKM</span>
+    </a>
+    <a href="{{ route('operator.print-settings.edit') }}" class="sub {{ $active === 'print_settings' ? 'on' : '' }}">
+        <span>Pengaturan Cetak</span>
+    </a>
+    <a href="{{ route('operator.status.index') }}" class="sub {{ $active === 'status_nilai' ? 'on' : '' }}">
+        <span>Status Nilai</span>
+    </a>
+    <a href="{{ route('operator.rapor.index') }}" class="sub {{ $active === 'cetak_rapor' ? 'on' : '' }}">
+        <span>Cetak Rapor</span>
     </a>
 
     <div class="sec">Administrasi</div>
