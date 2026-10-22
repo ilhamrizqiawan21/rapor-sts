@@ -47,6 +47,7 @@
 </head>
 <body>
 <div class="app">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="window.toggleSidebar ? window.toggleSidebar() : null"></div>
     <aside class="side" id="appSidebar">
         <div class="brand">
             <div class="logo">RS</div>
@@ -73,7 +74,7 @@
 
     <main class="main">
         <header class="top">
-            <button class="ham" type="button" aria-label="Buka/tutup menu" onclick="document.getElementById('appSidebar').classList.toggle('open')">
+            <button class="ham" id="hamburgerBtn" type="button" aria-label="Buka/tutup menu" onclick="window.toggleSidebar ? window.toggleSidebar() : null">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
             </button>
 
@@ -115,5 +116,27 @@
         </footer>
     </main>
 </div>
+<script>
+window.toggleSidebar = function() {
+    var sidebar = document.getElementById('appSidebar');
+    var backdrop = document.getElementById('sidebarBackdrop');
+    if (!sidebar) return;
+    if (window.innerWidth <= 768) {
+        var isOpen = sidebar.classList.toggle('open');
+        if (backdrop) backdrop.classList.toggle('active', isOpen);
+    } else {
+        var isCollapsed = sidebar.classList.toggle('collapsed');
+        try { localStorage.setItem('sidebar_collapsed', isCollapsed ? '1' : '0'); } catch(e) {}
+    }
+};
+
+if (window.innerWidth > 768) {
+    try {
+        if (localStorage.getItem('sidebar_collapsed') === '1') {
+            document.getElementById('appSidebar')?.classList.add('collapsed');
+        }
+    } catch(e) {}
+}
+</script>
 </body>
 </html>

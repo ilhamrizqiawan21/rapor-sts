@@ -54,13 +54,30 @@ a:hover {
 }
 
 .side {
-  flex: 1 1 240px;
+  flex: 0 0 240px;
+  width: 240px;
+  min-width: 240px;
   background: var(--sidebar);
   color: var(--sidebar-text);
   display: flex;
   flex-direction: column;
   padding-bottom: 16px;
-  min-width: 240px;
+  transition: margin-left 0.25s ease, width 0.25s ease, min-width 0.25s ease, opacity 0.2s ease;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+@media (min-width: 769px) {
+  .side.collapsed {
+    margin-left: -240px !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
 }
 
 @media (max-width: 768px) {
@@ -70,13 +87,31 @@ a:hover {
     left: -270px;
     bottom: 0;
     width: 260px;
+    min-width: 260px;
     z-index: 1000;
     transition: left 0.25s ease;
     overflow-y: auto;
     box-shadow: 2px 0 8px rgba(0,0,0,0.3);
   }
   .side.open {
+    left: 0 !important;
+  }
+}
+
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar-backdrop.active {
+    display: block;
+    position: fixed;
+    top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 999;
   }
 }
 
@@ -272,6 +307,17 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.ham:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.ham:focus-visible {
+  outline: 2px solid var(--semester-badge);
+  outline-offset: -2px;
 }
 
 .tl {

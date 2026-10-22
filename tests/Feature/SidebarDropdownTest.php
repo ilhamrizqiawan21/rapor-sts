@@ -71,4 +71,17 @@ class SidebarDropdownTest extends TestCase
         $response->assertSee('class="sub on">', false);
         $response->assertSee('Kehadiran &amp; Catatan', false);
     }
+
+    public function test_layout_renders_hamburger_button_and_backdrop_with_toggle_handler(): void
+    {
+        $this->seed(DemoSeeder::class);
+        $operator = User::where('username', 'admin')->first();
+
+        $response = $this->actingAs($operator)->get(route('operator.dashboard'));
+
+        $response->assertStatus(200);
+        $response->assertSee('id="hamburgerBtn"', false);
+        $response->assertSee('id="sidebarBackdrop"', false);
+        $response->assertSee('window.toggleSidebar', false);
+    }
 }
