@@ -57,7 +57,8 @@ class ReportCardController extends Controller
         /** @var Period $period */
         $period = app('activePeriod');
 
-        $classrooms = Classroom::where('academic_year_id', $period->academic_year_id)
+        $classrooms = Classroom::with('homeroomTeacher')
+            ->where('academic_year_id', $period->academic_year_id)
             ->orderBy('level')
             ->orderBy('name')
             ->get();

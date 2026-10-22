@@ -1,0 +1,86 @@
+- generic [ref=f4e2]:
+  - complementary [ref=f4e3]:
+    - generic [ref=f4e4]:
+      - generic [ref=f4e5]: RS
+      - generic [ref=f4e6]:
+        - generic [ref=f4e7]: Rapor STS
+        - generic [ref=f4e8]: Nama Madrasah
+    - generic [ref=f4e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu operator" [ref=f4e10]:
+      - link "Dashboard" [ref=f4e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - link "Profil Madrasah" [ref=f4e15] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/profil
+      - generic [ref=f4e19]: Pengaturan
+      - generic [ref=f4e20]:
+        - button "Lembaga" [expanded] [ref=f4e21] [cursor=pointer]
+        - generic [ref=f4e28]:
+          - link "Pengaturan" [ref=f4e29] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/lembaga
+          - link "Mata Pelajaran" [ref=f4e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/mapel
+          - link "Kelas" [ref=f4e33] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/kelas
+      - button "Guru" [ref=f4e36] [cursor=pointer]
+      - button "Siswa" [ref=f4e44] [cursor=pointer]
+      - button "Rapor" [ref=f4e53] [cursor=pointer]
+      - generic [ref=f4e59]: Administrasi
+      - link "Admin Aplikasi" [ref=f4e60] [cursor=pointer]:
+        - /url: "#"
+      - link "Backup Restore" [ref=f4e65] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=f4e69]: Akun
+      - link "Logout" [ref=f4e70] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f4e74]:
+    - generic [ref=f4e75]:
+      - button "Buka/tutup menu" [ref=f4e76] [cursor=pointer]
+      - generic [ref=f4e79]:
+        - generic [ref=f4e80]: Operator
+        - generic [ref=f4e81]: O
+    - generic [ref=f4e82]:
+      - link "Home" [ref=f4e83] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - text: /
+      - link "Admin" [ref=f4e84] [cursor=pointer]:
+        - /url: "#"
+      - text: / Pengaturan Lembaga
+    - generic [ref=f4e85]:
+      - generic [ref=f4e86]:
+        - generic [ref=f4e87]:
+          - generic [ref=f4e88]: Tambah Tahun Pelajaran
+          - generic [ref=f4e92]:
+            - generic [ref=f4e93]:
+              - generic [ref=f4e94]: "Tahun Pelajaran (contoh: 2026/2027)"
+              - 'textbox "Tahun Pelajaran (contoh: 2026/2027)" [ref=f4e95]':
+                - /placeholder: YYYY/YYYY
+              - generic [ref=f4e96]: Tahun baru otomatis dilengkapi Semester Ganjil dan Genap.
+            - button "+ Simpan Tahun" [ref=f4e97] [cursor=pointer]
+        - generic [ref=f4e98]:
+          - generic [ref=f4e99]: Periode Aktif Berjalan
+          - generic [ref=f4e103]:
+            - paragraph [ref=f4e104]: "Aplikasi sedang memproses dan menampilkan data pada periode:"
+            - generic [ref=f4e105]: SEMESTER GANJIL 2026/2027
+            - generic [ref=f4e106]: Untuk mengubah periode aktif yang berlaku bagi seluruh guru dan kepala madrasah, klik tombol "Aktifkan" pada tabel di bawah.
+      - generic [ref=f4e107]:
+        - generic [ref=f4e108]: Daftar Tahun Pelajaran & Semester
+        - table [ref=f4e113]:
+          - rowgroup [ref=f4e114]:
+            - row [ref=f4e115]:
+              - columnheader "#" [ref=f4e116]
+              - columnheader "Tahun Pelajaran" [ref=f4e117]
+              - columnheader "Semester Ganjil" [ref=f4e118]
+              - columnheader "Semester Genap" [ref=f4e119]
+              - columnheader "Aksi" [ref=f4e120]
+          - rowgroup [ref=f4e121]:
+            - row [ref=f4e122]:
+              - cell "1" [ref=f4e123]
+              - cell "2026/2027" [ref=f4e124]
+              - cell "✓ AKTIF" [ref=f4e125]
+              - cell [ref=f4e127]:
+                - button "Aktifkan" [ref=f4e129] [cursor=pointer]
+              - cell [ref=f4e130]:
+                - button "Hapus" [ref=f4e132] [cursor=pointer]
+    - generic [ref=f4e133]:
+      - generic [ref=f4e134]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f4e135]: Bukan aplikasi resmi Kementerian Agama

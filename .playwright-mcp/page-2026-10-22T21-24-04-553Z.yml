@@ -1,0 +1,235 @@
+- generic [ref=f37e2]:
+  - generic [ref=f37e4]:
+    - generic [ref=f37e5]: Internal Server Error
+    - button "Copy as Markdown" [ref=f37e11] [cursor=pointer]
+  - generic [ref=f37e18]:
+    - generic [ref=f37e19]:
+      - heading "Illuminate\\Database\\LazyLoadingViolationException" [level=1] [ref=f37e20]
+      - generic [ref=f37e21]: vendor/laravel/framework/src/Illuminate/Database/Eloquent/Concerns/HasAttributes.php:617
+      - paragraph [ref=f37e23]: Attempted to lazy load [homeroomTeacher] on model [App\Models\Classroom] but lazy loading is disabled.
+    - generic [ref=f37e24]:
+      - generic [ref=f37e25]:
+        - generic [ref=f37e26]:
+          - generic [ref=f37e27]: LARAVEL
+          - generic [ref=f37e28]: 13.38.0
+        - generic [ref=f37e29]:
+          - generic [ref=f37e30]: PHP
+          - generic [ref=f37e31]: 8.5.12
+      - generic [ref=f37e32]: UNHANDLED
+      - generic [ref=f37e36]: CODE 0
+    - generic [ref=f37e38]:
+      - generic [ref=f37e39]: "500"
+      - generic [ref=f37e43]: GET
+      - generic [ref=f37e47]: http://127.0.0.1:8765/operator/status-nilai
+      - button [ref=f37e48] [cursor=pointer]
+  - generic [ref=f37e53]:
+    - generic [ref=f37e54]:
+      - heading "Exception trace" [level=3] [ref=f37e60]
+      - generic [ref=f37e61]:
+        - generic [ref=f37e63] [cursor=pointer]:
+          - generic [ref=f37e68]: 5 vendor frames
+          - button [ref=f37e69]
+        - generic [ref=f37e74]:
+          - generic [ref=f37e75] [cursor=pointer]:
+            - generic [ref=f37e78]:
+              - code [ref=f37e82]:
+                - generic [ref=f37e83]: Illuminate\Database\Eloquent\Model->__isset()
+              - generic [ref=f37e84]: resources/views/operator/rapor/status.blade.php:58
+            - button [ref=f37e87]
+          - code [ref=f37e96]:
+            - generic [ref=f37e97]: 53 <div class="f">
+            - generic [ref=f37e98]: 54 <label for="kl">Pilih Kelas</label>
+            - generic [ref=f37e99]: 55 <select id="kl" name="classroom_id" class="in" onchange="document.getElementById('filterForm').submit()">
+            - generic [ref=f37e100]: 56 @foreach($classrooms as $c)
+            - generic [ref=f37e101]: "57 <option value=\"{{ $c->id }}\" {{ $selectedClassroom && $selectedClassroom->id === $c->id ? 'selected' : '' }}>"
+            - generic [ref=f37e102]: "58 Tingkat {{ $c->level }} — {{ $c->name }} (Wali: {{ $c->homeroomTeacher?->name ?? 'Belum ditentukan' }})"
+            - generic [ref=f37e103]: 59 </option>
+            - generic [ref=f37e104]: 60 @endforeach
+            - generic [ref=f37e105]: 61 </select>
+            - generic [ref=f37e106]: 62 </div>
+            - generic [ref=f37e107]: 63 </form>
+            - generic [ref=f37e108]: "64"
+            - generic [ref=f37e109]: 65 @if($selectedClassroom)
+            - generic [ref=f37e110]: "66 {{-- Progres Bar --}}"
+            - generic [ref=f37e111]: "67 <div style=\"border: 1px solid #dee2e6; border-radius: 4px\">"
+            - generic [ref=f37e112]: "68 <div style=\"padding: 10px 14px; border-bottom: 1px solid #dee2e6; font-size: 13px; font-weight: 600\">Progres Nilai — {{ $selectedClassroom->name }}</div>"
+            - generic [ref=f37e113]: "69 <div style=\"padding: 14px; display: flex; flex-direction: column; gap: 12px\">"
+            - generic [ref=f37e114]: "70"
+        - generic [ref=f37e116] [cursor=pointer]:
+          - generic [ref=f37e121]: 13 vendor frames
+          - button [ref=f37e122]
+        - generic [ref=f37e128] [cursor=pointer]:
+          - generic [ref=f37e131]:
+            - code [ref=f37e135]:
+              - generic [ref=f37e136]: "Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}()"
+            - generic [ref=f37e137]: app/Http/Middleware/EnsureRole.php:28
+          - button [ref=f37e140]
+        - generic [ref=f37e146] [cursor=pointer]:
+          - generic [ref=f37e151]: 1 vendor frame
+          - button [ref=f37e152]
+        - generic [ref=f37e158] [cursor=pointer]:
+          - generic [ref=f37e161]:
+            - code [ref=f37e165]:
+              - generic [ref=f37e166]: "Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}()"
+            - generic [ref=f37e167]: app/Http/Middleware/ReadOnlyForHeadmaster.php:30
+          - button [ref=f37e170]
+        - generic [ref=f37e176] [cursor=pointer]:
+          - generic [ref=f37e181]: 1 vendor frame
+          - button [ref=f37e182]
+        - generic [ref=f37e188] [cursor=pointer]:
+          - generic [ref=f37e191]:
+            - code [ref=f37e195]:
+              - generic [ref=f37e196]: "Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}()"
+            - generic [ref=f37e197]: app/Http/Middleware/SetActivePeriod.php:38
+          - button [ref=f37e200]
+        - generic [ref=f37e206] [cursor=pointer]:
+          - generic [ref=f37e211]: 45 vendor frames
+          - button [ref=f37e212]
+        - generic [ref=f37e218] [cursor=pointer]:
+          - generic [ref=f37e221]:
+            - code [ref=f37e225]:
+              - generic [ref=f37e226]: Illuminate\Foundation\Application->handleRequest()
+            - generic [ref=f37e227]: public/index.php:20
+          - button [ref=f37e230]
+        - generic [ref=f37e236] [cursor=pointer]:
+          - generic [ref=f37e241]: 1 vendor frame
+          - button [ref=f37e242]
+    - generic [ref=f37e247]:
+      - generic [ref=f37e248]:
+        - heading "Queries" [level=3] [ref=f37e253]
+        - generic [ref=f37e254]: 1-10 of 16
+      - generic [ref=f37e256]:
+        - generic [ref=f37e257]:
+          - generic [ref=f37e258]:
+            - generic [ref=f37e259]: sqlite
+            - code [ref=f37e266]:
+              - generic [ref=f37e267]: select * from "sessions" where "id" = 'j8Okhy7fUWq8vj95W0vGX09t47egfAmIsMYfHWVR' limit 1
+          - generic [ref=f37e268]: 1ms
+        - generic [ref=f37e269]:
+          - generic [ref=f37e270]:
+            - generic [ref=f37e271]: sqlite
+            - code [ref=f37e278]:
+              - generic [ref=f37e279]: select * from "users" where "id" = 1 limit 1
+          - generic [ref=f37e280]: 0.21ms
+        - generic [ref=f37e281]:
+          - generic [ref=f37e282]:
+            - generic [ref=f37e283]: sqlite
+            - code [ref=f37e290]:
+              - generic [ref=f37e291]: select exists (select 1 from "main".sqlite_master where name = 'periods' and type = 'table') as "exists"
+          - generic [ref=f37e292]: 0.12ms
+        - generic [ref=f37e293]:
+          - generic [ref=f37e294]:
+            - generic [ref=f37e295]: sqlite
+            - code [ref=f37e302]:
+              - generic [ref=f37e303]: select * from "periods" where "periods"."id" = 1 limit 1
+          - generic [ref=f37e304]: 0.12ms
+        - generic [ref=f37e305]:
+          - generic [ref=f37e306]:
+            - generic [ref=f37e307]: sqlite
+            - code [ref=f37e314]:
+              - generic [ref=f37e315]: select * from "academic_years" where "academic_years"."id" in (1)
+          - generic [ref=f37e316]: 0.11ms
+        - generic [ref=f37e317]:
+          - generic [ref=f37e318]:
+            - generic [ref=f37e319]: sqlite
+            - code [ref=f37e326]:
+              - generic [ref=f37e327]: select * from "classrooms" where "academic_year_id" = 1 order by "level" asc, "name" asc
+          - generic [ref=f37e328]: 0.16ms
+        - generic [ref=f37e329]:
+          - generic [ref=f37e330]:
+            - generic [ref=f37e331]: sqlite
+            - code [ref=f37e338]:
+              - generic [ref=f37e339]: select * from "enrollments" where "enrollments"."classroom_id" in (1) and "academic_year_id" = 1
+          - generic [ref=f37e340]: 0.13ms
+        - generic [ref=f37e341]:
+          - generic [ref=f37e342]:
+            - generic [ref=f37e343]: sqlite
+            - code [ref=f37e350]:
+              - generic [ref=f37e351]: select * from "students" where "students"."id" in (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+          - generic [ref=f37e352]: 0.17ms
+        - generic [ref=f37e353]:
+          - generic [ref=f37e354]:
+            - generic [ref=f37e355]: sqlite
+            - code [ref=f37e362]:
+              - generic [ref=f37e363]: select * from "teaching_assignments" where "classroom_id" = 1 and "period_id" = 1
+          - generic [ref=f37e364]: 0.16ms
+        - generic [ref=f37e365]:
+          - generic [ref=f37e366]:
+            - generic [ref=f37e367]: sqlite
+            - code [ref=f37e374]:
+              - generic [ref=f37e375]: select * from "subjects" where "subjects"."id" in (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)
+          - generic [ref=f37e376]: 0.15ms
+      - generic [ref=f37e377]:
+        - button [disabled] [ref=f37e378]
+        - button [disabled] [ref=f37e382]
+        - button "1" [ref=f37e386] [cursor=pointer]
+        - button "2" [ref=f37e388] [cursor=pointer]
+        - button [ref=f37e389] [cursor=pointer]
+        - button [ref=f37e392] [cursor=pointer]
+  - generic [ref=f37e397]:
+    - generic [ref=f37e398]:
+      - heading "Headers" [level=2] [ref=f37e399]
+      - generic [ref=f37e400]:
+        - generic [ref=f37e401]:
+          - generic [ref=f37e402]: host
+          - generic [ref=f37e404]: 127.0.0.1:8765
+        - generic [ref=f37e405]:
+          - generic [ref=f37e406]: connection
+          - generic [ref=f37e408]: keep-alive
+        - generic [ref=f37e409]:
+          - generic [ref=f37e410]: sec-ch-ua
+          - generic [ref=f37e412]: "\"Not:A-Brand\";v=\"8\", \"Chromium\";v=\"156\", \"Google Chrome\";v=\"156\""
+        - generic [ref=f37e413]:
+          - generic [ref=f37e414]: sec-ch-ua-mobile
+          - generic [ref=f37e416]: "?0"
+        - generic [ref=f37e417]:
+          - generic [ref=f37e418]: sec-ch-ua-platform
+          - generic [ref=f37e420]: "\"Linux\""
+        - generic [ref=f37e421]:
+          - generic [ref=f37e422]: upgrade-insecure-requests
+          - generic [ref=f37e424]: "1"
+        - generic [ref=f37e425]:
+          - generic [ref=f37e426]: user-agent
+          - generic [ref=f37e428]: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36
+        - generic [ref=f37e429]:
+          - generic [ref=f37e430]: accept
+          - generic [ref=f37e432]: text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+        - generic [ref=f37e433]:
+          - generic [ref=f37e434]: sec-fetch-site
+          - generic [ref=f37e436]: none
+        - generic [ref=f37e437]:
+          - generic [ref=f37e438]: sec-fetch-mode
+          - generic [ref=f37e440]: navigate
+        - generic [ref=f37e441]:
+          - generic [ref=f37e442]: sec-fetch-user
+          - generic [ref=f37e444]: "?1"
+        - generic [ref=f37e445]:
+          - generic [ref=f37e446]: sec-fetch-dest
+          - generic [ref=f37e448]: document
+        - generic [ref=f37e449]:
+          - generic [ref=f37e450]: accept-encoding
+          - generic [ref=f37e452]: gzip, deflate, br, zstd
+        - generic [ref=f37e453]:
+          - generic [ref=f37e454]: accept-language
+          - generic [ref=f37e456]: en-US,en;q=0.9
+        - generic [ref=f37e457]:
+          - generic [ref=f37e458]: cookie
+          - generic [ref=f37e460]: XSRF-TOKEN=eyJpdiI6Ik9EcTdvZmtHYzZCVjBDbWRKWk1rQ0E9PSIsInZhbHVlIjoiWGRWSFN5TW03V0NXTXlEeXJWL1RJU0ptVW1CZHlBeTdKakhTYnJwek5JUFNvL3NScFFpTjBRQnI3Uldacy9nTmh1bkU0SlFQdktUbjFZUGhReTQ2VGtlajFMWjZNczluVGdyMFZFYURKVmJpektUNktzbGZNc3lsd0k1Rmp0UnMiLCJtYWMiOiIwMGU2YWU5YWNkNGRkYTQ4MTQ2M2E4OGQ1YTE2MjE5N2VmODQ2Y2E4NmU4NDQ0M2M1ZjljNTcwNzIyNDlmNzZiIiwidGFnIjoiIn0%3D; rapor-sts-session=eyJpdiI6ImxyQldDRGhNUStER0RZZEp0ajNXMmc9PSIsInZhbHVlIjoiY2RNcUg5RVI2UUIxdXJwZStDajdnTWRoRCtUOVhDWHkxT0FQV3RXNW1oLzNLSEFJZDRqbnFGUGI0Rmg3U0t2OE03RWlIMkZkcUIwNk9zZElrcVpwdkJIRTg5czJ2NUNhTGY4VDVLamZ1ZXZ2SEFYMzFtbnZUNFN0Z0FqbVpIQUkiLCJtYWMiOiI3NGIwYzc2YjQ3MzFhZjY5Njk4YmRjNTQwNThjMzFjZWIyYjMxOGUxODQ4OGVhMDIyZGU4MTU2YzFhNTU4NGIwIiwidGFnIjoiIn0%3D
+    - generic [ref=f37e461]:
+      - heading "Body" [level=2] [ref=f37e462]
+      - generic [ref=f37e463]: // No request body
+    - generic [ref=f37e464]:
+      - heading "Routing" [level=2] [ref=f37e465]
+      - generic [ref=f37e466]:
+        - generic [ref=f37e467]:
+          - generic [ref=f37e468]: controller
+          - generic [ref=f37e470]: App\Http\Controllers\Operator\StatusController@index
+        - generic [ref=f37e471]:
+          - generic [ref=f37e472]: route name
+          - generic [ref=f37e474]: operator.status.index
+        - generic [ref=f37e475]:
+          - generic [ref=f37e476]: middleware
+          - generic [ref=f37e478]: web, auth, role:operator
+    - generic [ref=f37e479]:
+      - heading "Routing parameters" [level=2] [ref=f37e480]
+      - generic [ref=f37e481]: // No routing parameters

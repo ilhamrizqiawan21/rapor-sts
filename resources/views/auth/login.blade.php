@@ -48,14 +48,14 @@
             </div>
             <div>
                 <div style="font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; opacity: .88; color: #d4edda">
-                    {{ $profile->parent_institution ?? 'KEMENTERIAN AGAMA REPUBLIK INDONESIA' }}
+                    {{ $profile->parent_institution ?? '' }}
                 </div>
                 <div style="font-size: 28px; font-weight: 700; line-height: 1.15; margin: 2px 0 3px 0">
                     {{ $profile->name ?? 'Nama Madrasah' }}
                 </div>
                 <div style="font-size: 14.5px; opacity: .92; color: #e8f5e9">
                     @if(!empty($profile->district) || !empty($profile->regency))
-                        {{ $profile->district ? 'Kecamatan ' . $profile->district . ' · ' : '' }}{{ $profile->regency ?? '' }}
+                        {{ \App\Models\MadrasahProfile::formatRegion($profile->district, $profile->regency, null) }}
                     @else
                         Profil madrasah dapat diatur melalui akun Operator
                     @endif
@@ -73,9 +73,9 @@
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap">
                         <div style="display: flex; align-items: center; gap: 10px">
                             <span style="background: rgba(241, 196, 15, 0.2); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.4); padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px">
-                                Official Platform
+                                Aplikasi Pendamping
                             </span>
-                            <span style="font-size: 13px; opacity: .9; color: #e8f5e9">Tahun Ajaran Aktif {{ $activePeriod?->academicYear?->name ?? '2023/2024' }}</span>
+                            <span style="font-size: 13px; opacity: .9; color: #e8f5e9">Tahun Ajaran Aktif {{ $activePeriod?->academicYear?->name ?? '-' }}</span>
                         </div>
                     </div>
 
@@ -90,7 +90,7 @@
                             <div style="opacity: .88; font-size: 12px">Penilaian Lingkup Materi & Tes STS berbobot otomatis</div>
                         </div>
                         <div style="background: rgba(0,0,0,0.12); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); font-size: 13px">
-                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Rapor STS Resmi</div>
+                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Rapor STS</div>
                             <div style="opacity: .88; font-size: 12px">Cetak PDF rapor siswa per kelas dengan kop & ttd</div>
                         </div>
                         <div style="background: rgba(0,0,0,0.12); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); font-size: 13px">
@@ -98,8 +98,8 @@
                             <div style="opacity: .88; font-size: 12px">Excel multi-sheet & PDF Pengetahuan + Keterampilan</div>
                         </div>
                         <div style="background: rgba(0,0,0,0.12); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); font-size: 13px">
-                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Export Template RDM</div>
-                            <div style="opacity: .88; font-size: 12px">Isi otomatis template resmi RDM tanpa ketik ulang</div>
+                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Export Template Excel</div>
+                            <div style="opacity: .88; font-size: 12px">Isi otomatis template Excel penilaian tanpa ketik ulang</div>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
 
         {{-- Footer Sisi Kiri --}}
         <div style="font-size: 13.5px; line-height: 1.5; max-width: 560px; opacity: .9; position: relative; z-index: 2">
-            Platform pengolahan nilai dan rapor tengah semester terpadu. Data nilai siswa terjaga aman dan kompatibel penuh dengan format pelaporan Kementerian Agama.
+            Platform pengolahan nilai dan rapor tengah semester terpadu. Data nilai siswa terjaga aman. Bukan aplikasi resmi Kementerian Agama.
         </div>
     </div>
 

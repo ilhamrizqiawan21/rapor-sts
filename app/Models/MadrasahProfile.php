@@ -28,6 +28,25 @@ class MadrasahProfile extends Model
         'logo_right_path',
     ];
 
+    /**
+     * Baris wilayah kop ("Kecamatan X, Kabupaten Y - Provinsi Z"); bagian kosong atau "-" dilewati.
+     */
+    public static function formatRegion(?string $district, ?string $regency, ?string $province): string
+    {
+        $clean = fn (?string $v) => in_array(trim((string) $v), ['', '-', '–'], true) ? null : trim((string) $v);
+
+        $district = $clean($district);
+        $regency = $clean($regency);
+        $province = $clean($province);
+
+        $line = collect([
+            $district ? 'Kecamatan '.$district : null,
+            $regency ? 'Kabupaten '.$regency : null,
+        ])->filter()->implode(', ');
+
+        return $province ? trim($line.' - '.$province, ' -') : $line;
+    }
+
     public function getLogoLeftDataUrl(): ?string
     {
         if (! $this->logo_left_path) {

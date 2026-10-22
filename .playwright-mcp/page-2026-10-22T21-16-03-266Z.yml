@@ -1,0 +1,96 @@
+- generic [ref=f7e2]:
+  - complementary [ref=f7e3]:
+    - generic [ref=f7e4]:
+      - generic [ref=f7e5]: RS
+      - generic [ref=f7e6]:
+        - generic [ref=f7e7]: Rapor STS
+        - generic [ref=f7e8]: Nama Madrasah
+    - generic [ref=f7e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu operator" [ref=f7e10]:
+      - link "Dashboard" [ref=f7e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - link "Profil Madrasah" [ref=f7e15] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/profil
+      - generic [ref=f7e19]: Pengaturan
+      - generic [ref=f7e20]:
+        - button "Lembaga" [expanded] [ref=f7e21] [cursor=pointer]
+        - generic [ref=f7e28]:
+          - link "Pengaturan" [ref=f7e29] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/lembaga
+          - link "Mata Pelajaran" [ref=f7e31] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/mapel
+          - link "Kelas" [ref=f7e33] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/operator/kelas
+      - button "Guru" [ref=f7e36] [cursor=pointer]
+      - button "Siswa" [ref=f7e44] [cursor=pointer]
+      - button "Rapor" [ref=f7e53] [cursor=pointer]
+      - generic [ref=f7e59]: Administrasi
+      - link "Admin Aplikasi" [ref=f7e60] [cursor=pointer]:
+        - /url: "#"
+      - link "Backup Restore" [ref=f7e65] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=f7e69]: Akun
+      - link "Logout" [ref=f7e70] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f7e74]:
+    - generic [ref=f7e75]:
+      - button "Buka/tutup menu" [ref=f7e76] [cursor=pointer]
+      - generic [ref=f7e79]:
+        - generic [ref=f7e80]: Operator
+        - generic [ref=f7e81]: O
+    - generic [ref=f7e82]:
+      - link "Home" [ref=f7e83] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - text: /
+      - link "Admin" [ref=f7e84] [cursor=pointer]:
+        - /url: "#"
+      - text: / Pengaturan Lembaga
+    - generic [ref=f7e85]:
+      - generic [ref=f7e86]: Periode SEMESTER GANJIL 2026/2027 berhasil diaktifkan.
+      - generic [ref=f7e87]:
+        - generic [ref=f7e88]:
+          - generic [ref=f7e89]: Tambah Tahun Pelajaran
+          - generic [ref=f7e93]:
+            - generic [ref=f7e94]:
+              - generic [ref=f7e95]: "Tahun Pelajaran (contoh: 2026/2027)"
+              - 'textbox "Tahun Pelajaran (contoh: 2026/2027)" [ref=f7e96]':
+                - /placeholder: YYYY/YYYY
+              - generic [ref=f7e97]: Tahun baru otomatis dilengkapi Semester Ganjil dan Genap.
+            - button "+ Simpan Tahun" [ref=f7e98] [cursor=pointer]
+        - generic [ref=f7e99]:
+          - generic [ref=f7e100]: Periode Aktif Berjalan
+          - generic [ref=f7e104]:
+            - paragraph [ref=f7e105]: "Aplikasi sedang memproses dan menampilkan data pada periode:"
+            - generic [ref=f7e106]: SEMESTER GANJIL 2026/2027
+            - generic [ref=f7e107]: Untuk mengubah periode aktif yang berlaku bagi seluruh guru dan kepala madrasah, klik tombol "Aktifkan" pada tabel di bawah.
+      - generic [ref=f7e108]:
+        - generic [ref=f7e109]: Daftar Tahun Pelajaran & Semester
+        - table [ref=f7e114]:
+          - rowgroup [ref=f7e115]:
+            - row [ref=f7e116]:
+              - columnheader "#" [ref=f7e117]
+              - columnheader "Tahun Pelajaran" [ref=f7e118]
+              - columnheader "Semester Ganjil" [ref=f7e119]
+              - columnheader "Semester Genap" [ref=f7e120]
+              - columnheader "Aksi" [ref=f7e121]
+          - rowgroup [ref=f7e122]:
+            - row [ref=f7e123]:
+              - cell "1" [ref=f7e124]
+              - cell "2027" [ref=f7e125]
+              - cell [ref=f7e126]:
+                - button "Aktifkan" [ref=f7e128] [cursor=pointer]
+              - cell [ref=f7e129]:
+                - button "Aktifkan" [ref=f7e131] [cursor=pointer]
+              - cell [ref=f7e132]:
+                - button "Hapus" [ref=f7e134] [cursor=pointer]
+            - row [ref=f7e135]:
+              - cell "2" [ref=f7e136]
+              - cell "2026/2027" [ref=f7e137]
+              - cell "✓ AKTIF" [ref=f7e138]
+              - cell [ref=f7e140]:
+                - button "Aktifkan" [ref=f7e142] [cursor=pointer]
+              - cell [ref=f7e143]:
+                - button "Hapus" [ref=f7e145] [cursor=pointer]
+    - generic [ref=f7e146]:
+      - generic [ref=f7e147]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f7e148]: Bukan aplikasi resmi Kementerian Agama

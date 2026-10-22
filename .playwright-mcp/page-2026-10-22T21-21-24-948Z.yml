@@ -1,0 +1,155 @@
+- generic [ref=f32e2]:
+  - complementary [ref=f32e3]:
+    - generic [ref=f32e4]:
+      - generic [ref=f32e5]: RS
+      - generic [ref=f32e6]:
+        - generic [ref=f32e7]: Rapor STS
+        - generic [ref=f32e8]: Nama Madrasah
+    - generic [ref=f32e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu guru" [ref=f32e10]:
+      - link "Dashboard" [ref=f32e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - button "FIK - Fikih" [ref=f32e16] [cursor=pointer]
+      - button "BAR - Bahasa Arab" [ref=f32e23] [cursor=pointer]
+      - button "PP - Pendidikan Pancasila" [ref=f32e30] [cursor=pointer]
+      - button "INF - Informatika" [ref=f32e37] [cursor=pointer]
+      - button "SBP - Seni Budaya / Prakarya" [ref=f32e44] [cursor=pointer]
+      - button "MULOK - Muatan Lokal" [ref=f32e51] [cursor=pointer]
+      - generic [ref=f32e57]: Tugas Tambahan
+      - generic [ref=f32e58]:
+        - button "Wali Kelas VII.A" [expanded] [ref=f32e59] [cursor=pointer]
+        - generic [ref=f32e66]:
+          - link "Kehadiran & Catatan" [ref=f32e67] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/kehadiran
+          - link "Status Nilai" [ref=f32e69] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/status
+          - link "Cetak Rapor STS" [ref=f32e71] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/rapor
+      - generic [ref=f32e73]: Akun
+      - link "Logout" [ref=f32e74] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f32e78]:
+    - generic [ref=f32e79]:
+      - button "Buka/tutup menu" [ref=f32e80] [cursor=pointer]
+      - generic [ref=f32e83]:
+        - generic [ref=f32e84]: GURU FIKIH, S.Pd
+        - generic [ref=f32e85]: GF
+    - generic [ref=f32e86]:
+      - link "Home" [ref=f32e87] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - text: / Wali Kelas / Cetak Rapor STS
+    - generic [ref=f32e89]:
+      - generic [ref=f32e90]:
+        - generic [ref=f32e91]:
+          - generic [ref=f32e92]: Cetak Rapor STS
+          - generic [ref=f32e93]: VII.A · 10 siswa
+        - generic [ref=f32e94]:
+          - link "Semua Rapor" [ref=f32e95] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/rapor/1/semua/pdf
+          - link "Leger PDF" [ref=f32e96] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/rapor/1/leger/pdf
+          - link "Leger Excel" [ref=f32e97] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/rapor/1/leger/excel
+      - table [ref=f32e100]:
+        - rowgroup [ref=f32e101]:
+          - row [ref=f32e102]:
+            - columnheader "#" [ref=f32e103]
+            - columnheader "NISN" [ref=f32e104]
+            - columnheader "Nama" [ref=f32e105]
+            - columnheader "L/P" [ref=f32e106]
+            - columnheader "TTL" [ref=f32e107]
+            - columnheader "Aksi" [ref=f32e108]
+        - rowgroup [ref=f32e109]:
+          - row [ref=f32e110]:
+            - cell "1" [ref=f32e111]
+            - cell "0100000001" [ref=f32e112]
+            - cell "AHMAD FAUZAN" [ref=f32e113]
+            - cell "L" [ref=f32e114]
+            - cell "Bandung, 15-05-2013" [ref=f32e115]
+            - cell [ref=f32e116]:
+              - link "Rapor STS" [ref=f32e117] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/1/pdf
+          - row [ref=f32e118]:
+            - cell "2" [ref=f32e119]
+            - cell "0100000002" [ref=f32e120]
+            - cell "AISYAH NURAINI" [ref=f32e121]
+            - cell "P" [ref=f32e122]
+            - cell "Bandung, 15-05-2013" [ref=f32e123]
+            - cell [ref=f32e124]:
+              - link "Rapor STS" [ref=f32e125] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/2/pdf
+          - row [ref=f32e126]:
+            - cell "3" [ref=f32e127]
+            - cell "0100000003" [ref=f32e128]
+            - cell "DIMAS PRATAMA" [ref=f32e129]
+            - cell "L" [ref=f32e130]
+            - cell "Bandung, 15-05-2013" [ref=f32e131]
+            - cell [ref=f32e132]:
+              - link "Rapor STS" [ref=f32e133] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/3/pdf
+          - row [ref=f32e134]:
+            - cell "4" [ref=f32e135]
+            - cell "0100000004" [ref=f32e136]
+            - cell "FITRI RAMADHANI" [ref=f32e137]
+            - cell "P" [ref=f32e138]
+            - cell "Bandung, 15-05-2013" [ref=f32e139]
+            - cell [ref=f32e140]:
+              - link "Rapor STS" [ref=f32e141] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/4/pdf
+          - row [ref=f32e142]:
+            - cell "5" [ref=f32e143]
+            - cell "0100000005" [ref=f32e144]
+            - cell "MUHAMMAD RIZKI" [ref=f32e145]
+            - cell "L" [ref=f32e146]
+            - cell "Bandung, 15-05-2013" [ref=f32e147]
+            - cell [ref=f32e148]:
+              - link "Rapor STS" [ref=f32e149] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/5/pdf
+          - row [ref=f32e150]:
+            - cell "6" [ref=f32e151]
+            - cell "0100000006" [ref=f32e152]
+            - cell "NURUL HIDAYAH" [ref=f32e153]
+            - cell "P" [ref=f32e154]
+            - cell "Bandung, 15-05-2013" [ref=f32e155]
+            - cell [ref=f32e156]:
+              - link "Rapor STS" [ref=f32e157] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/6/pdf
+          - row [ref=f32e158]:
+            - cell "7" [ref=f32e159]
+            - cell "0100000007" [ref=f32e160]
+            - cell "RENDI SETIAWAN" [ref=f32e161]
+            - cell "L" [ref=f32e162]
+            - cell "Bandung, 15-05-2013" [ref=f32e163]
+            - cell [ref=f32e164]:
+              - link "Rapor STS" [ref=f32e165] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/7/pdf
+          - row [ref=f32e166]:
+            - cell "8" [ref=f32e167]
+            - cell "0100000008" [ref=f32e168]
+            - cell "SITI AMINAH" [ref=f32e169]
+            - cell "P" [ref=f32e170]
+            - cell "Bandung, 15-05-2013" [ref=f32e171]
+            - cell [ref=f32e172]:
+              - link "Rapor STS" [ref=f32e173] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/8/pdf
+          - row [ref=f32e174]:
+            - cell "9" [ref=f32e175]
+            - cell "0100000009" [ref=f32e176]
+            - cell "TAUFIK HIDAYAT" [ref=f32e177]
+            - cell "L" [ref=f32e178]
+            - cell "Bandung, 15-05-2013" [ref=f32e179]
+            - cell [ref=f32e180]:
+              - link "Rapor STS" [ref=f32e181] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/9/pdf
+          - row [ref=f32e182]:
+            - cell "10" [ref=f32e183]
+            - cell "0100000010" [ref=f32e184]
+            - cell "ZAHRA AULIA" [ref=f32e185]
+            - cell "P" [ref=f32e186]
+            - cell "Bandung, 15-05-2013" [ref=f32e187]
+            - cell [ref=f32e188]:
+              - link "Rapor STS" [ref=f32e189] [cursor=pointer]:
+                - /url: http://127.0.0.1:8765/rapor/1/siswa/10/pdf
+    - generic [ref=f32e190]:
+      - generic [ref=f32e191]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f32e192]: Bukan aplikasi resmi Kementerian Agama

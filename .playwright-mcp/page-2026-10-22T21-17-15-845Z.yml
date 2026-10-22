@@ -1,0 +1,153 @@
+- generic [ref=f12e2]:
+  - complementary [ref=f12e3]:
+    - generic [ref=f12e4]:
+      - generic [ref=f12e5]: RS
+      - generic [ref=f12e6]:
+        - generic [ref=f12e7]: Rapor STS
+        - generic [ref=f12e8]: Nama Madrasah
+    - generic [ref=f12e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu guru" [ref=f12e10]:
+      - link "Dashboard" [ref=f12e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - generic [ref=f12e15]:
+        - button "FIK - Fikih" [expanded] [ref=f12e16] [cursor=pointer]
+        - generic [ref=f12e22]:
+          - link "VII.A Belum kirim" [ref=f12e23] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/guru/mengajar/3
+            - generic [ref=f12e24]: VII.A
+            - generic "Belum kirim" [ref=f12e25]: ✕
+          - link "VII.B Belum kirim" [ref=f12e26] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/guru/mengajar/18
+            - generic [ref=f12e27]: VII.B
+            - generic "Belum kirim" [ref=f12e28]: ✕
+      - button "BAR - Bahasa Arab" [ref=f12e30] [cursor=pointer]
+      - button "PP - Pendidikan Pancasila" [ref=f12e37] [cursor=pointer]
+      - button "INF - Informatika" [ref=f12e44] [cursor=pointer]
+      - button "SBP - Seni Budaya / Prakarya" [ref=f12e51] [cursor=pointer]
+      - button "MULOK - Muatan Lokal" [ref=f12e58] [cursor=pointer]
+      - generic [ref=f12e64]: Tugas Tambahan
+      - button "Wali Kelas VII.A" [ref=f12e66] [cursor=pointer]
+      - generic [ref=f12e73]: Akun
+      - link "Logout" [ref=f12e74] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f12e78]:
+    - generic [ref=f12e79]:
+      - button "Buka/tutup menu" [ref=f12e80] [cursor=pointer]
+      - link "Beranda" [ref=f12e83] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - link "Bobot" [ref=f12e84] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/mengajar/3/bobot
+      - link "Penilaian" [ref=f12e85] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/mengajar/3
+      - generic [ref=f12e86]:
+        - generic [ref=f12e87]: GURU FIKIH, S.Pd
+        - generic [ref=f12e88]: GF
+    - generic [ref=f12e89]:
+      - link "Home" [ref=f12e90] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - text: /
+      - link "Penilaian" [ref=f12e91] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/mengajar/3
+      - text: / Sumatif
+    - generic [ref=f12e93]:
+      - generic [ref=f12e94]:
+        - generic [ref=f12e95]:
+          - generic [ref=f12e96]: Nilai Sumatif Lingkup Materi
+          - generic [ref=f12e97]: Fikih · VII.A · sampai tengah semester
+        - generic [ref=f12e98]:
+          - link "← Kembali" [ref=f12e99] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/guru/mengajar/3
+          - button "+ Tambah LM" [ref=f12e100] [cursor=pointer]
+          - button "Upload" [ref=f12e101] [cursor=pointer]
+          - link "Export Template" [ref=f12e102] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/guru/mengajar/3/sumatif/template
+          - button "Export RDM" [ref=f12e103] [cursor=pointer]
+      - generic [ref=f12e104]:
+        - generic [ref=f12e106]:
+          - text: "Cari:"
+          - searchbox "Cari:" [ref=f12e107]
+        - table [ref=f12e109]:
+          - rowgroup [ref=f12e110]:
+            - row [ref=f12e111]:
+              - columnheader "No" [ref=f12e112]
+              - columnheader "NISN" [ref=f12e113]
+              - columnheader "Nama Siswa" [ref=f12e114]
+              - columnheader "L/P" [ref=f12e115]
+              - columnheader "Lingkup Materi" [ref=f12e116]
+              - columnheader "Rerata" [ref=f12e117]
+            - row [ref=f12e118]:
+              - columnheader "- Belum ada LM -" [ref=f12e119]
+          - rowgroup [ref=f12e120]:
+            - row [ref=f12e121]:
+              - cell "1" [ref=f12e122]
+              - cell "0100000001" [ref=f12e123]
+              - cell "AHMAD FAUZAN" [ref=f12e124]
+              - cell "L" [ref=f12e125]
+              - cell "–" [ref=f12e126]
+              - cell "–" [ref=f12e127]
+            - row [ref=f12e128]:
+              - cell "2" [ref=f12e129]
+              - cell "0100000002" [ref=f12e130]
+              - cell "AISYAH NURAINI" [ref=f12e131]
+              - cell "P" [ref=f12e132]
+              - cell "–" [ref=f12e133]
+              - cell "–" [ref=f12e134]
+            - row [ref=f12e135]:
+              - cell "3" [ref=f12e136]
+              - cell "0100000003" [ref=f12e137]
+              - cell "DIMAS PRATAMA" [ref=f12e138]
+              - cell "L" [ref=f12e139]
+              - cell "–" [ref=f12e140]
+              - cell "–" [ref=f12e141]
+            - row [ref=f12e142]:
+              - cell "4" [ref=f12e143]
+              - cell "0100000004" [ref=f12e144]
+              - cell "FITRI RAMADHANI" [ref=f12e145]
+              - cell "P" [ref=f12e146]
+              - cell "–" [ref=f12e147]
+              - cell "–" [ref=f12e148]
+            - row [ref=f12e149]:
+              - cell "5" [ref=f12e150]
+              - cell "0100000005" [ref=f12e151]
+              - cell "MUHAMMAD RIZKI" [ref=f12e152]
+              - cell "L" [ref=f12e153]
+              - cell "–" [ref=f12e154]
+              - cell "–" [ref=f12e155]
+            - row [ref=f12e156]:
+              - cell "6" [ref=f12e157]
+              - cell "0100000006" [ref=f12e158]
+              - cell "NURUL HIDAYAH" [ref=f12e159]
+              - cell "P" [ref=f12e160]
+              - cell "–" [ref=f12e161]
+              - cell "–" [ref=f12e162]
+            - row [ref=f12e163]:
+              - cell "7" [ref=f12e164]
+              - cell "0100000007" [ref=f12e165]
+              - cell "RENDI SETIAWAN" [ref=f12e166]
+              - cell "L" [ref=f12e167]
+              - cell "–" [ref=f12e168]
+              - cell "–" [ref=f12e169]
+            - row [ref=f12e170]:
+              - cell "8" [ref=f12e171]
+              - cell "0100000008" [ref=f12e172]
+              - cell "SITI AMINAH" [ref=f12e173]
+              - cell "P" [ref=f12e174]
+              - cell "–" [ref=f12e175]
+              - cell "–" [ref=f12e176]
+            - row [ref=f12e177]:
+              - cell "9" [ref=f12e178]
+              - cell "0100000009" [ref=f12e179]
+              - cell "TAUFIK HIDAYAT" [ref=f12e180]
+              - cell "L" [ref=f12e181]
+              - cell "–" [ref=f12e182]
+              - cell "–" [ref=f12e183]
+            - row [ref=f12e184]:
+              - cell "10" [ref=f12e185]
+              - cell "0100000010" [ref=f12e186]
+              - cell "ZAHRA AULIA" [ref=f12e187]
+              - cell "P" [ref=f12e188]
+              - cell "–" [ref=f12e189]
+              - cell "–" [ref=f12e190]
+    - generic [ref=f12e191]:
+      - generic [ref=f12e192]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f12e193]: Bukan aplikasi resmi Kementerian Agama

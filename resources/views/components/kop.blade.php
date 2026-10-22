@@ -29,14 +29,15 @@
         <div style="font-family: 'Times New Roman', Times, serif; font-weight: 700; font-size: 18px; text-transform: uppercase">
             {{ $madrasahName }}
         </div>
-        @if($address)
+        @if($address && trim($address) !== '-')
             <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 12.5px">
                 {{ $address }}
             </div>
         @endif
-        @if($district || $regency || $province)
+        @php($regionLine = \App\Models\MadrasahProfile::formatRegion($district, $regency, $province))
+        @if($regionLine !== '')
             <div style="font-family: 'Times New Roman', Times, serif; font-style: italic; font-size: 12.5px">
-                Kecamatan {{ $district }}, Kabupaten {{ $regency }} - {{ $province }}
+                {{ $regionLine }}
             </div>
         @endif
     </div>

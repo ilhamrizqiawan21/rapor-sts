@@ -1,0 +1,142 @@
+- generic [ref=f2e2]:
+  - complementary [ref=f2e3]:
+    - generic [ref=f2e4]:
+      - generic [ref=f2e5]: RS
+      - generic [ref=f2e6]:
+        - generic [ref=f2e7]: Rapor STS
+        - generic [ref=f2e8]: Nama Madrasah
+    - generic [ref=f2e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu operator" [ref=f2e10]:
+      - link "Dashboard" [ref=f2e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - link "Profil Madrasah" [ref=f2e15] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/profil
+      - generic [ref=f2e19]: Pengaturan
+      - button "Lembaga" [ref=f2e21] [cursor=pointer]
+      - button "Guru" [ref=f2e29] [cursor=pointer]
+      - button "Siswa" [ref=f2e37] [cursor=pointer]
+      - button "Rapor" [ref=f2e46] [cursor=pointer]
+      - generic [ref=f2e52]: Administrasi
+      - link "Admin Aplikasi" [ref=f2e53] [cursor=pointer]:
+        - /url: "#"
+      - link "Backup Restore" [ref=f2e58] [cursor=pointer]:
+        - /url: "#"
+      - generic [ref=f2e62]: Akun
+      - link "Logout" [ref=f2e63] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f2e67]:
+    - generic [ref=f2e68]:
+      - button "Buka/tutup menu" [ref=f2e69] [cursor=pointer]
+      - generic [ref=f2e72]:
+        - generic [ref=f2e73]: Operator
+        - generic [ref=f2e74]: O
+    - generic [ref=f2e75]:
+      - link "Home" [ref=f2e76] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/operator/dashboard
+      - text: /
+      - link "Admin" [ref=f2e77] [cursor=pointer]:
+        - /url: "#"
+      - text: / Profil Madrasah
+    - generic [ref=f2e80]:
+      - generic [ref=f2e81]:
+        - generic [ref=f2e82]:
+          - generic [ref=f2e83]: Profil Madrasah
+          - generic [ref=f2e84]: Identitas ini tampil di kop rapor, halaman login, dan header aplikasi
+        - button "Simpan" [ref=f2e86] [cursor=pointer]
+      - generic [ref=f2e87]:
+        - generic [ref=f2e88]:
+          - generic [ref=f2e89]: Identitas Lembaga
+          - generic [ref=f2e90]:
+            - generic [ref=f2e91]:
+              - generic [ref=f2e92]: Instansi Induk (baris 1 kop)
+              - textbox "Instansi Induk (baris 1 kop)" [ref=f2e93]: KEMENTERIAN AGAMA REPUBLIK INDONESIA
+              - generic [ref=f2e94]: Kosongkan jika kop tidak memakai baris instansi induk
+            - generic [ref=f2e95]:
+              - generic [ref=f2e96]: Yayasan / Penyelenggara (opsional)
+              - textbox "Yayasan / Penyelenggara (opsional)" [ref=f2e97]:
+                - /placeholder: Nama yayasan
+            - generic [ref=f2e98]:
+              - generic [ref=f2e99]: Nama Madrasah
+              - textbox "Nama Madrasah" [ref=f2e100]
+            - generic [ref=f2e101]:
+              - generic [ref=f2e102]: Jenjang
+              - combobox "Jenjang" [ref=f2e103]:
+                - option "MTs" [selected]
+                - option "MI"
+                - option "MA"
+            - generic [ref=f2e104]:
+              - generic [ref=f2e105]: NSM
+              - textbox "NSM" [ref=f2e106]: "-"
+            - generic [ref=f2e107]:
+              - generic [ref=f2e108]: NPSN
+              - textbox "NPSN" [ref=f2e109]: "-"
+            - generic [ref=f2e110]:
+              - generic [ref=f2e111]: Alamat
+              - textbox "Alamat" [ref=f2e112]: "-"
+            - generic [ref=f2e113]:
+              - generic [ref=f2e114]: Kecamatan
+              - textbox "Kecamatan" [ref=f2e115]: "-"
+            - generic [ref=f2e116]:
+              - generic [ref=f2e117]: Kabupaten/Kota
+              - textbox "Kabupaten/Kota" [ref=f2e118]: "-"
+            - generic [ref=f2e119]:
+              - generic [ref=f2e120]: Provinsi
+              - textbox "Provinsi" [ref=f2e121]: "-"
+            - generic [ref=f2e122]:
+              - generic [ref=f2e123]: Telepon / Email (opsional)
+              - textbox "Telepon / Email (opsional)" [ref=f2e124]
+        - generic [ref=f2e125]:
+          - generic [ref=f2e126]: Kepala Madrasah
+          - generic [ref=f2e127]:
+            - generic [ref=f2e128]:
+              - generic [ref=f2e129]: Nama Kepala Madrasah
+              - textbox "Nama Kepala Madrasah" [ref=f2e130]: "-"
+            - generic [ref=f2e131]:
+              - generic [ref=f2e132]: NIP Kepala Madrasah
+              - textbox "NIP Kepala Madrasah" [ref=f2e133]:
+                - /placeholder: Kosongkan jika tidak ada
+        - generic [ref=f2e134]:
+          - generic [ref=f2e135]: Logo Kop Rapor
+          - generic [ref=f2e136]:
+            - generic [ref=f2e137]:
+              - generic [ref=f2e138]: Logo Kiri (Wajib untuk cetak)
+              - button "Logo Kiri (Wajib untuk cetak)" [ref=f2e139]
+              - generic [ref=f2e140]: Disarankan persegi, min. 300×300 px (PNG/JPG, maks 1MB)
+            - generic [ref=f2e141]:
+              - generic [ref=f2e142]: Logo Kanan (Opsional)
+              - button "Logo Kanan (Opsional)" [ref=f2e143]
+              - generic [ref=f2e144]: Kosongkan jika kop hanya memakai satu logo
+        - generic [ref=f2e145]:
+          - generic [ref=f2e146]: Branding Aplikasi
+          - generic [ref=f2e147]:
+            - generic [ref=f2e148]:
+              - generic [ref=f2e149]: Nama Aplikasi
+              - textbox "Nama Aplikasi" [ref=f2e150]: Rapor STS
+              - generic [ref=f2e151]: Tampil di header, sidebar, dan halaman login
+            - generic [ref=f2e152]:
+              - generic [ref=f2e153]: Subjudul
+              - textbox "Subjudul" [ref=f2e154]: Nama Madrasah
+            - generic [ref=f2e155]:
+              - generic [ref=f2e156]: Warna Topbar
+              - generic [ref=f2e157]:
+                - textbox [ref=f2e158] [cursor=pointer]: "#628b0d"
+                - textbox "Warna Topbar" [ref=f2e159]: "#628b0d"
+            - generic [ref=f2e160]:
+              - generic [ref=f2e161]: Logo Aplikasi (Sidebar & Login)
+              - button "Logo Aplikasi (Sidebar & Login)" [ref=f2e162]
+            - generic [ref=f2e163]:
+              - generic [ref=f2e164]: Gambar Halaman Login (Landscape)
+              - button "Gambar Halaman Login (Landscape)" [ref=f2e165]
+              - generic [ref=f2e166]: Foto gedung atau ilustrasi madrasah (maks 2MB)
+        - generic [ref=f2e167]:
+          - generic [ref=f2e168]: Pratinjau Kop
+          - generic [ref=f2e170]:
+            - generic [ref=f2e171]: LOGOKOP
+            - generic [ref=f2e173]:
+              - generic [ref=f2e174]: KEMENTERIAN AGAMA REPUBLIK INDONESIA
+              - generic [ref=f2e175]: Nama Madrasah
+              - generic [ref=f2e176]: "-"
+              - generic [ref=f2e177]: Kecamatan -, Kabupaten - - -
+    - generic [ref=f2e178]:
+      - generic [ref=f2e179]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f2e180]: Bukan aplikasi resmi Kementerian Agama

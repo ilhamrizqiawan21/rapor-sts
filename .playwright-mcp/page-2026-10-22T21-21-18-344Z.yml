@@ -1,0 +1,212 @@
+- generic [ref=f30e2]:
+  - complementary [ref=f30e3]:
+    - generic [ref=f30e4]:
+      - generic [ref=f30e5]: RS
+      - generic [ref=f30e6]:
+        - generic [ref=f30e7]: Rapor STS
+        - generic [ref=f30e8]: Nama Madrasah
+    - generic [ref=f30e9]: SEMESTER GANJIL 2026/2027
+    - navigation "Menu guru" [ref=f30e10]:
+      - link "Dashboard" [ref=f30e11] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - button "FIK - Fikih" [ref=f30e16] [cursor=pointer]
+      - button "BAR - Bahasa Arab" [ref=f30e23] [cursor=pointer]
+      - button "PP - Pendidikan Pancasila" [ref=f30e30] [cursor=pointer]
+      - button "INF - Informatika" [ref=f30e37] [cursor=pointer]
+      - button "SBP - Seni Budaya / Prakarya" [ref=f30e44] [cursor=pointer]
+      - button "MULOK - Muatan Lokal" [ref=f30e51] [cursor=pointer]
+      - generic [ref=f30e57]: Tugas Tambahan
+      - generic [ref=f30e58]:
+        - button "Wali Kelas VII.A" [expanded] [ref=f30e59] [cursor=pointer]
+        - generic [ref=f30e66]:
+          - link "Kehadiran & Catatan" [ref=f30e67] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/kehadiran
+          - link "Status Nilai" [ref=f30e69] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/status
+          - link "Cetak Rapor STS" [ref=f30e71] [cursor=pointer]:
+            - /url: http://127.0.0.1:8765/wali/rapor
+      - generic [ref=f30e73]: Akun
+      - link "Logout" [ref=f30e74] [cursor=pointer]:
+        - /url: "#"
+  - main [ref=f30e78]:
+    - generic [ref=f30e79]:
+      - button "Buka/tutup menu" [ref=f30e80] [cursor=pointer]
+      - generic [ref=f30e83]:
+        - generic [ref=f30e84]: GURU FIKIH, S.Pd
+        - generic [ref=f30e85]: GF
+    - generic [ref=f30e86]:
+      - link "Home" [ref=f30e87] [cursor=pointer]:
+        - /url: http://127.0.0.1:8765/guru/dashboard
+      - text: / Wali Kelas / Status Nilai
+    - generic [ref=f30e89]:
+      - generic [ref=f30e90]:
+        - generic [ref=f30e91]:
+          - generic [ref=f30e92]: Status Nilai Rapor STS — VII.A
+          - generic [ref=f30e93]: Status pengiriman nilai oleh guru mata pelajaran
+        - button "Kunci Nilai Kelas" [ref=f30e96] [cursor=pointer]
+      - generic [ref=f30e100]:
+        - generic [ref=f30e101]:
+          - generic [ref=f30e102]: Progres Nilai
+          - generic [ref=f30e103]:
+            - generic [ref=f30e104]:
+              - generic [ref=f30e105]:
+                - generic [ref=f30e106]: Sumatif Lingkup Materi
+                - generic [ref=f30e107]: 7%
+              - generic [ref=f30e108]: 7%
+            - generic [ref=f30e110]:
+              - generic [ref=f30e111]:
+                - generic [ref=f30e112]: Nilai STS
+                - generic [ref=f30e113]: 7%
+              - generic [ref=f30e114]: 7%
+        - table [ref=f30e117]:
+          - rowgroup [ref=f30e118]:
+            - row [ref=f30e119]:
+              - columnheader "#" [ref=f30e120]
+              - columnheader "Mata Pelajaran" [ref=f30e121]
+              - columnheader "Guru" [ref=f30e122]
+              - columnheader "Sumatif LM" [ref=f30e123]
+              - columnheader "STS" [ref=f30e124]
+              - columnheader "Status" [ref=f30e125]
+              - columnheader "Aksi" [ref=f30e126]
+          - rowgroup [ref=f30e127]:
+            - row [ref=f30e128]:
+              - cell "1" [ref=f30e129]
+              - cell "Pendidikan Agama Islam" [ref=f30e130]
+            - row [ref=f30e131]:
+              - cell [ref=f30e132]
+              - cell "A. Al Qur'an Hadis (QH)" [ref=f30e133]
+              - cell "Guru Qurdis, S.Pd.I" [ref=f30e134]
+              - cell "0 LM" [ref=f30e135]
+              - cell "Belum" [ref=f30e136]
+              - cell "✓ Terkirim" [ref=f30e137]
+              - cell [ref=f30e139]:
+                - button "Batal Kirim" [ref=f30e141] [cursor=pointer]
+            - row [ref=f30e142]:
+              - cell [ref=f30e143]
+              - cell "B. Akidah Akhlak (AA)" [ref=f30e144]
+              - cell "Guru Akidah, S.Ag" [ref=f30e145]
+              - cell "0 LM" [ref=f30e146]
+              - cell "Belum" [ref=f30e147]
+              - cell "✓ Terkirim" [ref=f30e148]
+              - cell [ref=f30e150]:
+                - button "Batal Kirim" [ref=f30e152] [cursor=pointer]
+            - row [ref=f30e153]:
+              - cell [ref=f30e154]
+              - cell "C. Fikih (FIK)" [ref=f30e155]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e156]
+              - cell "1 LM" [ref=f30e157]
+              - cell "Terisi" [ref=f30e158]
+              - cell "✓ Terkirim" [ref=f30e159]
+              - cell [ref=f30e161]:
+                - button "Batal Kirim" [ref=f30e163] [cursor=pointer]
+            - row [ref=f30e164]:
+              - cell [ref=f30e165]
+              - cell "D. Sejarah Kebudayaan Islam (SKI)" [ref=f30e166]
+              - cell "Guru SKI, S.Pd.I" [ref=f30e167]
+              - cell "0 LM" [ref=f30e168]
+              - cell "Belum" [ref=f30e169]
+              - cell "✓ Terkirim" [ref=f30e170]
+              - cell [ref=f30e172]:
+                - button "Batal Kirim" [ref=f30e174] [cursor=pointer]
+            - row [ref=f30e175]:
+              - cell "2" [ref=f30e176]
+              - cell "Bahasa Arab (BAR)" [ref=f30e177]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e178]
+              - cell "0 LM" [ref=f30e179]
+              - cell "Belum" [ref=f30e180]
+              - cell "✓ Terkirim" [ref=f30e181]
+              - cell [ref=f30e183]:
+                - button "Batal Kirim" [ref=f30e185] [cursor=pointer]
+            - row [ref=f30e186]:
+              - cell "3" [ref=f30e187]
+              - cell "Pendidikan Pancasila (PP)" [ref=f30e188]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e189]
+              - cell "0 LM" [ref=f30e190]
+              - cell "Belum" [ref=f30e191]
+              - cell "✓ Terkirim" [ref=f30e192]
+              - cell [ref=f30e194]:
+                - button "Batal Kirim" [ref=f30e196] [cursor=pointer]
+            - row [ref=f30e197]:
+              - cell "4" [ref=f30e198]
+              - cell "Bahasa Indonesia (BIN)" [ref=f30e199]
+              - cell "Guru B. Indonesia, S.Pd" [ref=f30e200]
+              - cell "0 LM" [ref=f30e201]
+              - cell "Belum" [ref=f30e202]
+              - cell "✓ Terkirim" [ref=f30e203]
+              - cell [ref=f30e205]:
+                - button "Batal Kirim" [ref=f30e207] [cursor=pointer]
+            - row [ref=f30e208]:
+              - cell "5" [ref=f30e209]
+              - cell "Matematika (MTK)" [ref=f30e210]
+              - cell "Guru Matematika, S.Pd" [ref=f30e211]
+              - cell "0 LM" [ref=f30e212]
+              - cell "Belum" [ref=f30e213]
+              - cell "✓ Terkirim" [ref=f30e214]
+              - cell [ref=f30e216]:
+                - button "Batal Kirim" [ref=f30e218] [cursor=pointer]
+            - row [ref=f30e219]:
+              - cell "6" [ref=f30e220]
+              - cell "Ilmu Pengetahuan Alam (IPA)" [ref=f30e221]
+              - cell "Guru IPA, S.Pd" [ref=f30e222]
+              - cell "0 LM" [ref=f30e223]
+              - cell "Belum" [ref=f30e224]
+              - cell "✓ Terkirim" [ref=f30e225]
+              - cell [ref=f30e227]:
+                - button "Batal Kirim" [ref=f30e229] [cursor=pointer]
+            - row [ref=f30e230]:
+              - cell "7" [ref=f30e231]
+              - cell "Ilmu Pengetahuan Sosial (IPS)" [ref=f30e232]
+              - cell "Guru IPS, S.Pd" [ref=f30e233]
+              - cell "0 LM" [ref=f30e234]
+              - cell "Belum" [ref=f30e235]
+              - cell "✓ Terkirim" [ref=f30e236]
+              - cell [ref=f30e238]:
+                - button "Batal Kirim" [ref=f30e240] [cursor=pointer]
+            - row [ref=f30e241]:
+              - cell "8" [ref=f30e242]
+              - cell "Bahasa Inggris (BIG)" [ref=f30e243]
+              - cell "Guru B. Inggris, S.Pd" [ref=f30e244]
+              - cell "0 LM" [ref=f30e245]
+              - cell "Belum" [ref=f30e246]
+              - cell "✓ Terkirim" [ref=f30e247]
+              - cell [ref=f30e249]:
+                - button "Batal Kirim" [ref=f30e251] [cursor=pointer]
+            - row [ref=f30e252]:
+              - cell "9" [ref=f30e253]
+              - cell "Pendidikan Jasmani, Olahraga dan Kesehatan (PJOK)" [ref=f30e254]
+              - cell "Guru PJOK, S.Pd" [ref=f30e255]
+              - cell "0 LM" [ref=f30e256]
+              - cell "Belum" [ref=f30e257]
+              - cell "✓ Terkirim" [ref=f30e258]
+              - cell [ref=f30e260]:
+                - button "Batal Kirim" [ref=f30e262] [cursor=pointer]
+            - row [ref=f30e263]:
+              - cell "10" [ref=f30e264]
+              - cell "Informatika (INF)" [ref=f30e265]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e266]
+              - cell "0 LM" [ref=f30e267]
+              - cell "Belum" [ref=f30e268]
+              - cell "✓ Terkirim" [ref=f30e269]
+              - cell [ref=f30e271]:
+                - button "Batal Kirim" [ref=f30e273] [cursor=pointer]
+            - row [ref=f30e274]:
+              - cell "11" [ref=f30e275]
+              - cell "Seni Budaya / Prakarya (SBP)" [ref=f30e276]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e277]
+              - cell "0 LM" [ref=f30e278]
+              - cell "Belum" [ref=f30e279]
+              - cell "✓ Terkirim" [ref=f30e280]
+              - cell [ref=f30e282]:
+                - button "Batal Kirim" [ref=f30e284] [cursor=pointer]
+            - row [ref=f30e285]:
+              - cell "12" [ref=f30e286]
+              - cell "Muatan Lokal (MULOK)" [ref=f30e287]
+              - cell "GURU FIKIH, S.Pd" [ref=f30e288]
+              - cell "0 LM" [ref=f30e289]
+              - cell "Belum" [ref=f30e290]
+              - cell "✓ Terkirim" [ref=f30e291]
+              - cell [ref=f30e293]:
+                - button "Batal Kirim" [ref=f30e295] [cursor=pointer]
+    - generic [ref=f30e296]:
+      - generic [ref=f30e297]: Rapor STS Versi 1.0 © 2026
+      - generic [ref=f30e298]: Bukan aplikasi resmi Kementerian Agama

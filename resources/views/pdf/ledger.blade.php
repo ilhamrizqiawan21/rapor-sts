@@ -151,8 +151,8 @@ if (isset($pdf)) {
             <td class="kop-text">
                 <div class="kop-inst">{{ $profile->parent_institution ?? '' }}</div>
                 <div class="kop-name">{{ $profile->name }}</div>
-                <div class="kop-addr">{{ $profile->address }}</div>
-                <div class="kop-addr">Kecamatan {{ $profile->district ?? '–' }}, Kabupaten {{ $profile->regency ?? '–' }} - {{ $profile->province ?? '–' }}</div>
+                @if(! in_array(trim((string) $profile->address), ['', '-'], true))<div class="kop-addr">{{ $profile->address }}</div>@endif
+                <div class="kop-addr">{{ \App\Models\MadrasahProfile::formatRegion($profile->district ?? null, $profile->regency ?? null, $profile->province ?? null) }}</div>
             </td>
             <td class="kop-logo" style="text-align: right">
                 @if($profile->getLogoRightDataUrl())

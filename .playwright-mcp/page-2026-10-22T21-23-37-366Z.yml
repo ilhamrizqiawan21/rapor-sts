@@ -1,0 +1,55 @@
+- generic [ref=f36e2]:
+  - generic [ref=f36e3]:
+    - generic [ref=f36e4]:
+      - img [ref=f36e6]:
+        - generic [ref=f36e17]: MADRASAH
+      - generic [ref=f36e18]:
+        - generic [ref=f36e19]: KEMENTERIAN AGAMA REPUBLIK INDONESIA
+        - generic [ref=f36e20]: MTs Uji Audit
+        - generic [ref=f36e21]: Kecamatan - · -
+    - generic [ref=f36e23]:
+      - generic [ref=f36e25]:
+        - generic [ref=f36e26]: Official Platform
+        - generic [ref=f36e27]: Tahun Ajaran Aktif 2026/2027
+      - generic [ref=f36e28]: Sistem Penilaian Sumatif Tengah Semester & Rekap Leger Kelas
+      - generic [ref=f36e29]:
+        - generic [ref=f36e30]:
+          - generic [ref=f36e31]: ✓ Sumatif & STS
+          - generic [ref=f36e32]: Penilaian Lingkup Materi & Tes STS berbobot otomatis
+        - generic [ref=f36e33]:
+          - generic [ref=f36e34]: ✓ Rapor STS Resmi
+          - generic [ref=f36e35]: Cetak PDF rapor siswa per kelas dengan kop & ttd
+        - generic [ref=f36e36]:
+          - generic [ref=f36e37]: ✓ Leger 2 Bagian
+          - generic [ref=f36e38]: Excel multi-sheet & PDF Pengetahuan + Keterampilan
+        - generic [ref=f36e39]:
+          - generic [ref=f36e40]: ✓ Export Template RDM
+          - generic [ref=f36e41]: Isi otomatis template resmi RDM tanpa ketik ulang
+    - generic [ref=f36e42]: Platform pengolahan nilai dan rapor tengah semester terpadu. Data nilai siswa terjaga aman dan kompatibel penuh dengan format pelaporan Kementerian Agama.
+  - generic [ref=f36e44]:
+    - generic [ref=f36e50]:
+      - generic [ref=f36e51]: Rapor STS
+      - generic [ref=f36e52]: Nama Madrasah
+    - generic [ref=f36e53]: Silakan login
+    - generic [ref=f36e54]:
+      - generic [ref=f36e55]: Username (NIK/NUPTK)
+      - textbox "Username (NIK/NUPTK)" [active] [ref=f36e56]:
+        - /placeholder: Masukkan NIK atau NUPTK
+    - generic [ref=f36e57]:
+      - generic [ref=f36e58]: Password
+      - textbox "Password" [ref=f36e59]:
+        - /placeholder: Masukkan password
+    - generic [ref=f36e60]:
+      - generic [ref=f36e61]: Tahun Pelajaran
+      - combobox "Tahun Pelajaran" [ref=f36e62]:
+        - option "2026/2027" [selected]
+    - generic [ref=f36e63]:
+      - generic [ref=f36e64]: Semester
+      - combobox "Semester" [ref=f36e65]:
+        - option "Semester 1 (Ganjil)" [selected]
+        - option "Semester 2 (Genap)"
+    - generic [ref=f36e66]:
+      - button "Masuk" [ref=f36e67] [cursor=pointer]
+      - link "Lupa Password?" [ref=f36e68] [cursor=pointer]:
+        - /url: "#"
+    - generic [ref=f36e69]: Aplikasi Penilaian Sumatif Tengah Semester MadrasahVersi 1.0

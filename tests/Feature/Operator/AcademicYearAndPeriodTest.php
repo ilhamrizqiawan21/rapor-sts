@@ -66,4 +66,17 @@ class AcademicYearAndPeriodTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('academic_years', ['id' => $year->id]);
     }
+
+    public function test_academic_year_name_must_use_consecutive_yyyy_yyyy_format(): void
+    {
+        $operator = User::where('username', 'admin')->first();
+
+        foreach (['2027', 'abc', '2027/2029', '2027/2027', '27/28'] as $invalid) {
+            $this->actingAs($operator)
+                ->post(route('operator.lembaga.tahun.store'), ['name' => $invalid])
+                ->assertSessionHasErrors('name');
+
+            $this->assertDatabaseMissing('academic_years', ['name' => $invalid]);
+        }
+    }
 }
