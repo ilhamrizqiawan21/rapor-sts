@@ -42,7 +42,7 @@
                         <path d="M68 48 C62 45 56 46 53 50" stroke="#1b5e20" stroke-width="1.2"/>
                         <!-- Pita & Tulisan -->
                         <path d="M30 68 C42 64 58 64 70 68 L66 73 C56 70 44 70 34 73 Z" fill="#f1c40f"/>
-                        <text x="50" y="82" font-family="'Source Sans 3', sans-serif" font-size="7.5" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="1">MTsS AL-IHSAN</text>
+                        <text x="50" y="82" font-family="'Source Sans 3', sans-serif" font-size="7.5" font-weight="bold" fill="#ffffff" text-anchor="middle" letter-spacing="1">MADRASAH</text>
                     </svg>
                 @endif
             </div>
@@ -51,10 +51,14 @@
                     {{ $profile->parent_institution ?? 'KEMENTERIAN AGAMA REPUBLIK INDONESIA' }}
                 </div>
                 <div style="font-size: 28px; font-weight: 700; line-height: 1.15; margin: 2px 0 3px 0">
-                    {{ $profile->name ?? 'MTsS AL-IHSAN' }}
+                    {{ $profile->name ?? 'Nama Madrasah' }}
                 </div>
                 <div style="font-size: 14.5px; opacity: .92; color: #e8f5e9">
-                    {{ $profile->district ? 'Kecamatan ' . $profile->district : 'Batujajar' }} · {{ $profile->regency ?? 'Kabupaten Bandung Barat' }}
+                    @if(!empty($profile->district) || !empty($profile->regency))
+                        {{ $profile->district ? 'Kecamatan ' . $profile->district . ' · ' : '' }}{{ $profile->regency ?? '' }}
+                    @else
+                        Profil madrasah dapat diatur melalui akun Operator
+                    @endif
                 </div>
             </div>
         </div>

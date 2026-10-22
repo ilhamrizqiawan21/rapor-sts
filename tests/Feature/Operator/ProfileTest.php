@@ -41,16 +41,16 @@ class ProfileTest extends TestCase
 
         $response = $this->actingAs($operator)->post(route('operator.profil.update'), [
             'parent_institution' => 'KEMENTERIAN AGAMA REPUBLIK INDONESIA',
-            'name' => 'MTsS AL-IHSAN BATUJAJAR',
+            'name' => 'MTs Nurul Huda',
             'level' => 'MTs',
             'nsm' => '121232170001',
             'npsn' => '20278901',
-            'address' => 'JL. GALANGGANG NO. 69',
-            'district' => 'Batujajar',
-            'regency' => 'Bandung Barat',
+            'address' => 'JL. PENDIDIKAN NO. 69',
+            'district' => 'Sukasari',
+            'regency' => 'Bandung',
             'province' => 'Jawa Barat',
             'headmaster_name' => 'Drs. H. Ahmad Sanusi, M.Pd.I',
-            'app_name' => 'Rapor STS Al-Ihsan',
+            'app_name' => 'Rapor STS Madrasah',
             'topbar_color' => '#1e7e34',
             'logo_left' => $logoLeft,
         ]);
@@ -58,12 +58,12 @@ class ProfileTest extends TestCase
         $response->assertRedirect(route('operator.profil.edit'));
 
         $this->assertDatabaseHas('madrasah_profiles', [
-            'name' => 'MTsS AL-IHSAN BATUJAJAR',
-            'district' => 'Batujajar',
+            'name' => 'MTs Nurul Huda',
+            'district' => 'Sukasari',
         ]);
 
         $this->assertDatabaseHas('app_settings', [
-            'app_name' => 'Rapor STS Al-Ihsan',
+            'app_name' => 'Rapor STS Madrasah',
             'topbar_color' => '#1e7e34',
         ]);
 

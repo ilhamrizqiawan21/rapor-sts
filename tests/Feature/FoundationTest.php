@@ -20,14 +20,14 @@ class FoundationTest extends TestCase
     public function test_operator_dashboard_page_renders_mockup_components(): void
     {
         $operator = User::factory()->operator()->create([
-            'name' => 'Admin MTsS Al-Ihsan',
+            'name' => 'Admin Madrasah',
         ]);
 
         $response = $this->actingAs($operator)->get('/operator/dashboard');
 
         $response->assertStatus(200);
         $response->assertSee('Dashboard Operator');
-        $response->assertSee('Admin MTsS Al-Ihsan');
+        $response->assertSee('Admin Madrasah');
         $response->assertSee('Info Aplikasi');
         $response->assertSee('Aktivitas Terbaru');
     }
