@@ -172,3 +172,4 @@ class LearningScopeController extends Controller
             ->with('success', "Lingkup Materi LM {$seq} beserta riwayat nilainya berhasil dihapus.");
     }
 }
+

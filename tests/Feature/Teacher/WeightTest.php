@@ -128,3 +128,4 @@ class WeightTest extends TestCase
         $lockedResponse->assertStatus(403);
     }
 }
+

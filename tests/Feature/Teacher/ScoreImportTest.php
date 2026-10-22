@@ -186,3 +186,4 @@ class ScoreImportTest extends TestCase
         @unlink($tempPath);
     }
 }
+
