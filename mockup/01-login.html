@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login Aplikasi Rapor STS — Mockup Rapor STS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2d24d4}a:hover{color:#1c158f}
+.in{height:40px;border:1px solid #ced4da;border-radius:4px;padding:0 10px;font:14px 'Source Sans 3',Arial,sans-serif;color:#212529;background:#fff;box-sizing:border-box;width:100%}
+</style>
+</head>
+<body style="background:#f4f6f9">
+<!-- Mockup statis. Sumber: kanvas desain. Jangan dipakai sebagai kode produksi; port ke Blade. -->
+<div style="min-height: 100vh; display: flex; flex-wrap: wrap; font-family: 'Source Sans 3', Arial, sans-serif; color: #212529; background: #f4f6f9">
+  <div style="flex: 3 1 520px; min-height: 420px; background: #2f7d32; color: #fff; display: flex; flex-direction: column; justify-content: space-between; padding: 48px; box-sizing: border-box; gap: 32px">
+    <div style="display: flex; align-items: center; gap: 16px">
+      <div style="width: 72px; height: 72px; border-radius: 12px; background: #fff; color: #2f7d32; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; text-align: center; line-height: 1.1">LOGO<br>MADRASAH</div>
+      <div>
+        <div style="font-size: 30px; font-weight: 700; line-height: 1.1">MTsS AL-IHSAN</div>
+        <div style="font-size: 16px; opacity: .92">Batujajar · Bandung Barat</div>
+      </div>
+    </div>
+    <div style="flex: 1 1 auto; min-height: 260px; border: 2px dashed rgba(255,255,255,.55); border-radius: 12px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 15px; padding: 24px">[FOTO GEDUNG / ILUSTRASI MADRASAH — dapat diganti di Profil Madrasah]</div>
+    <div style="font-size: 15px; line-height: 1.5; max-width: 560px">Pengolahan nilai Sumatif Tengah Semester. Nilai yang diinput di sini dapat diekspor ke format template RDM saat akhir semester.</div>
+  </div>
+  <div style="flex: 2 1 380px; display: flex; align-items: center; justify-content: center; padding: 40px 24px; box-sizing: border-box">
+    <form style="width: 100%; max-width: 380px; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.15); padding: 28px; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="width: 48px; height: 48px; border-radius: 8px; background: #628b0d; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700">RS</div>
+        <div>
+          <div style="font-size: 20px; font-weight: 700; color: #1d5c2e; line-height: 1.1">Rapor STS</div>
+          <div style="font-size: 13px; color: #555">[Nama Aplikasi dapat diganti]</div>
+        </div>
+      </div>
+      <div style="font-size: 17px; font-weight: 600; margin-top: 6px">Silakan login</div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="u" style="font-size: 13px; color: #495057">Username (NIK/NUPTK)</label>
+        <input id="u" class="in" type="text" placeholder="Username">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="p" style="font-size: 13px; color: #495057">Password</label>
+        <input id="p" class="in" type="password" placeholder="Password">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="ta" style="font-size: 13px; color: #495057">Tahun Pelajaran</label>
+        <select id="ta" class="in"><option>2026/2027</option><option>2025/2026</option></select>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <label for="sm" style="font-size: 13px; color: #495057">Semester</label>
+        <select id="sm" class="in"><option>Ganjil</option><option>Genap</option></select>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 4px">
+        <button type="button" style="min-height: 44px; padding: 0 24px; border: 0; border-radius: 4px; background: #2d24d4; color: #fff; font: 600 15px 'Source Sans 3', Arial, sans-serif; cursor: pointer">Login</button>
+        <a href="#" style="font-size: 14px">Lupa Password Admin?</a>
+      </div>
+      <div style="font-size: 12px; color: #6c757d; line-height: 1.5; border-top: 1px solid #e9ecef; padding-top: 12px">Aplikasi pendamping penilaian tengah semester. Bukan aplikasi resmi Kementerian Agama.<br>Versi 1.0</div>
+    </form>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pengaturan Cetak Rapor STS — Mockup Rapor STS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2d24d4}a:hover{color:#1c158f}
+.app{display:flex;flex-wrap:wrap;min-height:100vh;background:#f4f6f9;font-family:'Source Sans 3',Arial,sans-serif;font-size:14px;color:#212529}
+.side{flex:1 1 240px;background:#37404d;color:#c9ced6;display:flex;flex-direction:column;padding-bottom:16px}
+.brand{height:56px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid #dee2e6}
+.logo{width:38px;height:38px;border-radius:6px;background:#628b0d;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.bname{font-weight:700;color:#1d5c2e;font-size:16px;line-height:1.05}
+.bsub{font-size:11px;color:#555}
+.sem{align-self:flex-end;margin:10px 0 8px;background:#ffd43b;color:#212529;border-top:3px dashed #212529;border-bottom:3px dashed #212529;font-size:11px;font-weight:700;padding:2px 10px}
+.sec{padding:16px 18px 6px;font-size:11px;font-weight:700;color:#aab2bf;letter-spacing:.04em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 18px;min-height:24px;color:#c9ced6;text-decoration:none}
+.nav a:hover{color:#fff}
+.nav a.on{background:#2d24d4;color:#fff}
+.nav a.sub{padding-left:48px;background:#2e3641;font-size:13.5px}
+.nav a.sub.on{background:#2d24d4;color:#fff}
+.nav svg{flex:none}
+.chev{margin-left:auto}
+.main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column}
+.top{height:56px;background:#628b0d;display:flex;align-items:center;gap:8px;padding:0 12px;color:#fff}
+.ham{background:none;border:0;color:#fff;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.user{margin-left:auto;display:flex;align-items:center;gap:10px;font-weight:600}
+.ava{width:34px;height:34px;border-radius:50%;background:#e9ecef;color:#37404d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.crumb{background:#fff;padding:12px 24px;font-size:13px;color:#6c757d;border-bottom:1px solid #e3e6ea}
+.crumb a{text-decoration:none}
+.body{padding:24px;display:flex;flex-direction:column;gap:20px}
+.card{background:#fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ch{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid #e9ecef}
+.ct{font-size:15px;font-weight:700;margin:0}
+.cb{padding:16px;display:flex;flex-direction:column;gap:18px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:3px;padding:0 14px;min-height:36px;font:600 13px 'Source Sans 3',Arial,sans-serif;color:#fff;cursor:pointer;text-decoration:none;white-space:nowrap}
+.b-pri{background:#2d24d4}
+.f{display:flex;flex-direction:column;gap:6px}
+.f label,.lbl{font-size:13px;color:#495057}
+.in{height:38px;border:1px solid #ced4da;border-radius:4px;padding:0 10px;font:14px 'Source Sans 3',Arial,sans-serif;color:#212529;background:#fff;box-sizing:border-box;width:100%}
+.hint{font-size:12px;color:#6c757d}
+.chk{display:flex;align-items:center;gap:10px;min-height:32px;font-size:14px}
+.chk input{width:18px;height:18px}
+.foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;padding:12px 24px;font-size:12px;color:#495057;border-top:1px solid #e3e6ea;background:#fff}
+</style>
+</head>
+<body style="background:#f4f6f9">
+<!-- Mockup statis. Sumber: kanvas desain. Jangan dipakai sebagai kode produksi; port ke Blade. -->
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">RS</div><div><div class="bname">Rapor STS</div><div class="bsub">MTsS Al-Ihsan</div></div></div>
+    <div class="sem">SEMESTER GANJIL 2026/2027</div>
+    <nav class="nav" aria-label="Menu operator">
+      <a href="02-operator-dashboard.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg>Dashboard</a>
+      <a href="03-operator-profil.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 21V5l8-3 8 3v16M9 21v-6h6v6"/></svg>Profil Madrasah</a>
+      <div class="sec">Pengaturan</div>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M5 19l2-2M17 7l2-2"/></svg>Lembaga<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>Guru<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/></svg>Siswa<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 2h9l5 5v15H6zM14 2v6h6"/></svg>Rapor<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+      <a href="#" class="sub">Nilai KKM</a>
+      <a href="#" class="sub on">Pengaturan Cetak</a>
+      <a href="06-status-nilai.html" class="sub">Status Nilai</a>
+      <a href="07-cetak-rapor.html" class="sub">Cetak Rapor</a>
+      <div class="sec">Administrasi</div>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6M16 11l2 2 4-4"/></svg>Admin Aplikasi</a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 4v6h8V4"/></svg>Backup Restore</a>
+      <div class="sec">Akun</div>
+      <a href="01-login.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h5v18h-5M10 17l-5-5 5-5M5 12h11"/></svg>Logout</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <button class="ham" type="button" aria-label="Buka/tutup menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <div class="user">Admin MTsS Al-Ihsan<div class="ava">AD</div></div>
+    </header>
+    <div class="crumb"><a href="#">Home</a> / <a href="#">Admin</a> / Pengaturan Cetak</div>
+    <div class="body">
+      <div class="card">
+        <div class="ch"><div class="ct">Pengaturan Cetak Rapor STS</div></div>
+        <div class="cb">
+          <div class="f"><label for="jd">Judul Rapor</label><input id="jd" class="in" value="LAPORAN HASIL SUMATIF TENGAH SEMESTER"><span class="hint">Contoh lain: RAPOR TENGAH SEMESTER, LAPORAN PENILAIAN TENGAH SEMESTER</span></div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+            <div class="f"><label for="tc">Tempat Cetak</label><input id="tc" class="in" value="Bandung Barat"><span class="hint">Isi dengan nama kabupaten atau kecamatan</span></div>
+            <div class="f"><label for="tg">Tanggal Cetak</label><input id="tg" class="in" type="date" value="2026-10-30"></div>
+            <div class="f"><label for="kn">Label kolom nilai</label><input id="kn" class="in" value="Nilai STS"></div>
+            <div class="f"><label for="kt">Ukuran kertas</label><select id="kt" class="in"><option>A4</option><option>F4 / Folio</option></select></div>
+          </div>
+          <div class="f"><label for="wm">Watermark</label><input id="wm" class="in" placeholder="Watermark"><span class="hint">Kosongkan jika tidak ingin menggunakan watermark di rapor</span></div>
+          <fieldset style="border: 1px solid #dee2e6; border-radius: 4px; padding: 12px 16px; margin: 0">
+            <legend class="lbl" style="padding: 0 6px">Bagian yang ditampilkan di rapor STS</legend>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 16px">
+              <label class="chk"><input type="checkbox" checked>Capaian Kompetensi</label>
+              <label class="chk"><input type="checkbox" checked>Ketidakhadiran</label>
+              <label class="chk"><input type="checkbox" checked>Catatan Wali Kelas</label>
+              <label class="chk"><input type="checkbox" checked>Tanggapan Orang Tua/Wali</label>
+              <label class="chk"><input type="checkbox">Ekstrakurikuler</label>
+              <label class="chk"><input type="checkbox">Prestasi</label>
+              <label class="chk"><input type="checkbox">Baris Jumlah nilai</label>
+              <label class="chk"><input type="checkbox">QR verifikasi rapor</label>
+            </div>
+          </fieldset>
+          <div style="display: flex; justify-content: flex-end"><button type="button" class="btn b-pri">Simpan</button></div>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Rapor STS Versi 1.0 © 2026</span><span>[Nama Pengembang]</span></footer>
+  </main>
+</div>
+</body>
+</html>

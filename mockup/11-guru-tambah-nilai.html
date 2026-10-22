@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guru · Tambah Nilai Sumatif — Mockup Rapor STS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2d24d4}a:hover{color:#1c158f}
+.in{height:38px;border:1px solid #ced4da;border-radius:4px;padding:0 10px;font:14px 'Source Sans 3',Arial,sans-serif;color:#212529;background:#fff;box-sizing:border-box;width:100%}
+textarea.in{height:84px;padding:8px 10px;resize:vertical}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:3px;padding:0 16px;min-height:38px;font:600 13px 'Source Sans 3',Arial,sans-serif;color:#fff;cursor:pointer}
+.t{width:100%;border-collapse:collapse;font-size:13.5px}
+.t th{text-align:left;padding:10px;border-bottom:2px solid #9aa1a9;font-weight:700;background:#f1f3f5;vertical-align:bottom}
+.t td{padding:7px 10px;border-bottom:1px solid #e3e6ea;vertical-align:middle}
+.t tr:nth-child(even) td{background:#f8f9fa}
+.kc{display:inline-block;padding:3px 8px;border-radius:3px;font-size:12px;font-weight:700}
+</style>
+</head>
+<body style="background:#f4f6f9">
+<!-- Mockup statis. Sumber: kanvas desain. Jangan dipakai sebagai kode produksi; port ke Blade. -->
+<div style="min-height: 100vh; background: #5f6670; font-family: 'Source Sans 3', Arial, sans-serif; font-size: 14px; color: #212529; padding: 32px 16px; box-sizing: border-box; display: flex; justify-content: center; align-items: flex-start">
+  <div role="dialog" aria-labelledby="mt" style="width: 100%; max-width: 900px; background: #fff; border-radius: 6px; box-shadow: 0 8px 30px rgba(0,0,0,.35)">
+    <div style="display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #dee2e6">
+      <h2 id="mt" style="margin: 0; font-size: 20px; font-weight: 600">Tambah Nilai</h2>
+      <button type="button" aria-label="Tutup" style="margin-left: auto; width: 40px; height: 40px; border: 0; background: none; font-size: 22px; cursor: pointer; color: #495057">×</button>
+    </div>
+    <div style="padding: 20px; display: flex; flex-direction: column; gap: 18px">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px 32px">
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center"><label for="lm" style="color: #495057">TP/LM Ke</label><input id="lm" class="in" type="number" value="4" style="max-width: 110px"></div>
+          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: start"><label for="rk" style="color: #495057; padding-top: 8px">Ringkasan TP/Lingkup Materi</label><textarea id="rk" class="in" placeholder="Poin penting dari TP/Lingkup Materi, diawali KKO (Kata Kerja Operasional)">menjelaskan ketentuan salat fardu</textarea></div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px">
+          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center"><label for="nb" style="color: #495057">Nilai Batas Ketercapaian</label><input id="nb" class="in" type="number" value="70" style="max-width: 110px"></div>
+          <div style="display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: start"><span style="color: #495057">Interval</span>
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 13.5px"><b>Belum Tercapai</b><span>: &lt; 70</span><b>Cukup</b><span>: 70 – 79</span><b>Baik</b><span>: 80 – 89</span><b>Sangat Baik</b><span>: 90 – 100</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; justify-content: flex-end"><label style="display: flex; align-items: center; gap: 6px">Search: <input class="in" style="width: 180px; height: 32px" type="search"></label></div>
+      <div style="overflow-x: auto">
+        <table class="t">
+          <thead><tr><th style="width: 36px"></th><th>NISN</th><th>Nama</th><th>L/P</th><th style="min-width: 220px"><div style="display: flex; align-items: center; gap: 8px">Nilai<input class="in" aria-label="Isi semua nilai" placeholder="Isi semua" style="height: 30px; max-width: 110px"></div></th><th>Ketercapaian</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>01XXXXXXX1</td><td>AHMAD FAUZAN</td><td>L</td><td><input class="in" aria-label="Nilai Ahmad Fauzan" value="84"></td><td><span class="kc" style="background: #d4edda; color: #155724">Baik</span></td></tr>
+            <tr><td>2</td><td>01XXXXXXX2</td><td>AISYAH NURAINI</td><td>P</td><td><input class="in" aria-label="Nilai Aisyah Nuraini" value="93"></td><td><span class="kc" style="background: #cfe2ff; color: #0a3d8f">Sangat Baik</span></td></tr>
+            <tr><td>3</td><td>01XXXXXXX3</td><td>DIMAS PRATAMA</td><td>L</td><td><input class="in" aria-label="Nilai Dimas Pratama" value="66"></td><td><span class="kc" style="background: #f8d7da; color: #842029">Belum Tercapai</span></td></tr>
+            <tr><td>4</td><td>01XXXXXXX4</td><td>FITRI RAMADHANI</td><td>P</td><td><input class="in" aria-label="Nilai Fitri Ramadhani" value="76"></td><td><span class="kc" style="background: #fff3cd; color: #664d03">Cukup</span></td></tr>
+            <tr><td>5</td><td>01XXXXXXX5</td><td>MUHAMMAD RIZKI</td><td>L</td><td><input class="in" aria-label="Nilai Muhammad Rizki" placeholder="00"></td><td><span style="color: #6c757d">–</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 8px; padding: 14px 20px; border-top: 1px solid #dee2e6">
+      <button type="button" class="btn" style="background: #c82333">Batal</button>
+      <button type="button" class="btn" style="background: #2d24d4">Save changes</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

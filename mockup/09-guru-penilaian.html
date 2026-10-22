@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guru · Penilaian STS — Mockup Rapor STS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#2d24d4}a:hover{color:#1c158f}
+.app{display:flex;flex-wrap:wrap;min-height:100vh;background:#f4f6f9;font-family:'Source Sans 3',Arial,sans-serif;font-size:14px;color:#212529}
+.side{flex:1 1 240px;background:#37404d;color:#c9ced6;display:flex;flex-direction:column;padding-bottom:16px}
+.brand{height:56px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid #dee2e6}
+.logo{width:38px;height:38px;border-radius:6px;background:#628b0d;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.bname{font-weight:700;color:#1d5c2e;font-size:16px;line-height:1.05}
+.bsub{font-size:11px;color:#555}
+.sem{align-self:flex-end;margin:10px 0 8px;background:#ffd43b;color:#212529;border-top:3px dashed #212529;border-bottom:3px dashed #212529;font-size:11px;font-weight:700;padding:2px 10px}
+.sec{padding:16px 18px 6px;font-size:11px;font-weight:700;color:#aab2bf;letter-spacing:.04em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 18px;min-height:24px;color:#c9ced6;text-decoration:none}
+.nav a:hover{color:#fff}
+.nav a.on{background:#2d24d4;color:#fff}
+.nav a.sub{padding-left:48px;background:#2e3641;font-size:13.5px}
+.nav a.sub.on{background:#2d24d4;color:#fff}
+.nav svg{flex:none}
+.chev{margin-left:auto}
+.st{margin-left:auto;width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.main{flex:999 1 560px;min-width:0;display:flex;flex-direction:column}
+.top{min-height:56px;background:#628b0d;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:0 12px;color:#fff}
+.ham{background:none;border:0;color:#fff;width:44px;height:44px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.tl{display:flex;align-items:center;gap:6px;color:#fff;text-decoration:none;padding:10px 12px;font-weight:600;min-height:24px}
+.tl:hover{color:#fff;background:#557a0b}
+.tl.on{color:#ffe27a}
+.user{margin-left:auto;display:flex;align-items:center;gap:10px;font-weight:600}
+.ava{width:34px;height:34px;border-radius:50%;background:#e9ecef;color:#37404d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.crumb{background:#fff;padding:12px 24px;font-size:13px;color:#6c757d;border-bottom:1px solid #e3e6ea}
+.crumb a{text-decoration:none}
+.body{padding:24px;display:flex;flex-direction:column;gap:20px}
+.card{background:#fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.ch{display:flex;flex-wrap:wrap;align-items:flex-start;gap:12px;padding:14px 16px;border-bottom:1px solid #e9ecef}
+.ct{font-size:19px;font-weight:600;margin:0}
+.cs{font-size:12px;color:#6c757d}
+.acts{margin-left:auto;display:flex;flex-wrap:wrap;gap:0}
+.cb{padding:16px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:3px;padding:0 12px;min-height:36px;font:600 13px 'Source Sans 3',Arial,sans-serif;color:#fff;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{color:#fff}
+.b-pri{background:#2d24d4}.b-suc{background:#1e7e34}.b-dan{background:#c82333}.b-war{background:#f2b01e;color:#3b2a00}.b-inf{background:#1b6ec2}
+.b-war:hover{color:#3b2a00}
+.grp{display:flex;flex-wrap:wrap}.grp .btn{border-radius:0}.grp .btn:first-child{border-radius:3px 0 0 3px}.grp .btn:last-child{border-radius:0 3px 3px 0}
+.in{height:32px;border:1px solid #ced4da;border-radius:4px;padding:0 10px;font:14px 'Source Sans 3',Arial,sans-serif;color:#212529;background:#fff;box-sizing:border-box}
+.tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.tbtn{background:#fff;border:1px solid #c4c8cd;border-radius:3px;min-height:32px;padding:0 10px;font:13px 'Source Sans 3',Arial,sans-serif;cursor:pointer}
+.tb{overflow-x:auto}
+.t{width:100%;border-collapse:collapse;font-size:13.5px}
+.t th{text-align:left;padding:10px;border-bottom:2px solid #9aa1a9;font-weight:700;background:#f1f3f5;vertical-align:bottom}
+.t td{padding:9px 10px;border-bottom:1px solid #e3e6ea;vertical-align:top}
+.t tr:nth-child(even) td{background:#f8f9fa}
+.n{text-align:center;white-space:nowrap}
+.alert{padding:12px 16px;border-radius:3px;font-size:13.5px;line-height:1.55}
+.a-lt{background:#fff4d6;color:#5c4400;border:1px solid #f2d68a}
+.foot{margin-top:auto;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;padding:12px 24px;font-size:12px;color:#495057;border-top:1px solid #e3e6ea;background:#fff}
+</style>
+</head>
+<body style="background:#f4f6f9">
+<!-- Mockup statis. Sumber: kanvas desain. Jangan dipakai sebagai kode produksi; port ke Blade. -->
+<div class="app">
+  <aside class="side">
+    <div class="brand"><div class="logo">RS</div><div><div class="bname">Rapor STS</div><div class="bsub">MTsS Al-Ihsan</div></div></div>
+    <div class="sem">SEMESTER GANJIL 2026/2027</div>
+    <nav class="nav" aria-label="Menu guru">
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/></svg>Dashboard</a>
+      <a href="#"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM8 7h8"/></svg>FIK - Fikih<svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></a>
+      <a href="#" class="sub on">VII.A<span class="st" style="background: #c82333" aria-label="Belum kirim">✕</span></a>
+      <a href="#" class="sub">VII.B<span class="st" style="background: #1e7e34" aria-label="Terkirim">✓</span></a>
+      <a href="#" class="sub">VIII.A<span class="st" style="background: #c82333" aria-label="Belum kirim">✕</span></a>
+      <div class="sec">Tugas Tambahan</div>
+      <a href="13-wali-kehadiran-catatan.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2 20c0-3.5 3-5 7-5s7 1.5 7 5"/></svg>Wali Kelas VII.B</a>
+      <div class="sec">Akun</div>
+      <a href="01-login.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 3h5v18h-5M10 17l-5-5 5-5M5 12h11"/></svg>Logout</a>
+    </nav>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <button class="ham" type="button" aria-label="Buka/tutup menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+      <a class="tl" href="#">Beranda</a>
+      <a class="tl" href="08-guru-bobot.html">Bobot</a>
+      <a class="tl on" href="#">Penilaian</a>
+      <div class="user">GURU FIKIH, S.Pd<div class="ava">GF</div></div>
+    </header>
+    <div class="crumb"><a href="#">Home</a> / <a href="#">Guru</a> / Penilaian</div>
+    <div class="body">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Penilaian Sumatif Tengah Semester</div><div class="cs">Fikih · VII.A · Kurikulum Merdeka · Bobot Sumatif 50% : STS 50%</div></div><div class="acts grp"><a class="btn b-pri" href="10-guru-sumatif.html">Sumatif</a><a class="btn b-inf" href="12-guru-sts.html">STS</a><button type="button" class="btn b-war">Export RDM</button><button type="button" class="btn b-suc">Kirim</button></div></div>
+        <div class="cb" style="display: flex; flex-direction: column; gap: 12px">
+          <div class="alert a-lt"><b>Export RDM</b> menghasilkan file Excel sesuai template nilai sumatif RDM, sehingga nilai lingkup materi tidak perlu diketik ulang saat akhir semester. Setelah <b>Kirim</b>, nilai terkunci dan hanya bisa dibuka oleh wali kelas atau operator.</div>
+          <div class="tools"><div style="display: flex; gap: 4px"><button type="button" class="tbtn">Copy</button><button type="button" class="tbtn">Print</button><button type="button" class="tbtn">Excel</button></div><label style="margin-left: auto; display: flex; align-items: center; gap: 6px">Search: <input class="in" style="width: 180px" type="search"></label></div>
+          <div class="tb">
+            <table class="t">
+              <thead><tr><th style="width: 36px"></th><th>NISN</th><th>Nama</th><th class="n">Rerata<br>Sumatif</th><th class="n">STS</th><th class="n">Nilai<br>Rapor STS</th><th style="min-width: 340px">Capaian Kompetensi</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>01XXXXXXX1</td><td>AHMAD FAUZAN</td><td class="n">84</td><td class="n">80</td><td class="n"><b>82</b></td><td>Menunjukkan penguasaan yang baik dalam menganalisis tata cara bersuci dari hadas dan najis.</td></tr>
+                <tr><td>2</td><td>01XXXXXXX2</td><td>AISYAH NURAINI</td><td class="n">92</td><td class="n">90</td><td class="n"><b>91</b></td><td>Menunjukkan penguasaan yang sangat baik dalam mempraktikkan tata cara wudu dan tayamum.</td></tr>
+                <tr><td>3</td><td>01XXXXXXX3</td><td>DIMAS PRATAMA</td><td class="n">74</td><td class="n">70</td><td class="n"><b>72</b></td><td>Menunjukkan penguasaan yang cukup dalam mengidentifikasi macam-macam najis. Perlu bimbingan dalam tata cara menyucikan najis.</td></tr>
+                <tr><td>4</td><td>01XXXXXXX4</td><td>FITRI RAMADHANI</td><td class="n">88</td><td class="n">86</td><td class="n"><b>87</b></td><td>Menunjukkan penguasaan yang baik dalam menganalisis tata cara bersuci dari hadas dan najis.</td></tr>
+                <tr><td>5</td><td>01XXXXXXX5</td><td>MUHAMMAD RIZKI</td><td class="n">80</td><td class="n">–</td><td class="n" style="color: #c82333"><b>–</b></td><td style="color: #6c757d; font-style: italic">Nilai STS belum diisi</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="foot"><span>Rapor STS Versi 1.0 © 2026</span><span>[Nama Pengembang]</span></footer>
+  </main>
+</div>
+</body>
+</html>
