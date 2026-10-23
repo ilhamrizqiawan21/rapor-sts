@@ -56,6 +56,8 @@ class TeacherController extends Controller
 
     public function update(TeacherRequest $request, User $teacher): RedirectResponse
     {
+        abort_unless($teacher->role === Role::Guru, 404);
+
         $data = $request->validated();
 
         if (! empty($data['password'])) {
@@ -74,6 +76,8 @@ class TeacherController extends Controller
 
     public function toggleStatus(User $teacher): RedirectResponse
     {
+        abort_unless($teacher->role === Role::Guru, 404);
+
         $teacher->update(['is_active' => ! $teacher->is_active]);
 
         $statusText = $teacher->is_active ? 'diaktifkan' : 'dinonaktifkan';

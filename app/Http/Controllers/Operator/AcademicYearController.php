@@ -50,6 +50,10 @@ class AcademicYearController extends Controller
             return redirect()->route('operator.lembaga.index')->with('error', 'Tahun pelajaran tidak dapat dihapus karena sudah memiliki data kelas.');
         }
 
+        if ($academicYear->periods()->where('is_active', true)->exists()) {
+            return redirect()->route('operator.lembaga.index')->with('error', 'Tahun pelajaran tidak dapat dihapus karena memuat periode aktif. Aktifkan periode lain terlebih dahulu.');
+        }
+
         $name = $academicYear->name;
         $academicYear->delete();
 

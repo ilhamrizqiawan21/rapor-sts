@@ -66,7 +66,7 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - [x] Feature test `RdmExportTest`: verifikasi pengisian sel, token kolom B utuh, proteksi lembar, dan otorisasi guru.
 
 ## Tahap 8 — Rilis
-- [ ] Backup (FR-ADM-02), kelola akun (FR-ADM-03), ganti password.
+- [x] Backup (FR-ADM-02), kelola akun (FR-ADM-03), ganti password.
 - [ ] Halaman error 403/404/419/500 berbahasa Indonesia dengan layout aplikasi.
 - [ ] `docs/DEPLOY.md`: shared hosting & VPS, `.env` contoh, storage:link, batas PHP.
 - [ ] Uji terima bersama pemilik pada data demo; perbaiki temuan.

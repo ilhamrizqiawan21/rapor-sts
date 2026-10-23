@@ -18,7 +18,15 @@ class TeacherImporter
     public function import(UploadedFile|string $file): array
     {
         $filePath = is_string($file) ? $file : $file->getRealPath();
-        $spreadsheet = IOFactory::load($filePath);
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'imported' => 0,
+                'errors' => ['File tidak dapat dibaca: '.$e->getMessage()],
+            ];
+        }
         $sheet = $spreadsheet->getSheetByName('guru') ?? $spreadsheet->getActiveSheet();
 
         $highestRow = $sheet->getHighestDataRow();
@@ -65,9 +73,16 @@ class TeacherImporter
                 $gender = 'L'; // fallback default
             }
 
+            $existing = User::where('username', $nik)->first();
+            if ($existing && $existing->role !== Role::Guru) {
+                $errors[] = "Baris {$row}: NIK/NUPTK '{$nik}' bentrok dengan akun non-guru dan dilewati.";
+
+                continue;
+            }
+
             $plainPassword = $password !== '' ? $password : 'password';
 
-            $rowsToImport[] = [
+            $item = [
                 'username' => $nik,
                 'name' => $name,
                 'nik' => $nik,
@@ -78,6 +93,13 @@ class TeacherImporter
                 'role' => Role::Guru,
                 'is_active' => true,
             ];
+
+            // Guru yang sudah ada: jangan reset password bila kolom password dikosongkan.
+            if ($existing && $password === '') {
+                unset($item['password'], $item['password_plain']);
+            }
+
+            $rowsToImport[] = $item;
         }
 
         if ($totalDataRows > 0 && (count($errors) / $totalDataRows) > 0.20) {

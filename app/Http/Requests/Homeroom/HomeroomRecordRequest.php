@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Homeroom;
 
+use App\Models\Classroom;
+use App\Models\Enrollment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class HomeroomRecordRequest extends FormRequest
@@ -34,5 +36,30 @@ class HomeroomRecordRequest extends FormRequest
             'records.*.absent.min' => 'Jumlah alpa minimal 0.',
             'records.*.note.max' => 'Catatan wali kelas maksimal 500 karakter.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->any()) {
+                return;
+            }
+
+            $period = app()->bound('activePeriod') ? app('activePeriod') : null;
+            $classroom = $period ? Classroom::where('academic_year_id', $period->academic_year_id)
+                ->where('homeroom_teacher_id', $this->user()?->id)->first() : null;
+            if (! $classroom) {
+                return;
+            }
+
+            $ids = array_map('intval', array_column((array) $this->input('records', []), 'student_id'));
+            $valid = Enrollment::where('classroom_id', $classroom->id)
+                ->where('academic_year_id', $period->academic_year_id)
+                ->whereIn('student_id', $ids)->pluck('student_id')->all();
+
+            if (array_diff($ids, $valid)) {
+                $validator->errors()->add('records', 'Terdapat siswa yang bukan anggota kelas Anda.');
+            }
+        });
     }
 }

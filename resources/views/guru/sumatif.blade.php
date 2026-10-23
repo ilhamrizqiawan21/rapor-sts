@@ -18,7 +18,7 @@
     @if($errors->any())
         <x-alert variant="warning">
             @foreach($errors->all() as $err)
-                <div>{!! $err !!}</div>
+                <div>{!! nl2br(e(str_replace("<br>", "\n", $err))) !!}</div>
             @endforeach
         </x-alert>
     @endif

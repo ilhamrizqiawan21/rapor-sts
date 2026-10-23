@@ -4,6 +4,7 @@ namespace Tests\Feature\Teacher;
 
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\Enrollment;
 use App\Models\Period;
 use App\Models\Student;
 use App\Models\Subject;
@@ -39,6 +40,7 @@ class CompetencyOverrideTest extends TestCase
         ]);
 
         $student = Student::factory()->create();
+        Enrollment::create(['academic_year_id' => $year->id, 'classroom_id' => $classroom->id, 'student_id' => $student->id]);
 
         $overrideText = 'Siswa menunjukkan kemampuan luar biasa dalam memahami seluruh materi.';
 

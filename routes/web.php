@@ -10,6 +10,7 @@ use App\Http\Controllers\Kepala\LegerController as KepalaLegerController;
 use App\Http\Controllers\Kepala\ReportController as KepalaReportController;
 use App\Http\Controllers\Kepala\TeacherPerformanceController;
 use App\Http\Controllers\Operator\AcademicYearController;
+use App\Http\Controllers\Operator\BackupController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
 use App\Http\Controllers\Operator\KktpDefaultController;
@@ -119,6 +120,11 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::post('/status-nilai/kunci/{classroom}', [HomeroomLockController::class, 'lock'])->name('status.lock');
     Route::post('/status-nilai/buka/{classroom}', [HomeroomLockController::class, 'unlock'])->name('status.unlock');
     Route::post('/status-nilai/batal-kirim/{teachingAssignment}', [HomeroomStatusController::class, 'unsubmit'])->name('status.unsubmit');
+
+    // Backup Database (ADR-010: hanya unduh; restore manual oleh teknisi)
+    Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+    Route::post('/backup', [BackupController::class, 'store'])->name('backup.store');
+    Route::get('/backup/{file}', [BackupController::class, 'download'])->name('backup.download');
 
     // Cetak Rapor Operator (Mockup 07)
     Route::get('/cetak-rapor', [ReportCardController::class, 'operatorIndex'])->name('rapor.index');

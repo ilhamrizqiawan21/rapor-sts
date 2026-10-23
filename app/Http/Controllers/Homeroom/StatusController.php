@@ -59,6 +59,10 @@ class StatusController extends Controller
 
         $this->authorize('unsubmit', [$classroom, $period]);
 
+        if ($teachingAssignment->period_id !== $period->id) {
+            return back()->with('error', 'Penugasan ini bukan milik periode aktif.');
+        }
+
         if ($classroom->isLockedInPeriod($period->id)) {
             return back()->with('error', 'Tidak dapat membatalkan kirim nilai karena kelas sedang dikunci.');
         }

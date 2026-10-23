@@ -19,6 +19,10 @@ class LockController extends Controller
 
         $this->authorize('lock', $classroom);
 
+        if ($classroom->academic_year_id !== $period->academic_year_id) {
+            return back()->with('error', 'Kelas ini bukan bagian dari tahun pelajaran periode aktif.');
+        }
+
         if ($classroom->isLockedInPeriod($period->id)) {
             return back()->with('info', "Nilai kelas {$classroom->name} sudah dalam keadaan terkunci.");
         }

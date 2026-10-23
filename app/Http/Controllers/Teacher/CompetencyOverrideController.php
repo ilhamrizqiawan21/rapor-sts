@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Teacher;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Teacher\CompetencyOverrideRequest;
 use App\Models\CompetencyOverride;
+use App\Models\Enrollment;
 use App\Models\Student;
 use App\Models\TeachingAssignment;
 use App\Services\ActivityLogger;
@@ -15,6 +16,10 @@ class CompetencyOverrideController extends Controller
     public function update(CompetencyOverrideRequest $request, TeachingAssignment $teachingAssignment, Student $student): RedirectResponse
     {
         $this->authorize('update', $teachingAssignment);
+
+        abort_unless(Enrollment::where('classroom_id', $teachingAssignment->classroom_id)
+            ->where('academic_year_id', $teachingAssignment->period->academic_year_id)
+            ->where('student_id', $student->id)->exists(), 404);
 
         $validated = $request->validated();
 
@@ -41,6 +46,10 @@ class CompetencyOverrideController extends Controller
     public function destroy(TeachingAssignment $teachingAssignment, Student $student): RedirectResponse
     {
         $this->authorize('update', $teachingAssignment);
+
+        abort_unless(Enrollment::where('classroom_id', $teachingAssignment->classroom_id)
+            ->where('academic_year_id', $teachingAssignment->period->academic_year_id)
+            ->where('student_id', $student->id)->exists(), 404);
 
         CompetencyOverride::where('teaching_assignment_id', $teachingAssignment->id)
             ->where('student_id', $student->id)

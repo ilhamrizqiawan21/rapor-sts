@@ -20,7 +20,15 @@ class StudentImporter
     public function import(UploadedFile|string $file, Classroom $classroom): array
     {
         $filePath = is_string($file) ? $file : $file->getRealPath();
-        $spreadsheet = IOFactory::load($filePath);
+        try {
+            $spreadsheet = IOFactory::load($filePath);
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'imported' => 0,
+                'errors' => ['File tidak dapat dibaca: '.$e->getMessage()],
+            ];
+        }
         $sheet = $spreadsheet->getSheetByName('siswa') ?? $spreadsheet->getActiveSheet();
 
         $highestRow = $sheet->getHighestDataRow();

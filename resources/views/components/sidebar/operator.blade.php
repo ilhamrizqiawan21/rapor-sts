@@ -111,20 +111,12 @@
         </div>
     </div>
 
-    {{-- Administrasi (Admin Aplikasi, Backup Restore): menyusul di Tahap 8, disembunyikan sampai halamannya ada. --}}
-    @if(false)
     <div class="sec">Administrasi</div>
 
-    <a href="#" class="{{ $activeKey === 'admin' ? 'on' : '' }}">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6M16 11l2 2 4-4"/></svg>
-        <span>Admin Aplikasi</span>
-    </a>
-
-    <a href="#" class="{{ $activeKey === 'backup' ? 'on' : '' }}">
+    <a href="{{ route('operator.backup.index') }}" class="{{ $activeKey === 'backup' ? 'on' : '' }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 4v6h8V4"/></svg>
-        <span>Backup Restore</span>
+        <span>Backup Database</span>
     </a>
-    @endif
 
     <div class="sec">Akun</div>
     <a href="{{ route('akun.edit') }}" class="{{ $activeKey === 'akun' ? 'on' : '' }}">
