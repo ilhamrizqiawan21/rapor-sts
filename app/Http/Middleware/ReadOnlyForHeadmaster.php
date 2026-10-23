@@ -19,8 +19,8 @@ class ReadOnlyForHeadmaster
         if ($user && $user->role === Role::Kepala) {
             $isSafeMethod = in_array($request->method(), ['GET', 'HEAD', 'OPTIONS'], true);
 
-            // Pengecualian aksi yang diizinkan untuk kepala (logout & update password mandiri)
-            $isAllowedAction = $request->routeIs('logout', 'password.update');
+            // Pengecualian aksi yang diizinkan untuk kepala (logout & akun sendiri: password/foto)
+            $isAllowedAction = $request->routeIs('logout', 'password.update', 'akun.*');
 
             if (! $isSafeMethod && ! $isAllowedAction) {
                 abort(403, 'Akses hanya baca. Kepala madrasah tidak memiliki izin untuk mengubah data.');

@@ -19,6 +19,7 @@ class User extends Authenticatable
         'username',
         'password',
         'password_plain',
+        'photo_path',
         'role',
         'nik',
         'nuptk',

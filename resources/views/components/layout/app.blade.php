@@ -31,6 +31,9 @@
     $brand = $brandName ?? ($appSetting->app_name ?? 'Rapor STS');
     $sub = $brandSub ?? ($appSetting->app_subtitle ?? '');
     $topbar = $topbarColor ?? ($appSetting->topbar_color ?? null);
+    $brandLogo = ($appSetting?->app_logo_path && file_exists(storage_path('app/public/'.$appSetting->app_logo_path)))
+        ? asset('storage/'.$appSetting->app_logo_path)
+        : null;
 @endphp
 
 <!doctype html>
@@ -39,7 +42,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }} — {{ $brand }}</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @if($brandLogo)
+        <link rel="icon" href="{{ $brandLogo }}">
+    @else
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    @endif
     <link rel="alternate icon" href="{{ asset('favicon.ico') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -50,7 +57,11 @@
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="window.toggleSidebar ? window.toggleSidebar() : null"></div>
     <aside class="side" id="appSidebar">
         <div class="brand">
-            <div class="logo">RS</div>
+            @if($brandLogo)
+                <img src="{{ $brandLogo }}" alt="Logo" style="width: 38px; height: 38px; object-fit: contain; flex-shrink: 0">
+            @else
+                <div class="logo">RS</div>
+            @endif
             <div>
                 <div class="bname">{{ $brand }}</div>
                 <div class="bsub">{{ $sub }}</div>
@@ -86,7 +97,11 @@
 
             <div class="user">
                 <span>{{ $displayName }}</span>
-                <div class="ava">{{ $userInitials }}</div>
+                @if($currentUser?->photo_path && file_exists(storage_path('app/public/'.$currentUser->photo_path)))
+                    <img class="ava" src="{{ asset('storage/'.$currentUser->photo_path) }}" alt="Foto profil" style="object-fit: cover">
+                @else
+                    <div class="ava">{{ $userInitials }}</div>
+                @endif
             </div>
         </header>
 

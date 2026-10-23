@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Homeroom\HomeroomRecordController;
 use App\Http\Controllers\Homeroom\LockController as HomeroomLockController;
@@ -42,6 +43,14 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'destroy'])
     ->middleware('auth')
     ->name('logout');
+
+// Akun & Profil (semua role: foto & ganti password sendiri)
+Route::middleware('auth')->prefix('akun')->name('akun.')->group(function () {
+    Route::get('/', [AccountController::class, 'edit'])->name('edit');
+    Route::post('/foto', [AccountController::class, 'updatePhoto'])->name('foto');
+    Route::delete('/foto', [AccountController::class, 'removePhoto'])->name('foto.hapus');
+    Route::put('/password', [AccountController::class, 'updatePassword'])->name('password');
+});
 
 // Root redirect
 Route::get('/', [LoginController::class, 'home'])->name('home');

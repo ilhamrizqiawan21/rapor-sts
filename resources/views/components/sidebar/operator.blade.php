@@ -127,6 +127,10 @@
     @endif
 
     <div class="sec">Akun</div>
+    <a href="{{ route('akun.edit') }}" class="{{ $activeKey === 'akun' ? 'on' : '' }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+        <span>Profil Saya</span>
+    </a>
 
     <form method="POST" action="{{ route('logout') }}" id="logout-form-operator" style="display: none;">
         @csrf
