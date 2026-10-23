@@ -59,7 +59,7 @@
                             </td>
                             <td>
                                 <b>{{ $act->user->name ?? 'Sistem' }}</b>
-                                <div class="cs">{{ $act->user->role->label() ?? '-' }}</div>
+                                <div class="cs">{{ $act->user?->role?->label() ?? '-' }}</div>
                             </td>
                             <td>{{ $act->description }}</td>
                             <td class="cs">{{ $act->created_at->diffForHumans() }}</td>

@@ -73,7 +73,7 @@ Penegakan:
    kelas belum dikunci && periode aktif).
 3. Middleware `ReadOnlyForHeadmaster`: tolak semua method selain GET/HEAD untuk role kepala,
    kecuali `logout` dan `password.update`.
-4. Test otorisasi wajib (GEMINI.md §4).
+4. Test otorisasi wajib (lihat standar test proyek).
 
 ## 4. Route (ringkas)
 

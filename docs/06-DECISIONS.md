@@ -2,7 +2,7 @@
 
 Format: ID · Status · Keputusan · Alasan · Konsekuensi.
 Status: **Accepted** (wajib diikuti), **Proposed** (menunggu persetujuan pemilik), **Superseded**.
-AI eksekutor tidak boleh mengubah ADR Accepted; usulan perubahan ditulis sebagai ADR baru "Proposed".
+ADR berstatus Accepted tidak boleh diubah langsung; usulan perubahan ditulis sebagai ADR baru "Proposed".
 
 ---
 

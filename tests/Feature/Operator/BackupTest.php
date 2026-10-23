@@ -72,4 +72,12 @@ class BackupTest extends TestCase
         $this->artisan('backup:run')->assertSuccessful();
         $this->assertCount(1, app(DatabaseBackup::class)->list());
     }
+
+    public function test_dashboard_renders_system_activity_without_user(): void
+    {
+        $this->artisan('backup:run')->assertSuccessful();
+
+        $this->actingAs(User::where('username', 'admin')->first())
+            ->get(route('operator.dashboard'))->assertOk()->assertSee('Sistem');
+    }
 }

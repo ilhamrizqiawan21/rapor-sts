@@ -1,6 +1,6 @@
 # 09 — Rencana Eksekusi
 
-Satu tahap = satu sesi Gemini = satu branch = satu review. Jangan memulai tahap berikutnya sebelum
+Satu tahap = satu sesi kerja = satu branch = satu review. Jangan memulai tahap berikutnya sebelum
 tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" berarti test lulus.
 
 ## Tahap 0 — Fondasi
