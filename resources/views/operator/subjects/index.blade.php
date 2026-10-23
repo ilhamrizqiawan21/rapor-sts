@@ -113,7 +113,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahMapel').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahMapel').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahMapel').submit()">Simpan</button>
         </x-slot:footer>
     </x-modal>

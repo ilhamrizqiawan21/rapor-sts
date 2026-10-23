@@ -116,7 +116,7 @@
             <div class="card" style="width: 100%; max-width: 520px">
                 <div class="ch">
                     <div class="ct">Isi Catatan Massal</div>
-                    <button type="button" style="margin-left: auto; background: none; border: 0; font-size: 18px; cursor: pointer" onclick="document.getElementById('modal-massal').style.display='none'">&times;</button>
+                    <button type="button" class="icon-btn" aria-label="Tutup" style="margin-left: auto" onclick="document.getElementById('modal-massal').style.display='none'">&times;</button>
                 </div>
                 <form method="POST" action="{{ route('wali.kehadiran.batch_note') }}">
                     @csrf
@@ -130,7 +130,7 @@
                         </div>
                     </div>
                     <div style="padding: 12px 16px; background: #f8f9fa; border-top: 1px solid #e9ecef; display: flex; justify-content: flex-end; gap: 8px">
-                        <button type="button" class="btn" style="background: #6c757d" onclick="document.getElementById('modal-massal').style.display='none'">Batal</button>
+                        <button type="button" class="btn b-sec" onclick="document.getElementById('modal-massal').style.display='none'">Batal</button>
                         <button type="submit" class="btn b-pri">Terapkan ke Siswa Kosong</button>
                     </div>
                 </form>
@@ -142,7 +142,7 @@
             <div class="card" style="width: 100%; max-width: 480px">
                 <div class="ch">
                     <div class="ct">Upload Excel Kehadiran &amp; Catatan</div>
-                    <button type="button" style="margin-left: auto; background: none; border: 0; font-size: 18px; cursor: pointer" onclick="document.getElementById('modal-upload').style.display='none'">&times;</button>
+                    <button type="button" class="icon-btn" aria-label="Tutup" style="margin-left: auto" onclick="document.getElementById('modal-upload').style.display='none'">&times;</button>
                 </div>
                 <form method="POST" action="{{ route('wali.kehadiran.import') }}" enctype="multipart/form-data">
                     @csrf
@@ -156,7 +156,7 @@
                         </div>
                     </div>
                     <div style="padding: 12px 16px; background: #f8f9fa; border-top: 1px solid #e9ecef; display: flex; justify-content: flex-end; gap: 8px">
-                        <button type="button" class="btn" style="background: #6c757d" onclick="document.getElementById('modal-upload').style.display='none'">Batal</button>
+                        <button type="button" class="btn b-sec" onclick="document.getElementById('modal-upload').style.display='none'">Batal</button>
                         <button type="submit" class="btn b-suc">Unggah Sekarang</button>
                     </div>
                 </form>

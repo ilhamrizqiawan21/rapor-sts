@@ -29,7 +29,7 @@
             @if($classroom)
                 <div class="acts grp">
                     <a href="{{ route('rapor.classroom.pdf', $classroom) }}" class="btn b-inf" target="_blank" rel="noopener">Lihat Semua Rapor</a>
-                    <a href="{{ route('rapor.leger.pdf', $classroom) }}" class="btn b-suc" target="_blank">Leger PDF</a>
+                    <a href="{{ route('rapor.leger.pdf', $classroom) }}" class="btn b-dan" target="_blank" rel="noopener">Leger PDF</a>
                     <a href="{{ route('rapor.leger.excel', $classroom) }}" class="btn b-suc" style="background: #17692b">Leger Excel</a>
                 </div>
             @endif
@@ -83,7 +83,7 @@
                                         @endif
                                     </td>
                                     <td style="text-align: center">
-                                        <a href="{{ route('rapor.student.pdf', [$classroom, $student]) }}" class="btn b-dan" style="min-height: 28px; padding: 0 10px; font-size: 12px" target="_blank" rel="noopener">
+                                        <a href="{{ route('rapor.student.pdf', [$classroom, $student]) }}" class="btn b-inf" style="min-height: 28px; padding: 0 10px; font-size: 12px" target="_blank" rel="noopener">
                                             Lihat Rapor STS
                                         </a>
                                     </td>

@@ -122,7 +122,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahGuru').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahGuru').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahGuru').submit()">Simpan</button>
         </x-slot:footer>
     </x-modal>
@@ -141,7 +141,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalImportGuru').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalImportGuru').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formImportGuru').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>

@@ -174,7 +174,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahSiswa').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahSiswa').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahSiswa').submit()">Simpan</button>
         </x-slot:footer>
     </x-modal>
@@ -201,7 +201,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalImportSiswa').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalImportSiswa').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formImportSiswa').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>
@@ -254,7 +254,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalEditSiswa').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalEditSiswa').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formEditSiswa').submit()">Simpan Perubahan</button>
         </x-slot:footer>
     </x-modal>

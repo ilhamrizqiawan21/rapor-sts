@@ -17,7 +17,7 @@
     <x-card title="Data Mengajar Guru" subtitle="Master Data">
         <x-slot:actions>
             <div class="grp">
-                <button type="button" class="btn b-dan" onclick="document.getElementById('modalSalinMengajar').showModal()">Salin Mengajar</button>
+                <button type="button" class="btn b-sec" onclick="document.getElementById('modalSalinMengajar').showModal()">Salin Mengajar</button>
                 <a href="{{ route('operator.teachers.index') }}" class="btn b-war">Daftar Guru</a>
             </div>
         </x-slot:actions>
@@ -144,7 +144,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalSalinMengajar').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalSalinMengajar').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formSalinMengajar').submit()">Salin Sekarang</button>
         </x-slot:footer>
     </x-modal>

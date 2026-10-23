@@ -35,7 +35,7 @@
                 <div class="cs">{{ $teachingAssignment->subject->name }} · {{ $teachingAssignment->classroom->name }}</div>
             </div>
             <div class="acts grp">
-                <a class="btn b-dan" href="{{ route('guru.penilaian.index', $teachingAssignment) }}">← Kembali</a>
+                <a class="btn b-sec" href="{{ route('guru.penilaian.index', $teachingAssignment) }}">← Kembali</a>
                 <a class="btn b-war" href="{{ route('guru.sts.template', $teachingAssignment) }}">Template Excel</a>
                 <button type="button" class="btn b-inf" onclick="document.getElementById('modalExportRdmSts').showModal()">Export RDM</button>
                 @if(! $isLocked)
@@ -130,7 +130,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalUploadSts').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalUploadSts').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formUploadSts').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>
@@ -169,7 +169,7 @@
         </div>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalExportRdmSts').close()">Tutup</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalExportRdmSts').close()">Tutup</button>
         </x-slot:footer>
     </x-modal>
 

@@ -130,7 +130,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahKelas').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahKelas').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahKelas').submit()">Simpan</button>
         </x-slot:footer>
     </x-modal>
@@ -167,7 +167,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalTambahSekaligus').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahSekaligus').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahBatch').submit()">Buat Semua Kelas</button>
         </x-slot:footer>
     </x-modal>

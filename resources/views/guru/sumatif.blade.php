@@ -34,7 +34,7 @@
                 <div class="cs">{{ $teachingAssignment->subject->name }} · {{ $teachingAssignment->classroom->name }} · sampai tengah semester</div>
             </div>
             <div class="acts grp">
-                <a class="btn b-dan" href="{{ route('guru.penilaian.index', $teachingAssignment) }}">← Kembali</a>
+                <a class="btn b-sec" href="{{ route('guru.penilaian.index', $teachingAssignment) }}">← Kembali</a>
                 @if(! $isLocked)
                     <button type="button" class="btn b-pri" onclick="openAddModal()">+ Tambah LM</button>
                     <button type="button" class="btn b-suc" onclick="document.getElementById('modalUploadSumatif').showModal()">Upload</button>
@@ -205,7 +205,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalLmForm').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalLmForm').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formLm').submit()">Simpan LM & Nilai</button>
         </x-slot:footer>
     </x-modal>
@@ -224,7 +224,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalUploadSumatif').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalUploadSumatif').close()">Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formUploadSumatif').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>
@@ -263,7 +263,7 @@
         </div>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalExportRdmSumatif').close()">Tutup</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalExportRdmSumatif').close()">Tutup</button>
         </x-slot:footer>
     </x-modal>
 

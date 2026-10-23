@@ -68,7 +68,7 @@
                                         @endif
                                     </td>
                                     <td style="text-align: center">
-                                        <a href="{{ route('rapor.student.pdf', [$selectedClassroom, $student]) }}" class="btn b-dan" style="min-height: 28px; padding: 0 10px; font-size: 12px" target="_blank">
+                                        <a href="{{ route('rapor.student.pdf', [$selectedClassroom, $student]) }}" class="btn b-inf" style="min-height: 28px; padding: 0 10px; font-size: 12px" target="_blank" rel="noopener">
                                             Rapor STS
                                         </a>
                                     </td>

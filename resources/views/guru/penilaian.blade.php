@@ -160,7 +160,7 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-dan" onclick="document.getElementById('modalOverride').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalOverride').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formOverride').submit()">Simpan Capaian</button>
         </x-slot:footer>
     </x-modal>
