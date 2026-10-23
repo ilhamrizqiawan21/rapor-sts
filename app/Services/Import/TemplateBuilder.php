@@ -25,7 +25,7 @@ class TemplateBuilder
         $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
 
         // Baris 2: Keterangan
-        $sheet->setCellValue('A2', 'Petunjuk: NIK/NUPTK wajib diisi (dipakai sebagai username). L/P diisi L atau P. Password kosong = default "password". Data mulai baris 4.');
+        $sheet->setCellValue('A2', 'Petunjuk: NIK/NUPTK wajib diisi (dipakai sebagai username). L/P diisi L atau P. Password kosong pada guru baru = sandi acak 16 karakter yang dapat dilihat operator. Data mulai baris 4.');
         $sheet->mergeCells('A2:E2');
         $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(11);
 
@@ -152,7 +152,7 @@ class TemplateBuilder
 
             // Sel B1: Ringkasan LM
             $sheet->setCellValue('A1', 'Ringkasan LM:');
-            $sheet->setCellValue('B1', $def['summary']);
+            $sheet->setCellValueExplicit('B1', $def['summary'], DataType::TYPE_STRING);
             $sheet->getStyle('A1')->getFont()->setBold(true);
 
             // Sel B2: KKTP LM
@@ -179,7 +179,7 @@ class TemplateBuilder
 
                 $sheet->setCellValue('A'.$row, $student->id);
                 $sheet->setCellValueExplicit('B'.$row, $student->nisn, DataType::TYPE_STRING);
-                $sheet->setCellValue('C'.$row, $student->name);
+                $sheet->setCellValueExplicit('C'.$row, $student->name, DataType::TYPE_STRING);
                 $sheet->setCellValue('D'.$row, $student->gender);
                 if ($score !== null) {
                     $sheet->setCellValue('E'.$row, (float) $score);
@@ -244,7 +244,7 @@ class TemplateBuilder
 
             $sheet->setCellValue('A'.$row, $student->id);
             $sheet->setCellValueExplicit('B'.$row, $student->nisn, DataType::TYPE_STRING);
-            $sheet->setCellValue('C'.$row, $student->name);
+            $sheet->setCellValueExplicit('C'.$row, $student->name, DataType::TYPE_STRING);
             $sheet->setCellValue('D'.$row, $student->gender);
             if ($score !== null) {
                 $sheet->setCellValue('E'.$row, (float) $score);
@@ -309,11 +309,11 @@ class TemplateBuilder
 
             $sheet->setCellValue('A'.$row, $student->id);
             $sheet->setCellValueExplicit('B'.$row, $student->nisn, DataType::TYPE_STRING);
-            $sheet->setCellValue('C'.$row, $student->name);
+            $sheet->setCellValueExplicit('C'.$row, $student->name, DataType::TYPE_STRING);
             $sheet->setCellValue('D'.$row, $record ? $record->sick : 0);
             $sheet->setCellValue('E'.$row, $record ? $record->permit : 0);
             $sheet->setCellValue('F'.$row, $record ? $record->absent : 0);
-            $sheet->setCellValue('G'.$row, $record?->note ?? '');
+            $sheet->setCellValueExplicit('G'.$row, $record?->note ?? '', DataType::TYPE_STRING);
             $row++;
         }
 

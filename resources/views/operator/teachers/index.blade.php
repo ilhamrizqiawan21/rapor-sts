@@ -106,7 +106,7 @@
             </div>
             <div class="f">
                 <label for="password">Password Awal</label>
-                <input id="password" name="password" type="password" class="in" value="password" required>
+                <input id="password" name="password" type="password" class="in" minlength="6" autocomplete="new-password" required>
             </div>
             <div class="f">
                 <label for="nip">NIP (opsional)</label>

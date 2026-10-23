@@ -18,7 +18,7 @@ class PrintSettingController extends Controller
         /** @var Period $period */
         $period = app('activePeriod');
 
-        $setting = PrintSetting::firstOrCreate(
+        $setting = PrintSetting::firstOrNew(
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',

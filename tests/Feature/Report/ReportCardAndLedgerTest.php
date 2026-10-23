@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Services\Report\ReportCardBuilder;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Tests\TestCase;
 
@@ -85,6 +86,8 @@ class ReportCardAndLedgerTest extends TestCase
 
         $builder = new ReportCardBuilder;
         $data = $builder->buildClassReportData($classroom, $period, $student);
+
+        $this->assertDatabaseMissing('print_settings', ['period_id' => $period->id]);
 
         $this->assertTrue($data['isDraft']);
         $this->assertEquals('DRAFT', $data['watermarkText']);
@@ -160,7 +163,7 @@ class ReportCardAndLedgerTest extends TestCase
             'name' => 'VII.A',
         ]);
 
-        $student = Student::factory()->create(['name' => 'Siswa Satu', 'nisn' => '1111111111']);
+        $student = Student::factory()->create(['name' => '=1+1', 'nisn' => '1111111111']);
         Enrollment::create(['academic_year_id' => $year->id, 'classroom_id' => $classroom->id, 'student_id' => $student->id]);
 
         // PDF
@@ -189,6 +192,8 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertEquals('Nisn', $sheetP->getCell('C6')->getValue());
         $this->assertEquals('Nama', $sheetP->getCell('D6')->getValue());
         $this->assertEquals('JK', $sheetP->getCell('E6')->getValue());
+        $this->assertSame('=1+1', $sheetP->getCell('D8')->getValue());
+        $this->assertSame(DataType::TYPE_STRING, $sheetP->getCell('D8')->getDataType());
 
         $sheetK = $loadedExcel->getSheetByName('Keterampilan');
         $this->assertEquals('LEGGER NILAI KETERAMPILAN', $sheetK->getCell('A1')->getValue());

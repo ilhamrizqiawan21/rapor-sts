@@ -151,4 +151,46 @@ class TeachingAssignmentTest extends TestCase
             'kktp' => 78.50,
         ]);
     }
+
+    public function test_copy_from_previous_year_uses_matching_class_in_active_year(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $oldYear = AcademicYear::factory()->create();
+        $newYear = AcademicYear::factory()->create();
+        $source = Period::factory()->create(['academic_year_id' => $oldYear->id, 'is_active' => false]);
+        $target = Period::factory()->create(['academic_year_id' => $newYear->id, 'is_active' => true]);
+        $oldClass = Classroom::factory()->create(['academic_year_id' => $oldYear->id, 'name' => 'VII.A', 'level' => 7]);
+        $newClass = Classroom::factory()->create(['academic_year_id' => $newYear->id, 'name' => 'VII.A', 'level' => 7]);
+        $teacher = User::factory()->guru()->create();
+        $subject = Subject::where('code', 'FIK')->firstOrFail();
+        TeachingAssignment::create([
+            'period_id' => $source->id,
+            'classroom_id' => $oldClass->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+        ]);
+
+        $this->actingAs($operator)->post(route('operator.mengajar.copy'), [
+            'source_period_id' => $source->id,
+            'target_period_id' => $target->id,
+        ])->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('teaching_assignments', ['period_id' => $target->id, 'classroom_id' => $newClass->id]);
+        $this->assertDatabaseMissing('teaching_assignments', ['period_id' => $target->id, 'classroom_id' => $oldClass->id]);
+    }
+
+    public function test_copy_rejects_non_active_target_period(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $year = AcademicYear::factory()->create();
+        $activeYear = AcademicYear::factory()->create();
+        $source = Period::factory()->create(['academic_year_id' => $year->id, 'semester' => 1, 'is_active' => false]);
+        $target = Period::factory()->create(['academic_year_id' => $year->id, 'semester' => 2, 'is_active' => false]);
+        Period::factory()->create(['academic_year_id' => $activeYear->id, 'is_active' => true]);
+
+        $this->actingAs($operator)->post(route('operator.mengajar.copy'), [
+            'source_period_id' => $source->id,
+            'target_period_id' => $target->id,
+        ])->assertSessionHasErrors('target_period_id');
+    }
 }

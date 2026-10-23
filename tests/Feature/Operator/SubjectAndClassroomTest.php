@@ -87,4 +87,21 @@ class SubjectAndClassroomTest extends TestCase
         $response->assertRedirect();
         $this->assertDatabaseHas('classrooms', ['id' => $classroom->id]);
     }
+
+    public function test_only_active_teacher_can_be_assigned_as_homeroom_teacher(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $year = AcademicYear::factory()->create();
+        $headmaster = User::factory()->kepala()->create();
+
+        $this->actingAs($operator)->post(route('operator.classrooms.store'), [
+            'academic_year_id' => $year->id,
+            'level' => 7,
+            'name' => 'VII.A',
+            'curriculum' => 'merdeka',
+            'homeroom_teacher_id' => $headmaster->id,
+        ])->assertSessionHasErrors('homeroom_teacher_id');
+
+        $this->assertDatabaseMissing('classrooms', ['academic_year_id' => $year->id, 'name' => 'VII.A']);
+    }
 }

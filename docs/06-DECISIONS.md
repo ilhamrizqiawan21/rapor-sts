@@ -52,8 +52,8 @@ DejaVu Sans & Times. Bila paket `barryvdh/laravel-dompdf` belum mendukung Larave
 Cetak PDF satu kelas dilakukan sinkron. Alasan: shared hosting sering tanpa worker.
 Konsekuensi: batasi "Semua Rapor" per kelas (bukan per tingkat/sekolah); naikkan `max_execution_time`.
 
-**ADR-010 · Accepted · Backup unduh saja, restore manual**
-Alasan: restore dari UI berisiko menimpa data seluruh madrasah. Restore dilakukan teknisi.
+**ADR-010 · Revised · Backup dan restore oleh operator**
+Restore tersedia bagi operator dari backup server atau unggahan `.sql.gz`, dengan konfirmasi eksplisit dan backup pengaman otomatis sebelum import. Restore tetap berisiko menimpa seluruh data; lakukan saat pengguna lain tidak mengubah data.
 
 **ADR-011 · Accepted · Penghapusan**
 Siswa, guru, user: tidak dihapus, hanya nonaktif. LM (lingkup materi): hapus permanen beserta nilainya

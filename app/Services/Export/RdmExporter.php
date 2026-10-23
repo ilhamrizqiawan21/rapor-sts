@@ -176,15 +176,15 @@ class RdmExporter
         string $classSubject
     ): void {
         if (! empty($cfg['cell_name'])) {
-            $sheet->setCellValue($cfg['cell_name'], $name);
+            $sheet->setCellValueExplicit($cfg['cell_name'], $name, DataType::TYPE_STRING);
         }
 
         if (! empty($cfg['cell_topic'])) {
-            $sheet->setCellValue($cfg['cell_topic'], $topic);
+            $sheet->setCellValueExplicit($cfg['cell_topic'], $topic, DataType::TYPE_STRING);
         }
 
         if (! empty($cfg['cell_class_subject'])) {
-            $sheet->setCellValue($cfg['cell_class_subject'], $classSubject);
+            $sheet->setCellValueExplicit($cfg['cell_class_subject'], $classSubject, DataType::TYPE_STRING);
         }
     }
 
@@ -272,7 +272,7 @@ class RdmExporter
                 $sheet->setCellValue("{$colNo}{$currentRow}", $idx + 1);
                 $sheet->setCellValueExplicit("{$colNis}{$currentRow}", (string) $student->nis, DataType::TYPE_STRING);
                 $sheet->setCellValueExplicit("{$colNisn}{$currentRow}", (string) $student->nisn, DataType::TYPE_STRING);
-                $sheet->setCellValue("{$colNama}{$currentRow}", $student->name);
+                $sheet->setCellValueExplicit("{$colNama}{$currentRow}", $student->name, DataType::TYPE_STRING);
 
                 $scoreVal = $scoreProvider($student);
                 if ($scoreVal !== null) {

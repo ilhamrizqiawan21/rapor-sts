@@ -8,6 +8,7 @@ use App\Services\ActivityLogger;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class TeacherImporter
@@ -69,6 +70,18 @@ class TeacherImporter
                 continue;
             }
 
+            if (mb_strlen($nik) > 50 || mb_strlen($name) > 255) {
+                $errors[] = "Baris {$row}: NIK/NUPTK atau nama terlalu panjang.";
+
+                continue;
+            }
+
+            if ($password !== '' && mb_strlen($password) < 6) {
+                $errors[] = "Baris {$row}: Password awal minimal 6 karakter.";
+
+                continue;
+            }
+
             if (! in_array($gender, ['L', 'P'], true)) {
                 $gender = 'L'; // fallback default
             }
@@ -80,7 +93,7 @@ class TeacherImporter
                 continue;
             }
 
-            $plainPassword = $password !== '' ? $password : 'password';
+            $plainPassword = $password !== '' ? $password : Str::random(16);
 
             $item = [
                 'username' => $nik,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Operator;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -30,7 +31,7 @@ class ClassroomRequest extends FormRequest
             'alias' => ['nullable', 'string', 'max:50'],
             'curriculum' => ['required', 'in:merdeka,k13'],
             'phase' => ['nullable', 'string', 'max:5'],
-            'homeroom_teacher_id' => ['nullable', 'exists:users,id'],
+            'homeroom_teacher_id' => ['nullable', Rule::exists('users', 'id')->where('role', Role::Guru->value)->where('is_active', true)],
         ];
     }
 }

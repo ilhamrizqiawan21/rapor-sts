@@ -10,6 +10,7 @@ use App\Services\Grading\ClassGradeSheet;
 use App\Services\Grading\CompetencyDescriber;
 use App\Services\Grading\GradeCalculator;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
@@ -97,7 +98,7 @@ class HeadmasterRecapExporter
             $colIdx = 7;
             foreach ($subjects as $subj) {
                 $colLetter = Coordinate::stringFromColumnIndex($colIdx++);
-                $sheet->setCellValue($colLetter.$headerRow, $subj->code);
+                $sheet->setCellValueExplicit($colLetter.$headerRow, $subj->code, DataType::TYPE_STRING);
             }
 
             $sheet->getStyle('A'.$headerRow.':'.$lastColLetter.$headerRow)->getFont()->setBold(true);
@@ -117,8 +118,8 @@ class HeadmasterRecapExporter
                 $isLocked = $cls->locks->isNotEmpty();
 
                 $sheet->setCellValue('A'.$currentRow, $no++);
-                $sheet->setCellValue('B'.$currentRow, $cls->name);
-                $sheet->setCellValue('C'.$currentRow, $cls->homeroomTeacher?->name ?? '–');
+                $sheet->setCellValueExplicit('B'.$currentRow, $cls->name, DataType::TYPE_STRING);
+                $sheet->setCellValueExplicit('C'.$currentRow, $cls->homeroomTeacher?->name ?? '–', DataType::TYPE_STRING);
                 $sheet->setCellValue('D'.$currentRow, "{$submittedInClass}/{$totalInClass}");
                 $sheet->setCellValue('E'.$currentRow, $isLocked ? 'Dikunci' : 'Belum');
 

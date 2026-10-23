@@ -8,6 +8,7 @@ use App\Models\AcademicYear;
 use App\Models\Period;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AcademicYearController extends Controller
@@ -25,19 +26,19 @@ class AcademicYearController extends Controller
 
     public function store(AcademicYearRequest $request): RedirectResponse
     {
-        $year = AcademicYear::create($request->validated());
+        $year = DB::transaction(function () use ($request) {
+            $year = AcademicYear::create($request->validated());
 
-        // Otomatis buat periode Semester 1 (Ganjil) dan Semester 2 (Genap)
-        Period::create([
-            'academic_year_id' => $year->id,
-            'semester' => 1,
-            'is_active' => false,
-        ]);
-        Period::create([
-            'academic_year_id' => $year->id,
-            'semester' => 2,
-            'is_active' => false,
-        ]);
+            foreach ([1, 2] as $semester) {
+                Period::create([
+                    'academic_year_id' => $year->id,
+                    'semester' => $semester,
+                    'is_active' => false,
+                ]);
+            }
+
+            return $year;
+        });
 
         ActivityLogger::log('create_academic_year', "Menambahkan tahun pelajaran {$year->name}", $year);
 

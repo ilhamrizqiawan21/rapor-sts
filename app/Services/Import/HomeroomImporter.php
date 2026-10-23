@@ -84,7 +84,7 @@ class HomeroomImporter
             // Validasi Sakit, Izin, Alpa
             $sick = 0;
             if ($sickRaw !== null && $sickRaw !== '') {
-                if (! is_numeric($sickRaw) || (int) $sickRaw < 0) {
+                if (filter_var((string) $sickRaw, FILTER_VALIDATE_INT) === false || (int) $sickRaw < 0) {
                     $errorList[] = "Baris {$row}: Jumlah sakit ({$sickRaw}) tidak valid (harus bilangan bulat ≥ 0).";
 
                     continue;
@@ -94,7 +94,7 @@ class HomeroomImporter
 
             $permit = 0;
             if ($permitRaw !== null && $permitRaw !== '') {
-                if (! is_numeric($permitRaw) || (int) $permitRaw < 0) {
+                if (filter_var((string) $permitRaw, FILTER_VALIDATE_INT) === false || (int) $permitRaw < 0) {
                     $errorList[] = "Baris {$row}: Jumlah izin ({$permitRaw}) tidak valid (harus bilangan bulat ≥ 0).";
 
                     continue;
@@ -104,7 +104,7 @@ class HomeroomImporter
 
             $absent = 0;
             if ($absentRaw !== null && $absentRaw !== '') {
-                if (! is_numeric($absentRaw) || (int) $absentRaw < 0) {
+                if (filter_var((string) $absentRaw, FILTER_VALIDATE_INT) === false || (int) $absentRaw < 0) {
                     $errorList[] = "Baris {$row}: Jumlah alpa ({$absentRaw}) tidak valid (harus bilangan bulat ≥ 0).";
 
                     continue;

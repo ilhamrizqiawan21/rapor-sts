@@ -16,6 +16,7 @@ use App\Services\ActivityLogger;
 use App\Services\PeriodService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TeachingAssignmentController extends Controller
@@ -125,9 +126,10 @@ class TeachingAssignmentController extends Controller
 
     public function copy(Request $request, PeriodService $periodService): RedirectResponse
     {
+        $activePeriod = app()->bound('activePeriod') ? app('activePeriod') : null;
         $request->validate([
-            'source_period_id' => ['required', 'exists:periods,id'],
-            'target_period_id' => ['required', 'exists:periods,id'],
+            'source_period_id' => ['required', 'exists:periods,id', 'different:target_period_id'],
+            'target_period_id' => ['required', Rule::in([$activePeriod?->id])],
         ]);
 
         $copiedCount = $periodService->copyTeachingAssignments(

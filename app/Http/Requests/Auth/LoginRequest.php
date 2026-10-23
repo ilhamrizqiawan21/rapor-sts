@@ -81,12 +81,8 @@ class LoginRequest extends FormRequest
             ->first();
 
         if (! $period) {
-            // Jika belum ada baris periode untuk tahun & semester ini, fallback atau buat bila perlu
-            $period = Period::firstOrCreate([
-                'academic_year_id' => $this->input('academic_year_id'),
-                'semester' => (int) $this->input('semester'),
-            ], [
-                'is_active' => false,
+            throw ValidationException::withMessages([
+                'semester' => 'Periode semester ini belum tersedia. Hubungi operator.',
             ]);
         }
 

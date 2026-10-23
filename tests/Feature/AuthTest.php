@@ -88,6 +88,22 @@ class AuthTest extends TestCase
         $response->assertSessionHasErrors('username');
     }
 
+    public function test_login_cannot_create_a_missing_period(): void
+    {
+        $year = AcademicYear::factory()->create();
+        User::factory()->operator()->create(['username' => 'operator', 'password' => 'secret123']);
+
+        $this->post('/login', [
+            'username' => 'operator',
+            'password' => 'secret123',
+            'academic_year_id' => $year->id,
+            'semester' => 1,
+        ])->assertSessionHasErrors('semester');
+
+        $this->assertGuest();
+        $this->assertDatabaseMissing('periods', ['academic_year_id' => $year->id, 'semester' => 1]);
+    }
+
     public function test_inactive_users_cannot_authenticate(): void
     {
         $year = AcademicYear::factory()->create();
@@ -107,6 +123,16 @@ class AuthTest extends TestCase
 
         $this->assertGuest();
         $response->assertSessionHasErrors('username');
+    }
+
+    public function test_deactivated_user_loses_access_with_existing_session(): void
+    {
+        $teacher = User::factory()->guru()->create(['is_active' => true]);
+        $this->actingAs($teacher);
+        $teacher->update(['is_active' => false]);
+
+        $this->get(route('guru.dashboard'))->assertRedirect(route('login'));
+        $this->assertGuest();
     }
 
     public function test_login_redirects_based_on_role(): void

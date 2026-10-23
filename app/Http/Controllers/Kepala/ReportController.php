@@ -91,7 +91,7 @@ class ReportController extends Controller
 
         $dashboardData = $analytics->getDashboardData($period);
         $profile = MadrasahProfile::first() ?? new MadrasahProfile;
-        $printSetting = PrintSetting::firstOrCreate(
+        $printSetting = PrintSetting::firstOrNew(
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',

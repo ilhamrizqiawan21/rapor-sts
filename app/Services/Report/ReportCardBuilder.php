@@ -49,7 +49,7 @@ class ReportCardBuilder
             'province' => '-',
         ]);
 
-        $printSetting = PrintSetting::firstOrCreate(
+        $printSetting = PrintSetting::firstOrNew(
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
@@ -257,7 +257,7 @@ class ReportCardBuilder
     public function buildLedgerData(Classroom $classroom, Period $period): array
     {
         $profile = MadrasahProfile::first() ?? new MadrasahProfile;
-        $printSetting = PrintSetting::firstOrCreate(
+        $printSetting = PrintSetting::firstOrNew(
             ['period_id' => $period->id],
             [
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',

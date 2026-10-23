@@ -2,6 +2,8 @@
 
 return [
 
+    'initial_operator_password' => env('INITIAL_OPERATOR_PASSWORD'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

@@ -85,7 +85,7 @@ class LedgerExcelExporter
 
         // Row 2: Metadata Kelas & Semester
         $sheet->setCellValue('A2', 'Kelas:');
-        $sheet->setCellValue('B2', $classroom->name);
+        $sheet->setCellValueExplicit('B2', $classroom->name, DataType::TYPE_STRING);
         $sheet->setCellValue('D2', 'Semester:');
         $sheet->setCellValue('E2', $period->semester->label());
         $sheet->getStyle('A2')->getFont()->setBold(true);
@@ -93,7 +93,7 @@ class LedgerExcelExporter
 
         // Row 3: Metadata Madrasah & Tahun Ajaran
         $sheet->setCellValue('A3', 'Madrasah:');
-        $sheet->setCellValue('B3', $profile->name ?? 'Madrasah');
+        $sheet->setCellValueExplicit('B3', $profile->name ?? 'Madrasah', DataType::TYPE_STRING);
         $sheet->setCellValue('D3', 'Tahun Ajaran:');
         $sheet->setCellValue('E3', $period->academicYear->name);
         $sheet->getStyle('A3')->getFont()->setBold(true);
@@ -129,18 +129,18 @@ class LedgerExcelExporter
                     if ($startLetter !== $endLetter) {
                         $sheet->mergeCells("{$startLetter}6:{$endLetter}6");
                     }
-                    $sheet->setCellValue("{$startLetter}6", $cg['code']);
+                    $sheet->setCellValueExplicit("{$startLetter}6", $cg['code'], DataType::TYPE_STRING);
 
                     foreach ($subCols as $sc) {
                         $cLetter = Coordinate::stringFromColumnIndex($colIdx);
-                        $sheet->setCellValue("{$cLetter}7", $sc['code']);
+                        $sheet->setCellValueExplicit("{$cLetter}7", $sc['code'], DataType::TYPE_STRING);
                         $colIdx++;
                     }
                 }
             } else {
                 $cLetter = Coordinate::stringFromColumnIndex($colIdx);
                 $sheet->mergeCells("{$cLetter}6:{$cLetter}7");
-                $sheet->setCellValue("{$cLetter}6", $cg['code']);
+                $sheet->setCellValueExplicit("{$cLetter}6", $cg['code'], DataType::TYPE_STRING);
                 $colIdx++;
             }
         }
@@ -179,7 +179,7 @@ class LedgerExcelExporter
             $sheet->setCellValue("A{$currentRow}", $no++);
             $sheet->setCellValueExplicit("B{$currentRow}", (string) $student->nis, DataType::TYPE_STRING);
             $sheet->setCellValueExplicit("C{$currentRow}", (string) $student->nisn, DataType::TYPE_STRING);
-            $sheet->setCellValue("D{$currentRow}", $student->name);
+            $sheet->setCellValueExplicit("D{$currentRow}", $student->name, DataType::TYPE_STRING);
             $sheet->setCellValue("E{$currentRow}", $student->gender ?? '–');
 
             $subjectColIdx = 6;

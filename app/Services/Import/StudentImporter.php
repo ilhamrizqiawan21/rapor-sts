@@ -79,6 +79,18 @@ class StudentImporter
                 continue;
             }
 
+            if ($birthPlace === '') {
+                $errors[] = "Baris {$row}: Tempat lahir wajib diisi.";
+
+                continue;
+            }
+
+            if ($birthDateRaw === null || $birthDateRaw === '') {
+                $errors[] = "Baris {$row}: Tanggal lahir wajib diisi.";
+
+                continue;
+            }
+
             // Parsing tanggal lahir
             $birthDate = null;
             if (is_numeric($birthDateRaw)) {
@@ -93,16 +105,12 @@ class StudentImporter
                 }
             }
 
-            if (! $birthDate) {
-                $birthDate = '2012-01-01'; // Fallback aman bila kosong
-            }
-
             $rowsToImport[] = [
                 'nis' => $nis !== '' ? $nis : null,
                 'nisn' => $nisn,
                 'name' => strtoupper($name),
                 'gender' => $gender,
-                'birth_place' => $birthPlace !== '' ? $birthPlace : '-',
+                'birth_place' => $birthPlace,
                 'birth_date' => $birthDate,
                 'address' => $address !== '' ? $address : null,
                 'is_active' => true,

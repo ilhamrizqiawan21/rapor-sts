@@ -130,7 +130,14 @@ Setiap transisi dicatat di `activity_logs`.
 ## 7. Deploy
 
 - Satu instalasi per madrasah (ADR-002). `.env` per klien.
-- Shared hosting: `public/` sebagai document root, `php artisan storage:link`, cron tidak wajib.
+- Sebelum seed pertama di production, isi `INITIAL_OPERATOR_PASSWORD` (minimal 12 karakter)
+  untuk akun awal `admin`, lalu ganti melalui menu akun setelah login.
+- Shared hosting: `public/` sebagai document root, `php artisan storage:link`. Backup otomatis
+  memerlukan cron yang menjalankan `php artisan schedule:run` setiap menit.
 - `memory_limit` ≥ 256M dan `max_execution_time` ≥ 120 untuk cetak PDF satu kelas.
 - Backup: tombol operator menghasilkan dump via `mysqldump` bila tersedia; jika tidak tersedia
   (shared hosting), fallback ekspor per tabel dengan query (ADR-010).
+- Direktori `storage/app/backups` harus dapat ditulis oleh proses PHP web/cron dan berkasnya
+  dapat dibaca oleh keduanya. Restore MySQL/MariaDB memakai klien `mysql`/`mariadb`; SQLite
+  dipulihkan melalui PDO. Atur `upload_max_filesize` dan `post_max_size` PHP bila perlu
+  mengunggah arsip sampai 50 MB.

@@ -115,7 +115,7 @@
 
     <a href="{{ route('operator.backup.index') }}" class="{{ $activeKey === 'backup' ? 'on' : '' }}">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 4v6h8V4"/></svg>
-        <span>Backup Database</span>
+        <span>Backup & Restore</span>
     </a>
 
     <div class="sec">Akun</div>

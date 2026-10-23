@@ -54,7 +54,7 @@
 </head>
 <body>
 <div class="app">
-    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="window.toggleSidebar ? window.toggleSidebar() : null"></div>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
     <aside class="side" id="appSidebar">
         <div class="brand">
             @if($brandLogo)
@@ -85,7 +85,7 @@
 
     <main class="main">
         <header class="top">
-            <button class="ham" id="hamburgerBtn" type="button" aria-label="Buka/tutup menu" onclick="window.toggleSidebar ? window.toggleSidebar() : null">
+            <button class="ham" id="hamburgerBtn" type="button" aria-label="Tutup menu" aria-controls="appSidebar" aria-expanded="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
             </button>
 
@@ -131,22 +131,5 @@
         </footer>
     </main>
 </div>
-<script>
-window.toggleSidebar = function() {
-    var sidebar = document.getElementById('appSidebar');
-    var backdrop = document.getElementById('sidebarBackdrop');
-    if (!sidebar) return;
-    if (window.innerWidth <= 768) {
-        var isOpen = sidebar.classList.toggle('open');
-        if (backdrop) backdrop.classList.toggle('active', isOpen);
-    } else {
-        sidebar.classList.toggle('collapsed');
-    }
-};
-
-try {
-    localStorage.removeItem('sidebar_collapsed');
-} catch(e) {}
-</script>
 </body>
 </html>

@@ -161,6 +161,32 @@ class TeacherAndStudentTest extends TestCase
         @unlink($tempPath);
     }
 
+    public function test_student_import_rejects_missing_birth_date_instead_of_inventing_one(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $classroom = Classroom::factory()->create();
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('siswa');
+        $sheet->setCellValue('B4', '0999999999');
+        $sheet->setCellValue('C4', 'Siswa Uji');
+        $sheet->setCellValue('D4', 'L');
+        $sheet->setCellValue('E4', 'Bandung');
+        $path = tempnam(sys_get_temp_dir(), 'student_missing_date_').'.xlsx';
+        (new Xlsx($spreadsheet))->save($path);
+
+        try {
+            $this->actingAs($operator)->post(route('operator.students.import'), [
+                'classroom_id' => $classroom->id,
+                'file' => new UploadedFile($path, 'siswa.xlsx', null, null, true),
+            ])->assertSessionHasErrors('file');
+
+            $this->assertDatabaseMissing('students', ['nisn' => '0999999999']);
+        } finally {
+            @unlink($path);
+        }
+    }
+
     public function test_operator_can_delete_student_with_scores(): void
     {
         $operator = User::where('username', 'admin')->first();

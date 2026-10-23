@@ -26,7 +26,11 @@ class DatabaseBackup
      */
     public function run(): string
     {
-        $name = 'backup-'.now()->format('Ymd-His').'.sql.gz';
+        $timestamp = now();
+        do {
+            $name = 'backup-'.$timestamp->format('Ymd-His').'.sql.gz';
+            $timestamp->addSecond();
+        } while (is_file($this->directory().'/'.$name));
         $path = $this->directory().'/'.$name;
         $sql = tempnam(sys_get_temp_dir(), 'bk');
 
@@ -100,6 +104,135 @@ class DatabaseBackup
         }
     }
 
+    /** Restore a compressed SQL backup. A fresh backup is kept before changing data. */
+    public function restore(string $archive): string
+    {
+        $sql = tempnam(sys_get_temp_dir(), 'restore-');
+        if ($sql === false) {
+            throw new RuntimeException('Tidak dapat menyiapkan berkas sementara restore.');
+        }
+
+        try {
+            $input = @gzopen($archive, 'rb');
+            $output = fopen($sql, 'wb');
+            if (! $input || ! $output) {
+                if ($input) {
+                    gzclose($input);
+                }
+                if ($output) {
+                    fclose($output);
+                }
+                throw new RuntimeException('Berkas backup tidak dapat dibaca.');
+            }
+
+            $size = 0;
+            try {
+                while (! gzeof($input)) {
+                    $chunk = @gzread($input, 1048576);
+                    if ($chunk === false || ($chunk === '' && ! gzeof($input))) {
+                        throw new RuntimeException('Berkas backup rusak.');
+                    }
+                    $size += strlen($chunk);
+                    if ($size > (int) config('backup.restore_max_bytes', 536870912)) {
+                        throw new RuntimeException('Isi backup melebihi batas restore.');
+                    }
+                    if ($chunk !== '' && fwrite($output, $chunk) !== strlen($chunk)) {
+                        throw new RuntimeException('Gagal menyiapkan berkas restore.');
+                    }
+                }
+            } finally {
+                gzclose($input);
+                fclose($output);
+            }
+
+            $head = file_get_contents($sql, false, null, 0, 4096);
+            if ($size === 0 || ! preg_match('/\A(?:-- Backup Rapor STS|-- (?:MySQL|MariaDB) dump)/', $head)) {
+                throw new RuntimeException('Berkas bukan backup SQL yang didukung.');
+            }
+
+            $driver = DB::connection()->getDriverName();
+            if ($driver === 'sqlite' && ! str_starts_with($head, '-- Backup Rapor STS')) {
+                throw new RuntimeException('Format backup tidak sesuai dengan database SQLite.');
+            }
+            if (in_array($driver, ['mysql', 'mariadb'], true) && str_contains($head, '(sqlite)')) {
+                throw new RuntimeException('Format backup tidak sesuai dengan database MySQL.');
+            }
+
+            $safetyName = $this->run();
+            if ($driver === 'sqlite') {
+                $pdo = DB::connection()->getPdo();
+                $pdo->beginTransaction();
+                try {
+                    $pdo->exec('PRAGMA defer_foreign_keys = ON');
+                    $pdo->exec(file_get_contents($sql));
+                    $pdo->commit();
+                } catch (\Throwable $e) {
+                    $pdo->rollBack();
+                    throw $e;
+                }
+            } elseif (in_array($driver, ['mysql', 'mariadb'], true)) {
+                $this->restoreMysql($sql);
+            } else {
+                throw new RuntimeException('Driver database tidak mendukung restore.');
+            }
+
+            return $safetyName;
+        } finally {
+            @unlink($sql);
+        }
+    }
+
+    private function restoreMysql(string $sql): void
+    {
+        $binary = config('backup.mysql_path');
+        if (! $binary) {
+            foreach (['/usr/bin/mysql', '/usr/bin/mariadb', '/usr/local/bin/mysql'] as $candidate) {
+                if (is_executable($candidate)) {
+                    $binary = $candidate;
+                    break;
+                }
+            }
+        }
+        if (! $binary || ! is_executable($binary)) {
+            throw new RuntimeException('Program mysql/mariadb untuk restore tidak tersedia.');
+        }
+
+        $c = config('database.connections.'.config('database.default'));
+        $cnf = tempnam(sys_get_temp_dir(), 'cnf');
+        if ($cnf === false) {
+            throw new RuntimeException('Tidak dapat menyiapkan kredensial database.');
+        }
+        chmod($cnf, 0600);
+        $esc = fn ($v) => '"'.addcslashes((string) $v, '"\\').'"';
+        file_put_contents($cnf, "[client]\nuser={$esc($c['username'])}\npassword={$esc($c['password'])}\n");
+
+        try {
+            $args = [$binary, '--defaults-extra-file='.$cnf, '--default-character-set=utf8mb4'];
+            if (! empty($c['unix_socket'])) {
+                $args[] = '--socket='.$c['unix_socket'];
+            } else {
+                $args[] = '--host='.$c['host'];
+                $args[] = '--port='.$c['port'];
+            }
+            $args[] = $c['database'];
+
+            $input = fopen($sql, 'rb');
+            try {
+                $process = new Process($args);
+                $process->setInput($input);
+                $process->setTimeout(600);
+                $process->run();
+                if (! $process->isSuccessful()) {
+                    throw new RuntimeException('Import SQL gagal: '.trim($process->getErrorOutput()));
+                }
+            } finally {
+                fclose($input);
+            }
+        } finally {
+            @unlink($cnf);
+        }
+    }
+
     private function findMysqldump(): ?string
     {
         $configured = config('backup.mysqldump_path');
@@ -153,7 +286,7 @@ class DatabaseBackup
         $driver = $conn->getDriverName();
         $pdo = $conn->getPdo();
         $fh = fopen($target, 'wb');
-        fwrite($fh, '-- Backup Rapor STS '.now()->toDateTimeString()."\n");
+        fwrite($fh, '-- Backup Rapor STS ('.$driver.') '.now()->toDateTimeString()."\n");
         if ($driver !== 'sqlite') {
             fwrite($fh, "SET FOREIGN_KEY_CHECKS=0;\n");
         }

@@ -46,6 +46,8 @@ class TeacherImportSafetyTest extends TestCase
         $this->assertSame($hash, $operator->password);
         $this->assertSame($existingHash, $existing->fresh()->password);
         $this->assertDatabaseHas('users', ['username' => '6005']);
+        $this->assertNotSame('password', User::where('username', '6005')->firstOrFail()->password_plain);
+        $this->assertSame(16, strlen(User::where('username', '6005')->firstOrFail()->password_plain));
         @unlink($path);
     }
 

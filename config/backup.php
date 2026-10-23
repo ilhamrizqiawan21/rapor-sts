@@ -13,4 +13,6 @@ return [
 
     // Path mysqldump; kosongkan untuk mencari otomatis, fallback ke ekspor PHP bila tidak ada.
     'mysqldump_path' => env('BACKUP_MYSQLDUMP_PATH'),
+    'mysql_path' => env('BACKUP_MYSQL_PATH'),
+    'restore_max_bytes' => (int) env('BACKUP_RESTORE_MAX_BYTES', 536870912),
 ];

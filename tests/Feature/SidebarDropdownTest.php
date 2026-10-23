@@ -72,7 +72,7 @@ class SidebarDropdownTest extends TestCase
         $response->assertSee('Kehadiran &amp; Catatan', false);
     }
 
-    public function test_layout_renders_hamburger_button_and_backdrop_with_toggle_handler(): void
+    public function test_layout_renders_accessible_hamburger_button_and_backdrop(): void
     {
         $this->seed(DemoSeeder::class);
         $operator = User::where('username', 'admin')->first();
@@ -82,6 +82,7 @@ class SidebarDropdownTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('id="hamburgerBtn"', false);
         $response->assertSee('id="sidebarBackdrop"', false);
-        $response->assertSee('window.toggleSidebar', false);
+        $response->assertSee('aria-controls="appSidebar"', false);
+        $response->assertSee('aria-expanded="true"', false);
     }
 }

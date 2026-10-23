@@ -52,19 +52,24 @@ class DatabaseSeeder extends Seeder
         );
 
         // 3. User Operator default
-        User::firstOrCreate(
-            ['username' => 'admin'],
-            [
+        if (! User::where('username', 'admin')->exists()) {
+            $initialPassword = config('app.initial_operator_password');
+            if (app()->environment('production') && (! is_string($initialPassword) || strlen($initialPassword) < 12)) {
+                throw new \RuntimeException('Set INITIAL_OPERATOR_PASSWORD (minimal 12 karakter) sebelum menjalankan seed di production.');
+            }
+
+            User::create([
+                'username' => 'admin',
                 'name' => 'Operator',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make($initialPassword ?: 'admin123'),
                 'role' => Role::Operator,
                 'nik' => '3204000000000001',
                 'nuptk' => null,
                 'nip' => null,
                 'gender' => 'L',
                 'is_active' => true,
-            ]
-        );
+            ]);
+        }
 
         // 4. Mapel MTs bawaan
         $this->call(SubjectSeeder::class);

@@ -127,8 +127,9 @@ Setiap kebutuhan punya ID. Test dan commit sebaiknya menyebut ID terkait (mis. `
 
 - **FR-ADM-01** Activity log: login, kirim/batal kirim, kunci/buka kunci, upload, ubah bobot, hapus LM.
   Tampil di dashboard operator (10 terbaru) dengan pencarian.
-- **FR-ADM-02** Backup: operator mengunduh dump database (.sql.gz). Restore dilakukan manual oleh
-  teknisi (tidak ada tombol restore di v1 — lihat ADR-010).
+- **FR-ADM-02** Backup: operator membuat dan mengunduh dump database (.sql.gz), lalu dapat
+  melakukan restore dari berkas server atau unggahan melalui menu Backup & Restore dengan
+  konfirmasi dan backup pengaman (lihat ADR-010).
 - **FR-ADM-03** Kelola akun admin/operator dan akun kepala madrasah.
 
 ## B. Kebutuhan non-fungsional

@@ -188,6 +188,15 @@ class HomeroomRecordTest extends TestCase
 
         $tempFile = tempnam(sys_get_temp_dir(), 'test_homeroom_').'.xlsx';
         $writer = new Xlsx($spreadsheet);
+        $sheet->setCellValue('D4', 1.5);
+        $writer->save($tempFile);
+
+        $this->actingAs($teacher)->post(route('wali.kehadiran.import'), [
+            'file' => new UploadedFile($tempFile, 'import.xlsx', null, null, true),
+        ])->assertSessionHasErrors('file');
+        $this->assertDatabaseMissing('homeroom_records', ['student_id' => $student->id]);
+
+        $sheet->setCellValue('D4', 3);
         $writer->save($tempFile);
 
         $uploadedFile = new UploadedFile($tempFile, 'import.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', null, true);
