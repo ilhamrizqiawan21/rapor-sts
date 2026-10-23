@@ -104,4 +104,61 @@ class SubjectAndClassroomTest extends TestCase
 
         $this->assertDatabaseMissing('classrooms', ['academic_year_id' => $year->id, 'name' => 'VII.A']);
     }
+
+    public function test_operator_can_assign_change_and_clear_homeroom_teacher_for_existing_classroom(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $classroom = Classroom::factory()->create(['homeroom_teacher_id' => null]);
+        $firstTeacher = User::factory()->guru()->create();
+        $secondTeacher = User::factory()->guru()->create();
+
+        $this->actingAs($operator)->get(route('operator.classrooms.index', [
+            'academic_year_id' => $classroom->academic_year_id,
+        ]))->assertOk()
+            ->assertSee('name="homeroom_teacher_id"', false)
+            ->assertSee('onchange="this.form.requestSubmit()"', false)
+            ->assertSee($firstTeacher->name)
+            ->assertDontSee('Atur Wali Kelas');
+
+        foreach ([$firstTeacher->id, $secondTeacher->id, null] as $teacherId) {
+            $this->actingAs($operator)->patch(route('operator.classrooms.homeroom.update', $classroom), [
+                'homeroom_teacher_id' => $teacherId,
+            ])->assertRedirect(route('operator.classrooms.index', [
+                'academic_year_id' => $classroom->academic_year_id,
+            ]));
+
+            $this->assertDatabaseHas('classrooms', [
+                'id' => $classroom->id,
+                'homeroom_teacher_id' => $teacherId,
+            ]);
+        }
+    }
+
+    public function test_homeroom_assignment_rejects_non_teacher_and_inactive_teacher(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $classroom = Classroom::factory()->create(['homeroom_teacher_id' => null]);
+        $headmaster = User::factory()->kepala()->create();
+        $inactiveTeacher = User::factory()->guru()->inactive()->create();
+
+        foreach ([$headmaster->id, $inactiveTeacher->id] as $teacherId) {
+            $this->actingAs($operator)->patch(route('operator.classrooms.homeroom.update', $classroom), [
+                'homeroom_teacher_id' => $teacherId,
+            ])->assertSessionHasErrors('homeroom_teacher_id');
+        }
+
+        $this->assertDatabaseHas('classrooms', ['id' => $classroom->id, 'homeroom_teacher_id' => null]);
+    }
+
+    public function test_teacher_cannot_change_homeroom_assignment(): void
+    {
+        $classroom = Classroom::factory()->create(['homeroom_teacher_id' => null]);
+        $teacher = User::factory()->guru()->create();
+
+        $this->actingAs($teacher)->patch(route('operator.classrooms.homeroom.update', $classroom), [
+            'homeroom_teacher_id' => $teacher->id,
+        ])->assertForbidden();
+
+        $this->assertDatabaseHas('classrooms', ['id' => $classroom->id, 'homeroom_teacher_id' => null]);
+    }
 }

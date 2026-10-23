@@ -13,6 +13,7 @@ use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class ClassroomController extends Controller
@@ -93,6 +94,22 @@ class ClassroomController extends Controller
 
         return redirect()->route('operator.classrooms.index', ['academic_year_id' => $classroom->academic_year_id])
             ->with('success', "Kelas {$classroom->name} berhasil diperbarui.");
+    }
+
+    public function updateHomeroom(Request $request, Classroom $classroom): RedirectResponse
+    {
+        $validated = $request->validate([
+            'homeroom_teacher_id' => ['nullable', Rule::exists('users', 'id')->where('role', Role::Guru->value)->where('is_active', true)],
+        ]);
+
+        $teacherId = $validated['homeroom_teacher_id'] ?? null;
+        $classroom->update(['homeroom_teacher_id' => $teacherId]);
+
+        $teacherName = $teacherId ? User::find($teacherId)?->name : 'belum ditetapkan';
+        ActivityLogger::log('update_homeroom_teacher', "Mengatur wali kelas {$classroom->name}: {$teacherName}", $classroom);
+
+        return redirect()->route('operator.classrooms.index', ['academic_year_id' => $classroom->academic_year_id])
+            ->with('success', "Wali kelas {$classroom->name} berhasil diperbarui.");
     }
 
     public function destroy(Classroom $classroom): RedirectResponse

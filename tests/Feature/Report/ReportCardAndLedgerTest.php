@@ -110,7 +110,7 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertEquals(85, $childRow['score']);
     }
 
-    public function test_single_student_report_card_pdf_download(): void
+    public function test_single_student_report_card_pdf_opens_inline(): void
     {
         $teacher = User::factory()->guru()->create();
         $year = AcademicYear::factory()->create();
@@ -128,10 +128,11 @@ class ReportCardAndLedgerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringContainsString('inline', (string) $response->headers->get('Content-Disposition'));
         $this->assertStringContainsString('Rapor_STS_VII.A_Ahmad_Siswa_0012345678.pdf', (string) $response->headers->get('Content-Disposition'));
     }
 
-    public function test_all_students_report_card_pdf_download(): void
+    public function test_all_students_report_card_pdf_opens_inline(): void
     {
         $teacher = User::factory()->guru()->create();
         $year = AcademicYear::factory()->create();
@@ -149,6 +150,7 @@ class ReportCardAndLedgerTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/pdf');
+        $this->assertStringContainsString('inline', (string) $response->headers->get('Content-Disposition'));
         $this->assertStringContainsString('Rapor_STS_VII.A_semua.pdf', (string) $response->headers->get('Content-Disposition'));
     }
 

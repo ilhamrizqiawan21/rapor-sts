@@ -55,7 +55,7 @@ class ReportCardBuilder
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
                 'print_place' => $profile->regency ?? '-',
                 'print_date' => now()->toDateString(),
-                'score_label' => 'Nilai STS',
+                'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
                 'watermark_text' => null,
                 'sections' => [
@@ -263,7 +263,7 @@ class ReportCardBuilder
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
                 'print_place' => $profile->regency ?? '-',
                 'print_date' => now()->toDateString(),
-                'score_label' => 'Nilai STS',
+                'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
             ]
         );

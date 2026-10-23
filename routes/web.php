@@ -81,6 +81,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::post('/kelas', [ClassroomController::class, 'store'])->name('classrooms.store');
     Route::post('/kelas/batch', [ClassroomController::class, 'batchStore'])->name('classrooms.batch');
     Route::put('/kelas/{classroom}', [ClassroomController::class, 'update'])->name('classrooms.update');
+    Route::patch('/kelas/{classroom}/wali-kelas', [ClassroomController::class, 'updateHomeroom'])->name('classrooms.homeroom.update');
     Route::delete('/kelas/{classroom}', [ClassroomController::class, 'destroy'])->name('classrooms.destroy');
 
     // Guru

@@ -38,6 +38,7 @@ class PrintSettingTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Pengaturan Cetak Rapor STS');
         $response->assertSee('Capaian Kompetensi');
+        $response->assertSee('value="Nilai Akhir"', false);
     }
 
     public function test_operator_can_update_print_settings(): void

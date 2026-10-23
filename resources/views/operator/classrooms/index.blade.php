@@ -13,6 +13,9 @@
     @if(session('error'))
         <x-alert variant="warning">{{ session('error') }}</x-alert>
     @endif
+    @if($errors->any())
+        <x-alert variant="warning">{{ $errors->first() }}</x-alert>
+    @endif
 
     <x-card title="Data Kelas Madrasah">
         <x-slot:actions>
@@ -53,7 +56,21 @@
                             <td><b>{{ $c->name }}</b></td>
                             <td>{{ $c->curriculum->label() }}</td>
                             <td>{{ $c->phase ?? '-' }}</td>
-                            <td>{{ $c->homeroomTeacher ? $c->homeroomTeacher->name : '-' }}</td>
+                            <td>
+                                <form method="POST" action="{{ route('operator.classrooms.homeroom.update', $c) }}">
+                                    @csrf
+                                    @method('PATCH')
+                                    <select name="homeroom_teacher_id" class="sel" aria-label="Wali kelas {{ $c->name }}" onchange="this.form.requestSubmit()">
+                                        @if($c->homeroomTeacher && !$teachers->contains('id', $c->homeroom_teacher_id))
+                                            <option value="{{ $c->homeroom_teacher_id }}" selected disabled>{{ $c->homeroomTeacher->name }} (tidak aktif)</option>
+                                        @endif
+                                        <option value="" @selected(!$c->homeroom_teacher_id)>Belum ditetapkan</option>
+                                        @foreach($teachers as $t)
+                                            <option value="{{ $t->id }}" @selected($c->homeroom_teacher_id === $t->id)>{{ $t->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </td>
                             <td>{{ $c->enrollments_count }} Siswa</td>
                             <td>
                                 <form method="POST" action="{{ route('operator.classrooms.destroy', $c) }}" onsubmit="return confirm('Hapus kelas {{ $c->name }}?')">

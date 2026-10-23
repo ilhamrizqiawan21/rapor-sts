@@ -120,7 +120,7 @@ class ReportCardController extends Controller
         $cleanNisn = preg_replace('/\s+/', '_', trim($student->nisn));
         $filename = "Rapor_STS_{$cleanClass}_{$cleanStudent}_{$cleanNisn}.pdf";
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 
     public function downloadAllPdf(
@@ -141,6 +141,6 @@ class ReportCardController extends Controller
         $cleanClass = preg_replace('/\s+/', '_', trim($classroom->name));
         $filename = "Rapor_STS_{$cleanClass}_semua.pdf";
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 }

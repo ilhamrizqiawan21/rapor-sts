@@ -97,7 +97,7 @@ class ReportController extends Controller
                 'report_title' => 'LAPORAN HASIL SUMATIF TENGAH SEMESTER',
                 'print_place' => $profile->regency ?? '-',
                 'print_date' => now()->toDateString(),
-                'score_label' => 'Nilai STS',
+                'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
             ]
         );
