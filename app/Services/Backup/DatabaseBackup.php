@@ -31,7 +31,19 @@ class DatabaseBackup
             $timestamp->addSecond();
         } while (is_file($this->directory().'/'.$name));
         $path = $this->directory().'/'.$name;
-        $sql = tempnam(sys_get_temp_dir(), 'bk');
+
+        if (! extension_loaded('zlib')) {
+            throw new RuntimeException('Ekstensi PHP zlib belum aktif di server. Aktifkan zlib di pengaturan PHP hosting.');
+        }
+        if (! is_writable($this->directory())) {
+            throw new RuntimeException('Folder '.$this->directory().' tidak dapat ditulis. Atur izin (chmod 775) folder storage/app/backups untuk user web server.');
+        }
+
+        // Berkas sementara disimpan di folder backup (sys_get_temp_dir sering dibatasi open_basedir di hosting).
+        $sql = tempnam($this->directory(), 'bk');
+        if ($sql === false) {
+            throw new RuntimeException('Tidak dapat membuat berkas sementara backup.');
+        }
 
         try {
             $driver = DB::connection()->getDriverName();
@@ -114,7 +126,7 @@ class DatabaseBackup
     /** Restore a compressed SQL backup. A fresh backup is kept before changing data. */
     public function restore(string $archive): string
     {
-        $sql = tempnam(sys_get_temp_dir(), 'restore-');
+        $sql = tempnam($this->directory(), 'restore-');
         if ($sql === false) {
             throw new RuntimeException('Tidak dapat menyiapkan berkas sementara restore.');
         }
@@ -211,7 +223,7 @@ class DatabaseBackup
     private function restoreMysqlWithCli(string $binary, string $sql): void
     {
         $c = config('database.connections.'.config('database.default'));
-        $cnf = tempnam(sys_get_temp_dir(), 'cnf');
+        $cnf = tempnam($this->directory(), 'cnf');
         if ($cnf === false) {
             throw new RuntimeException('Tidak dapat menyiapkan kredensial database.');
         }
@@ -337,7 +349,7 @@ class DatabaseBackup
     {
         $c = config('database.connections.'.config('database.default'));
 
-        $cnf = tempnam(sys_get_temp_dir(), 'cnf');
+        $cnf = tempnam($this->directory(), 'cnf');
         chmod($cnf, 0600);
         $esc = fn ($v) => '"'.addcslashes((string) $v, '"\\').'"';
         file_put_contents($cnf, "[client]\nuser={$esc($c['username'])}\npassword={$esc($c['password'])}\n");
