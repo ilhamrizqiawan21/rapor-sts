@@ -16,7 +16,7 @@ class EnumsTest extends TestCase
         $this->assertSame('guru', Role::Guru->value);
         $this->assertSame('kepala', Role::Kepala->value);
 
-        $this->assertSame('Operator', Role::Operator->label());
+        $this->assertSame('Admin', Role::Operator->label());
         $this->assertSame('Guru', Role::Guru->label());
         $this->assertSame('Kepala Madrasah', Role::Kepala->label());
     }

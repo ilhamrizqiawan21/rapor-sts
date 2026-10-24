@@ -21,6 +21,14 @@
     <x-card title="Data Guru & Tenaga Pendidik">
         <x-slot:actions>
             <div class="grp">
+                <form method="POST" action="{{ route('operator.teachers.bulk-destroy') }}" id="formBulkDeleteGuru" style="display: inline" onsubmit="return confirmBulkDeleteGuru(event)">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="ids[]" disabled>
+                    <button type="submit" id="btnBulkDeleteGuru" class="btn b-dan" style="display: none; align-items: center; gap: 6px">
+                        Hapus Terpilih (<span id="selectedGuruCount">0</span>)
+                    </button>
+                </form>
                 <button type="button" class="btn b-pri" onclick="document.getElementById('modalTambahGuru').showModal()">+ Tambah Guru</button>
                 <button type="button" class="btn b-suc" onclick="document.getElementById('modalImportGuru').showModal()">Upload Excel</button>
                 <a href="{{ route('operator.teachers.template') }}" class="btn b-war">Unduh Template</a>
@@ -36,6 +44,12 @@
             <table class="t">
                 <thead>
                     <tr>
+                        <th style="width: 36px; text-align: center">
+                            <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0" title="Pilih semua guru">
+                                <input type="checkbox" id="selectAllGuru" title="Pilih semua guru" aria-label="Pilih semua guru">
+                                <span style="display: none">Pilih semua guru</span>
+                            </label>
+                        </th>
                         <th style="width: 40px">#</th>
                         <th>Nama Guru</th>
                         <th>Username (NIK/NUPTK)</th>
@@ -49,6 +63,9 @@
                 <tbody>
                     @forelse($teachers as $idx => $t)
                         <tr>
+                            <td style="text-align: center">
+                                <input type="checkbox" name="ids[]" value="{{ $t->id }}" class="teacher-checkbox" form="formBulkDeleteGuru" aria-label="Pilih guru {{ $t->name }}">
+                            </td>
                             <td>{{ $teachers->firstItem() + $idx }}</td>
                             <td><b>{{ $t->name }}</b></td>
                             <td>{{ $t->username }}</td>
@@ -78,7 +95,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="n cs">Belum ada data guru.</td>
+                            <td colspan="9" class="n cs">Belum ada data guru.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -141,9 +158,56 @@
         </form>
 
         <x-slot:footer>
-            <button type="button" class="btn b-sec" onclick="document.getElementById('modalImportGuru').close()">Batal</button>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalImportGuru').close()"><span style="display:none">Batal</span>Batal</button>
             <button type="button" class="btn b-suc" onclick="document.getElementById('formImportGuru').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAllGuru = document.getElementById('selectAllGuru');
+            const teacherCheckboxes = document.querySelectorAll('.teacher-checkbox');
+            const btnBulkDeleteGuru = document.getElementById('btnBulkDeleteGuru');
+            const selectedGuruCount = document.getElementById('selectedGuruCount');
+
+            function updateGuruBulkState() {
+                const checked = document.querySelectorAll('.teacher-checkbox:checked');
+                const count = checked.length;
+                if (selectedGuruCount) selectedGuruCount.textContent = count;
+                if (btnBulkDeleteGuru) {
+                    btnBulkDeleteGuru.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+                if (selectAllGuru) {
+                    selectAllGuru.checked = teacherCheckboxes.length > 0 && count === teacherCheckboxes.length;
+                    selectAllGuru.indeterminate = count > 0 && count < teacherCheckboxes.length;
+                }
+            }
+
+            if (selectAllGuru) {
+                selectAllGuru.addEventListener('change', function () {
+                    teacherCheckboxes.forEach(cb => { cb.checked = selectAllGuru.checked; });
+                    updateGuruBulkState();
+                });
+            }
+
+            teacherCheckboxes.forEach(cb => {
+                cb.addEventListener('change', updateGuruBulkState);
+            });
+
+            window.confirmBulkDeleteGuru = function (e) {
+                const checked = document.querySelectorAll('.teacher-checkbox:checked');
+                if (checked.length === 0) {
+                    alert('Pilih minimal satu guru untuk dihapus.');
+                    e.preventDefault();
+                    return false;
+                }
+                if (!confirm('Hapus ' + checked.length + ' guru yang dipilih? Tindakan ini tidak dapat dibatalkan.')) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            };
+        });
+    </script>
 </x-layout.app>
 

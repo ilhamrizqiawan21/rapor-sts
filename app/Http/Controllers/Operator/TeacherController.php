@@ -13,6 +13,7 @@ use App\Services\Import\TeacherImporter;
 use App\Services\Import\TemplateBuilder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -104,6 +105,42 @@ class TeacherController extends Controller
         ActivityLogger::log('delete_teacher', "Menghapus data guru {$teacher->name}");
 
         return redirect()->back()->with('success', "Data guru {$teacher->name} berhasil dihapus.");
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:users,id'],
+        ]);
+
+        $ids = $validated['ids'];
+
+        $hasNonGuru = User::whereIn('id', $ids)->where('role', '!=', Role::Guru)->exists();
+        if ($hasNonGuru) {
+            return redirect()->back()->withErrors([
+                'delete' => 'Hanya pengguna dengan peran Guru yang dapat dihapus melalui menu ini.',
+            ]);
+        }
+
+        $inUse = TeachingAssignment::whereIn('teacher_id', $ids)->exists()
+            || Classroom::whereIn('homeroom_teacher_id', $ids)->exists();
+
+        if ($inUse) {
+            return redirect()->back()->withErrors([
+                'delete' => 'Guru yang dipilih tidak dapat dihapus karena masih memiliki data mengajar atau menjadi wali kelas. Hapus data mengajar / ganti wali kelas terlebih dahulu, atau gunakan Nonaktifkan.',
+            ]);
+        }
+
+        $count = count($ids);
+
+        DB::transaction(function () use ($ids) {
+            User::whereIn('id', $ids)->where('role', Role::Guru)->delete();
+        });
+
+        ActivityLogger::log('bulk_delete_teachers', "Menghapus {$count} data guru");
+
+        return redirect()->route('operator.teachers.index')->with('success', "Berhasil menghapus {$count} data guru.");
     }
 
     public function template(TemplateBuilder $builder): StreamedResponse

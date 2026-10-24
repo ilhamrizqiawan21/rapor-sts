@@ -205,6 +205,96 @@ class TeacherAndStudentTest extends TestCase
         $this->assertDatabaseMissing('enrollments', ['student_id' => $student->id]);
     }
 
+    public function test_operator_can_bulk_delete_students_and_their_enrollments(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $year = AcademicYear::factory()->create();
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+        $students = Student::factory()->count(2)->create();
+        $untouchedStudent = Student::factory()->create();
+
+        foreach ($students as $student) {
+            Enrollment::create([
+                'academic_year_id' => $year->id,
+                'classroom_id' => $classroom->id,
+                'student_id' => $student->id,
+            ]);
+        }
+
+        $this->actingAs($operator)->delete(route('operator.students.bulk-destroy'), [
+            'ids' => $students->modelKeys(),
+        ])->assertRedirect(route('operator.students.index'));
+
+        foreach ($students as $student) {
+            $this->assertDatabaseMissing('students', ['id' => $student->id]);
+            $this->assertDatabaseMissing('enrollments', ['student_id' => $student->id]);
+        }
+
+        $this->assertDatabaseHas('students', ['id' => $untouchedStudent->id]);
+    }
+
+    public function test_bulk_student_delete_requires_at_least_one_selection(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $student = Student::factory()->create();
+
+        $this->actingAs($operator)->delete(route('operator.students.bulk-destroy'), [
+            'ids' => [],
+        ])->assertSessionHasErrors('ids');
+
+        $this->assertDatabaseHas('students', ['id' => $student->id]);
+    }
+
+    public function test_teacher_and_student_pages_render_bulk_selection_controls(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+
+        $this->actingAs($operator)->get(route('operator.teachers.index'))
+            ->assertOk()
+            ->assertSee('name="ids[]"', false)
+            ->assertSee('Pilih semua guru');
+
+        $this->actingAs($operator)->get(route('operator.students.index'))
+            ->assertOk()
+            ->assertSee('name="ids[]"', false)
+            ->assertSee('Pilih semua siswa');
+    }
+
+    public function test_operator_can_bulk_delete_unused_teachers(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $teachers = User::factory()->count(2)->create(['role' => Role::Guru]);
+
+        $this->actingAs($operator)->delete(route('operator.teachers.bulk-destroy'), [
+            'ids' => $teachers->modelKeys(),
+        ])->assertRedirect(route('operator.teachers.index'));
+
+        foreach ($teachers as $teacher) {
+            $this->assertDatabaseMissing('users', ['id' => $teacher->id]);
+        }
+    }
+
+    public function test_bulk_teacher_delete_preserves_all_selected_teachers_if_any_are_in_use(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $teachers = User::factory()->count(2)->create(['role' => Role::Guru]);
+        $classroom = Classroom::factory()->create();
+        TeachingAssignment::create([
+            'period_id' => Period::factory()->create(['academic_year_id' => $classroom->academic_year_id])->id,
+            'classroom_id' => $classroom->id,
+            'subject_id' => Subject::firstOrFail()->id,
+            'teacher_id' => $teachers->first()->id,
+        ]);
+
+        $this->actingAs($operator)->delete(route('operator.teachers.bulk-destroy'), [
+            'ids' => $teachers->modelKeys(),
+        ])->assertSessionHasErrors('delete');
+
+        foreach ($teachers as $teacher) {
+            $this->assertDatabaseHas('users', ['id' => $teacher->id]);
+        }
+    }
+
     public function test_operator_can_delete_unused_teacher_and_password_is_visible(): void
     {
         $operator = User::where('username', 'admin')->first();

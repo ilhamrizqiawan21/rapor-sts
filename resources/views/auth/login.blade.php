@@ -57,7 +57,7 @@
                     @if(!empty($profile->district) || !empty($profile->regency))
                         {{ \App\Models\MadrasahProfile::formatRegion($profile->district, $profile->regency, null) }}
                     @else
-                        Profil madrasah dapat diatur melalui akun Operator
+                        Profil madrasah dapat diatur melalui akun Admin
                     @endif
                 </div>
             </div>
@@ -178,7 +178,7 @@
                 <button type="submit" class="btn b-pri" style="min-height: 44px; padding: 0 28px; font-size: 15px; font-weight: 600; border-radius: 6px; cursor: pointer">
                     Masuk
                 </button>
-                <a href="#" style="font-size: 13.5px; color: #1b5e20; text-decoration: none" onclick="alert('Silakan hubungi operator madrasah untuk mereset password.'); return false;">
+                <a href="#" style="font-size: 13.5px; color: #1b5e20; text-decoration: none" onclick="alert('Silakan hubungi admin madrasah untuk mereset password.'); return false;">
                     Lupa Password?
                 </a>
             </div>

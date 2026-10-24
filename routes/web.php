@@ -87,6 +87,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     // Guru
     Route::get('/guru', [TeacherController::class, 'index'])->name('teachers.index');
     Route::post('/guru', [TeacherController::class, 'store'])->name('teachers.store');
+    Route::delete('/guru/bulk-destroy', [TeacherController::class, 'bulkDestroy'])->name('teachers.bulk-destroy');
     Route::put('/guru/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
     Route::delete('/guru/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
     Route::post('/guru/{teacher}/toggle', [TeacherController::class, 'toggleStatus'])->name('teachers.toggle');
@@ -96,6 +97,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     // Siswa & Enrollment
     Route::get('/siswa', [StudentController::class, 'index'])->name('students.index');
     Route::post('/siswa', [StudentController::class, 'store'])->name('students.store');
+    Route::delete('/siswa/bulk-destroy', [StudentController::class, 'bulkDestroy'])->name('students.bulk-destroy');
     Route::put('/siswa/{student}', [StudentController::class, 'update'])->name('students.update');
     Route::post('/siswa/{student}/toggle', [StudentController::class, 'toggleStatus'])->name('students.toggle');
     Route::get('/siswa/template', [StudentController::class, 'template'])->name('students.template');

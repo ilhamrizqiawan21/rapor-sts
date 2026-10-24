@@ -21,6 +21,14 @@
     <x-card title="Data Siswa Madrasah">
         <x-slot:actions>
             <div class="grp">
+                <form method="POST" action="{{ route('operator.students.bulk-destroy') }}" id="formBulkDeleteSiswa" style="display: inline" onsubmit="return confirmBulkDeleteSiswa(event)">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="ids[]" disabled>
+                    <button type="submit" id="btnBulkDeleteSiswa" class="btn b-dan" style="display: none; align-items: center; gap: 6px">
+                        Hapus Terpilih (<span id="selectedSiswaCount">0</span>)
+                    </button>
+                </form>
                 <button type="button" class="btn b-pri" onclick="document.getElementById('modalTambahSiswa').showModal()">+ Tambah Siswa</button>
                 <button type="button" class="btn b-suc" onclick="document.getElementById('modalImportSiswa').showModal()">Upload Excel</button>
                 <a href="{{ route('operator.students.template', ['classroom_id' => $selectedClassId]) }}" class="btn b-war">Unduh Template</a>
@@ -58,6 +66,12 @@
             <table class="t">
                 <thead>
                     <tr>
+                        <th style="width: 36px; text-align: center">
+                            <label style="cursor: pointer; display: flex; align-items: center; justify-content: center; margin: 0" title="Pilih semua siswa">
+                                <input type="checkbox" id="selectAllSiswa" title="Pilih semua siswa" aria-label="Pilih semua siswa">
+                                <span style="display: none">Pilih semua siswa</span>
+                            </label>
+                        </th>
                         <th style="width: 40px">#</th>
                         <th>NIS</th>
                         <th>NISN</th>
@@ -75,6 +89,9 @@
                             $currentClass = $currentEnrollment?->classroom;
                         @endphp
                         <tr>
+                            <td style="text-align: center">
+                                <input type="checkbox" name="ids[]" value="{{ $s->id }}" class="student-checkbox" form="formBulkDeleteSiswa" aria-label="Pilih siswa {{ $s->name }}">
+                            </td>
                             <td>{{ $students->firstItem() + $idx }}</td>
                             <td>{{ $s->nis ?? '-' }}</td>
                             <td><b>{{ $s->nisn }}</b></td>
@@ -113,7 +130,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="n cs">Belum ada data siswa untuk filter ini.</td>
+                            <td colspan="9" class="n cs">Belum ada data siswa untuk filter ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -273,6 +290,50 @@
             document.getElementById('modalEditSiswa').showModal();
         }
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAllSiswa = document.getElementById('selectAllSiswa');
+            const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+            const btnBulkDeleteSiswa = document.getElementById('btnBulkDeleteSiswa');
+            const selectedSiswaCount = document.getElementById('selectedSiswaCount');
+
+            function updateSiswaBulkState() {
+                const checked = document.querySelectorAll('.student-checkbox:checked');
+                const count = checked.length;
+                if (selectedSiswaCount) selectedSiswaCount.textContent = count;
+                if (btnBulkDeleteSiswa) {
+                    btnBulkDeleteSiswa.style.display = count > 0 ? 'inline-flex' : 'none';
+                }
+                if (selectAllSiswa) {
+                    selectAllSiswa.checked = studentCheckboxes.length > 0 && count === studentCheckboxes.length;
+                    selectAllSiswa.indeterminate = count > 0 && count < studentCheckboxes.length;
+                }
+            }
+
+            if (selectAllSiswa) {
+                selectAllSiswa.addEventListener('change', function () {
+                    studentCheckboxes.forEach(cb => { cb.checked = selectAllSiswa.checked; });
+                    updateSiswaBulkState();
+                });
+            }
+
+            studentCheckboxes.forEach(cb => {
+                cb.addEventListener('change', updateSiswaBulkState);
+            });
+
+            window.confirmBulkDeleteSiswa = function (e) {
+                const checked = document.querySelectorAll('.student-checkbox:checked');
+                if (checked.length === 0) {
+                    alert('Pilih minimal satu siswa untuk dihapus.');
+                    e.preventDefault();
+                    return false;
+                }
+                if (!confirm('Hapus ' + checked.length + ' siswa yang dipilih beserta seluruh nilainya? Tindakan ini tidak dapat dibatalkan.')) {
+                    e.preventDefault();
+                    return false;
+                }
+                return true;
+            };
+        });
     </script>
 </x-layout.app>
 

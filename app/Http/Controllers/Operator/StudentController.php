@@ -6,9 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Operator\StudentRequest;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\CompetencyOverride;
 use App\Models\Enrollment;
+use App\Models\HomeroomRecord;
 use App\Models\Period;
 use App\Models\Student;
+use App\Models\StsScore;
+use App\Models\SummativeScore;
 use App\Services\ActivityLogger;
 use App\Services\Import\StudentImporter;
 use App\Services\Import\TemplateBuilder;
@@ -150,6 +154,30 @@ class StudentController extends Controller
         ActivityLogger::log('delete_student', "Menghapus siswa {$name} beserta seluruh nilainya");
 
         return redirect()->back()->with('success', "Data siswa {$name} berhasil dihapus.");
+    }
+
+    public function bulkDestroy(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'min:1'],
+            'ids.*' => ['integer', 'exists:students,id'],
+        ]);
+
+        $ids = $validated['ids'];
+        $count = count($ids);
+
+        DB::transaction(function () use ($ids) {
+            SummativeScore::whereIn('student_id', $ids)->delete();
+            StsScore::whereIn('student_id', $ids)->delete();
+            CompetencyOverride::whereIn('student_id', $ids)->delete();
+            HomeroomRecord::whereIn('student_id', $ids)->delete();
+            Enrollment::whereIn('student_id', $ids)->delete();
+            Student::whereIn('id', $ids)->delete();
+        });
+
+        ActivityLogger::log('bulk_delete_students', "Menghapus {$count} data siswa beserta seluruh nilainya");
+
+        return redirect()->route('operator.students.index')->with('success', "Berhasil menghapus {$count} data siswa.");
     }
 
     public function template(Request $request, TemplateBuilder $builder): StreamedResponse
