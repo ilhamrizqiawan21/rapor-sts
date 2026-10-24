@@ -29,7 +29,7 @@ class BackupController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return back()->with('error', 'Backup gagal dibuat. Periksa log aplikasi.');
+            return back()->with('error', 'Backup gagal dibuat: '.$e->getMessage());
         }
 
         ActivityLogger::log('backup_database', "Membuat backup database {$name}");

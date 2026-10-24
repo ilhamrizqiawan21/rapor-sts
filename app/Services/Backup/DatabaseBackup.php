@@ -5,7 +5,6 @@ namespace App\Services\Backup;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Schema;
 use RuntimeException;
 use Symfony\Component\Process\Process;
 
@@ -38,9 +37,17 @@ class DatabaseBackup
             $driver = DB::connection()->getDriverName();
             $binary = in_array($driver, ['mysql', 'mariadb'], true) ? $this->findMysqldump() : null;
 
-            if ($binary) {
-                $this->dumpWithMysqldump($binary, $sql);
-            } else {
+            $dumped = false;
+            if ($binary && function_exists('proc_open')) {
+                try {
+                    $this->dumpWithMysqldump($binary, $sql);
+                    $dumped = true;
+                } catch (\Throwable $dumpEx) {
+                    report($dumpEx);
+                }
+            }
+
+            if (! $dumped) {
                 $this->dumpWithPhp($sql);
             }
 
@@ -146,12 +153,16 @@ class DatabaseBackup
             }
 
             $head = file_get_contents($sql, false, null, 0, 4096);
-            if ($size === 0 || ! preg_match('/\A(?:-- Backup Rapor STS|-- (?:MySQL|MariaDB) dump)/', $head)) {
+            $isValidSql = $size > 0 && (
+                preg_match('/(?:-- Backup Rapor STS|-- (?:MySQL|MariaDB) dump)/i', $head)
+                || preg_match('/(?:CREATE TABLE|INSERT INTO|DROP TABLE)/i', $head)
+            );
+            if (! $isValidSql) {
                 throw new RuntimeException('Berkas bukan backup SQL yang didukung.');
             }
 
             $driver = DB::connection()->getDriverName();
-            if ($driver === 'sqlite' && ! str_starts_with($head, '-- Backup Rapor STS')) {
+            if ($driver === 'sqlite' && ! str_contains($head, 'Backup Rapor STS') && ! preg_match('/sqlite/i', $head)) {
                 throw new RuntimeException('Format backup tidak sesuai dengan database SQLite.');
             }
             if (in_array($driver, ['mysql', 'mariadb'], true) && str_contains($head, '(sqlite)')) {
@@ -184,19 +195,21 @@ class DatabaseBackup
 
     private function restoreMysql(string $sql): void
     {
-        $binary = config('backup.mysql_path');
-        if (! $binary) {
-            foreach (['/usr/bin/mysql', '/usr/bin/mariadb', '/usr/local/bin/mysql'] as $candidate) {
-                if (is_executable($candidate)) {
-                    $binary = $candidate;
-                    break;
-                }
+        $binary = $this->findMysql();
+        if ($binary && function_exists('proc_open')) {
+            try {
+                $this->restoreMysqlWithCli($binary, $sql);
+                return;
+            } catch (\Throwable $e) {
+                report($e);
             }
         }
-        if (! $binary || ! is_executable($binary)) {
-            throw new RuntimeException('Program mysql/mariadb untuk restore tidak tersedia.');
-        }
 
+        $this->restoreMysqlWithPhp($sql);
+    }
+
+    private function restoreMysqlWithCli(string $binary, string $sql): void
+    {
         $c = config('database.connections.'.config('database.default'));
         $cnf = tempnam(sys_get_temp_dir(), 'cnf');
         if ($cnf === false) {
@@ -212,7 +225,9 @@ class DatabaseBackup
                 $args[] = '--socket='.$c['unix_socket'];
             } else {
                 $args[] = '--host='.$c['host'];
-                $args[] = '--port='.$c['port'];
+                if (! empty($c['port'])) {
+                    $args[] = '--port='.$c['port'];
+                }
             }
             $args[] = $c['database'];
 
@@ -233,13 +248,83 @@ class DatabaseBackup
         }
     }
 
+    private function restoreMysqlWithPhp(string $sql): void
+    {
+        $pdo = DB::connection()->getPdo();
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+        $pdo->exec("SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO'");
+
+        $fh = fopen($sql, 'r');
+        if (! $fh) {
+            throw new RuntimeException('Tidak dapat membuka berkas SQL untuk restore.');
+        }
+
+        $query = '';
+        while (($line = fgets($fh)) !== false) {
+            $trimmed = trim($line);
+            if ($trimmed === '' || str_starts_with($trimmed, '--') || str_starts_with($trimmed, '/*')) {
+                continue;
+            }
+
+            $query .= $line;
+            if (str_ends_with($trimmed, ';')) {
+                $pdo->exec($query);
+                $query = '';
+            }
+        }
+
+        if (trim($query) !== '') {
+            $pdo->exec($query);
+        }
+
+        fclose($fh);
+        $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+    }
+
+    private function findMysql(): ?string
+    {
+        $configured = config('backup.mysql_path');
+        if ($configured && is_executable($configured)) {
+            return $configured;
+        }
+
+        $candidates = [
+            '/usr/bin/mariadb',
+            '/usr/bin/mysql',
+            '/usr/local/bin/mariadb',
+            '/usr/local/bin/mysql',
+            '/usr/local/mysql/bin/mysql',
+            'C:\\laragon\\bin\\mysql\\current\\bin\\mysql.exe',
+            'C:\\xampp\\mysql\\bin\\mysql.exe',
+        ];
+
+        foreach ($candidates as $candidate) {
+            if (is_executable($candidate)) {
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
     private function findMysqldump(): ?string
     {
         $configured = config('backup.mysqldump_path');
-        if ($configured) {
-            return is_executable($configured) ? $configured : null;
+        if ($configured && is_executable($configured)) {
+            return $configured;
         }
-        foreach (['/usr/bin/mysqldump', '/usr/local/bin/mysqldump', '/usr/bin/mariadb-dump'] as $candidate) {
+
+        $candidates = [
+            '/usr/bin/mariadb-dump',
+            '/usr/bin/mysqldump',
+            '/usr/local/bin/mariadb-dump',
+            '/usr/local/bin/mysqldump',
+            '/usr/local/mysql/bin/mysqldump',
+            'C:\\laragon\\bin\\mysql\\current\\bin\\mysqldump.exe',
+            'C:\\xampp\\mysql\\bin\\mysqldump.exe',
+        ];
+
+        foreach ($candidates as $candidate) {
             if (is_executable($candidate)) {
                 return $candidate;
             }
@@ -252,19 +337,20 @@ class DatabaseBackup
     {
         $c = config('database.connections.'.config('database.default'));
 
-        // Kredensial lewat berkas sementara agar password tidak tampil di daftar proses.
         $cnf = tempnam(sys_get_temp_dir(), 'cnf');
         chmod($cnf, 0600);
         $esc = fn ($v) => '"'.addcslashes((string) $v, '"\\').'"';
         file_put_contents($cnf, "[client]\nuser={$esc($c['username'])}\npassword={$esc($c['password'])}\n");
 
         try {
-            $args = [$binary, '--defaults-extra-file='.$cnf, '--single-transaction', '--routines', '--no-tablespaces', '--default-character-set=utf8mb4', '--result-file='.$target];
+            $args = [$binary, '--defaults-extra-file='.$cnf, '--single-transaction', '--no-tablespaces', '--default-character-set=utf8mb4', '--result-file='.$target];
             if (! empty($c['unix_socket'])) {
                 $args[] = '--socket='.$c['unix_socket'];
             } else {
                 $args[] = '--host='.$c['host'];
-                $args[] = '--port='.$c['port'];
+                if (! empty($c['port'])) {
+                    $args[] = '--port='.$c['port'];
+                }
             }
             $args[] = $c['database'];
 
@@ -286,28 +372,61 @@ class DatabaseBackup
         $driver = $conn->getDriverName();
         $pdo = $conn->getPdo();
         $fh = fopen($target, 'wb');
+        if (! $fh) {
+            throw new RuntimeException('Tidak dapat membuka berkas target backup.');
+        }
+
         fwrite($fh, '-- Backup Rapor STS ('.$driver.') '.now()->toDateTimeString()."\n");
         if ($driver !== 'sqlite') {
             fwrite($fh, "SET FOREIGN_KEY_CHECKS=0;\n");
+            fwrite($fh, "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n");
+            fwrite($fh, "SET time_zone = '+00:00';\n\n");
         }
 
-        foreach (Schema::getTableListing() as $table) {
-            $table = preg_replace('/^.*\./', '', $table);
-            if ($table === 'sqlite_sequence') {
-                continue;
-            }
+        $tables = $this->getTableNames($conn, $driver);
+
+        foreach ($tables as $table) {
             $q = $conn->getQueryGrammar()->wrapTable($table);
 
             if ($driver === 'sqlite') {
                 $ddl = $conn->selectOne('select sql from sqlite_master where name = ?', [$table])->sql ?? null;
             } else {
-                $ddl = array_values((array) $conn->selectOne("show create table {$q}"))[1] ?? null;
+                $ddlRow = $conn->selectOne("SHOW CREATE TABLE {$q}");
+                $ddl = $ddlRow ? array_values((array) $ddlRow)[1] : null;
             }
+
+            if (! $ddl) {
+                continue;
+            }
+
             fwrite($fh, "\nDROP TABLE IF EXISTS {$q};\n{$ddl};\n");
 
+            $batch = [];
             foreach ($conn->table($table)->cursor() as $row) {
-                $vals = array_map(fn ($v) => $v === null ? 'NULL' : $pdo->quote((string) $v), (array) $row);
-                fwrite($fh, "INSERT INTO {$q} VALUES (".implode(',', $vals).");\n");
+                $vals = array_map(function ($v) use ($pdo) {
+                    if ($v === null) {
+                        return 'NULL';
+                    }
+                    if (is_bool($v)) {
+                        return $v ? '1' : '0';
+                    }
+                    if (is_int($v) || is_float($v)) {
+                        return (string) $v;
+                    }
+
+                    return $pdo->quote((string) $v);
+                }, (array) $row);
+
+                $batch[] = '('.implode(',', $vals).')';
+
+                if (count($batch) >= 100) {
+                    fwrite($fh, "INSERT INTO {$q} VALUES\n".implode(",\n", $batch).";\n");
+                    $batch = [];
+                }
+            }
+
+            if (! empty($batch)) {
+                fwrite($fh, "INSERT INTO {$q} VALUES\n".implode(",\n", $batch).";\n");
             }
         }
 
@@ -315,5 +434,23 @@ class DatabaseBackup
             fwrite($fh, "\nSET FOREIGN_KEY_CHECKS=1;\n");
         }
         fclose($fh);
+    }
+
+    private function getTableNames($conn, string $driver): array
+    {
+        if ($driver === 'sqlite') {
+            $rows = $conn->select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT IN ('sqlite_sequence', 'sqlite_stat1')");
+
+            return array_map(fn ($r) => $r->name, $rows);
+        }
+
+        // MySQL / MariaDB: Hanya ambil tabel BASE TABLE di database aktif saat ini
+        $rows = $conn->select("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'");
+        $tables = [];
+        foreach ($rows as $row) {
+            $tables[] = array_values((array) $row)[0];
+        }
+
+        return $tables;
     }
 }
