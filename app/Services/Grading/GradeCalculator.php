@@ -25,10 +25,10 @@ class GradeCalculator
 
         $sum = '0';
         foreach ($validScores as $score) {
-            $sum = bcadd($sum, (string) $score, $scale);
+            $sum = $this->decimalAdd($sum, (string) $score, $scale);
         }
 
-        return bcdiv($sum, (string) $count, $scale);
+        return $this->decimalDivide($sum, (string) $count, $scale);
     }
 
     /**
@@ -53,17 +53,17 @@ class GradeCalculator
         $wT = (string) $weightSts;
 
         // Cek jika kedua bobot nol
-        if (bccomp($wS, '0', $scale) === 0 && bccomp($wT, '0', $scale) === 0) {
+        if ($this->decimalCompare($wS, '0', $scale) === 0 && $this->decimalCompare($wT, '0', $scale) === 0) {
             throw new InvalidArgumentException('Bobot sumatif dan STS tidak boleh keduanya nol.');
         }
 
         // Jika bobot STS nol, nilai rapor murni dari sumatif
-        if (bccomp($wT, '0', $scale) === 0) {
+        if ($this->decimalCompare($wT, '0', $scale) === 0) {
             return $summativeAvg;
         }
 
         // Jika bobot sumatif nol, nilai rapor murni dari STS
-        if (bccomp($wS, '0', $scale) === 0) {
+        if ($this->decimalCompare($wS, '0', $scale) === 0) {
             return $stsScore !== null && $stsScore !== '' ? (string) $stsScore : null;
         }
 
@@ -79,12 +79,12 @@ class GradeCalculator
 
         $stsStr = (string) $stsScore;
 
-        $termSummative = bcmul($summativeAvg, $wS, $scale);
-        $termSts = bcmul($stsStr, $wT, $scale);
-        $numerator = bcadd($termSummative, $termSts, $scale);
-        $denominator = bcadd($wS, $wT, $scale);
+        $termSummative = $this->decimalMultiply($summativeAvg, $wS, $scale);
+        $termSts = $this->decimalMultiply($stsStr, $wT, $scale);
+        $numerator = $this->decimalAdd($termSummative, $termSts, $scale);
+        $denominator = $this->decimalAdd($wS, $wT, $scale);
 
-        return bcdiv($numerator, $denominator, $scale);
+        return $this->decimalDivide($numerator, $denominator, $scale);
     }
 
     /**
@@ -131,10 +131,67 @@ class GradeCalculator
         }
 
         $wT = (string) $weightSts;
-        if (bccomp($wT, '0', self::DEFAULT_SCALE) > 0 && ($stsScore === null || $stsScore === '')) {
+        if ($this->decimalCompare($wT, '0', self::DEFAULT_SCALE) > 0 && ($stsScore === null || $stsScore === '')) {
             return 'Nilai STS belum diisi';
         }
 
         return 'Lengkap';
+    }
+
+    private function decimalAdd(string|int|float $left, string|int|float $right, int $scale): string
+    {
+        return $this->fromScaledInt(
+            $this->toScaledInt($left, $scale) + $this->toScaledInt($right, $scale),
+            $scale
+        );
+    }
+
+    private function decimalMultiply(string|int|float $left, string|int|float $right, int $scale): string
+    {
+        $factor = 10 ** $scale;
+        $product = $this->toScaledInt($left, $scale) * $this->toScaledInt($right, $scale);
+
+        return $this->fromScaledInt(intdiv($product, $factor), $scale);
+    }
+
+    private function decimalDivide(string|int|float $left, string|int|float $right, int $scale): string
+    {
+        $divisor = $this->toScaledInt($right, $scale);
+        if ($divisor === 0) {
+            throw new InvalidArgumentException('Pembagian desimal tidak boleh menggunakan nol.');
+        }
+
+        $factor = 10 ** $scale;
+        $dividend = $this->toScaledInt($left, $scale) * $factor;
+
+        return $this->fromScaledInt(intdiv($dividend, $divisor), $scale);
+    }
+
+    private function decimalCompare(string|int|float $left, string|int|float $right, int $scale): int
+    {
+        return $this->toScaledInt($left, $scale) <=> $this->toScaledInt($right, $scale);
+    }
+
+    private function toScaledInt(string|int|float $value, int $scale): int
+    {
+        $value = trim((string) $value);
+        $negative = str_starts_with($value, '-');
+        $unsigned = ltrim($value, '+-');
+        [$whole, $fraction] = array_pad(explode('.', $unsigned, 2), 2, '');
+        $fraction = str_pad(substr($fraction, 0, $scale), $scale, '0');
+        $scaled = ((int) ($whole ?: '0')) * (10 ** $scale) + (int) ($fraction ?: '0');
+
+        return $negative ? -$scaled : $scaled;
+    }
+
+    private function fromScaledInt(int $value, int $scale): string
+    {
+        $negative = $value < 0;
+        $value = abs($value);
+        $factor = 10 ** $scale;
+        $whole = intdiv($value, $factor);
+        $fraction = str_pad((string) ($value % $factor), $scale, '0', STR_PAD_LEFT);
+
+        return ($negative ? '-' : '').$whole.'.'.$fraction;
     }
 }

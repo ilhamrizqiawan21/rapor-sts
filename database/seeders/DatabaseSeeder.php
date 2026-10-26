@@ -3,8 +3,11 @@
 namespace Database\Seeders;
 
 use App\Enums\Role;
+use App\Enums\Semester;
+use App\Models\AcademicYear;
 use App\Models\AppSetting;
 use App\Models\MadrasahProfile;
+use App\Models\Period;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -51,7 +54,20 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 3. User Operator default
+        // 3. Tahun pelajaran awal demo
+        $academicYear = AcademicYear::firstOrCreate(['name' => '2026/2027']);
+
+        Period::firstOrCreate(
+            ['academic_year_id' => $academicYear->id, 'semester' => Semester::Ganjil],
+            ['is_active' => true]
+        );
+
+        Period::firstOrCreate(
+            ['academic_year_id' => $academicYear->id, 'semester' => Semester::Genap],
+            ['is_active' => false]
+        );
+
+        // 4. User Operator default
         if (! User::where('username', 'admin')->exists()) {
             $initialPassword = config('app.initial_operator_password');
             if (app()->environment('production') && (! is_string($initialPassword) || strlen($initialPassword) < 12)) {

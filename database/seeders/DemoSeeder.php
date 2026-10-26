@@ -134,6 +134,52 @@ class DemoSeeder extends Seeder
             ]
         );
 
+        // Tahun dan kelas tujuan agar alur kenaikan kelas demo dapat dicoba.
+        $nextAcademicYear = AcademicYear::firstOrCreate(['name' => '2027/2028']);
+
+        Period::firstOrCreate(
+            ['academic_year_id' => $nextAcademicYear->id, 'semester' => Semester::Ganjil],
+            ['is_active' => false]
+        );
+
+        Period::firstOrCreate(
+            ['academic_year_id' => $nextAcademicYear->id, 'semester' => Semester::Genap],
+            ['is_active' => false]
+        );
+
+        Classroom::firstOrCreate(
+            ['academic_year_id' => $nextAcademicYear->id, 'name' => 'VIII.A'],
+            [
+                'level' => 8,
+                'alias' => 'Kelas VIII-A',
+                'curriculum' => Curriculum::Merdeka,
+                'phase' => 'D',
+                'homeroom_teacher_id' => $teachers['FIK']->id,
+            ]
+        );
+
+        Classroom::firstOrCreate(
+            ['academic_year_id' => $nextAcademicYear->id, 'name' => 'VIII.B'],
+            [
+                'level' => 8,
+                'alias' => 'Kelas VIII-B',
+                'curriculum' => Curriculum::Merdeka,
+                'phase' => 'D',
+                'homeroom_teacher_id' => $teachers['QH']->id,
+            ]
+        );
+
+        Classroom::firstOrCreate(
+            ['academic_year_id' => $nextAcademicYear->id, 'name' => 'IX.A'],
+            [
+                'level' => 9,
+                'alias' => 'Kelas IX-A',
+                'curriculum' => Curriculum::Merdeka,
+                'phase' => 'D',
+                'homeroom_teacher_id' => $teachers['AA']->id,
+            ]
+        );
+
         // 6. 30 Siswa Fiktif (10 per kelas)
         $studentNames = [
             // Kelas VII.A

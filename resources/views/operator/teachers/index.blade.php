@@ -80,6 +80,15 @@
                                 @endif
                             </td>
                             <td>
+                                <button type="button" class="btn b-inf" style="min-height: 28px; padding: 0 8px; font-size: 12px"
+                                    data-update-url="{{ route('operator.teachers.update', $t) }}"
+                                    data-name="{{ $t->name }}"
+                                    data-username="{{ $t->username }}"
+                                    data-nik="{{ $t->nik }}"
+                                    data-nuptk="{{ $t->nuptk }}"
+                                    data-nip="{{ $t->nip }}"
+                                    data-gender="{{ $t->gender }}"
+                                    onclick="openEditGuruModal(this)">Edit</button>
                                 <form method="POST" action="{{ route('operator.teachers.toggle', $t) }}" style="display: inline">
                                     @csrf
                                     <button type="submit" class="btn {{ $t->is_active ? 'b-war' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px">
@@ -144,6 +153,50 @@
         </x-slot:footer>
     </x-modal>
 
+    {{-- Modal Edit Guru --}}
+    <x-modal id="modalEditGuru" title="Edit Data Guru">
+        <form method="POST" id="formEditGuru" action="">
+            @csrf
+            @method('PUT')
+            <div class="f">
+                <label for="edit_guru_name">Nama Guru (dengan gelar)</label>
+                <input id="edit_guru_name" name="name" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_guru_username">Username (NIK / NUPTK)</label>
+                <input id="edit_guru_username" name="username" class="in" required>
+            </div>
+            <div class="f">
+                <label for="edit_guru_password">Password Baru</label>
+                <input id="edit_guru_password" name="password" type="password" class="in" minlength="6" autocomplete="new-password" placeholder="Kosongkan jika tidak diubah">
+            </div>
+            <div class="f">
+                <label for="edit_guru_nik">NIK (opsional)</label>
+                <input id="edit_guru_nik" name="nik" class="in">
+            </div>
+            <div class="f">
+                <label for="edit_guru_nuptk">NUPTK (opsional)</label>
+                <input id="edit_guru_nuptk" name="nuptk" class="in">
+            </div>
+            <div class="f">
+                <label for="edit_guru_nip">NIP (opsional)</label>
+                <input id="edit_guru_nip" name="nip" class="in">
+            </div>
+            <div class="f">
+                <label for="edit_guru_gender">Jenis Kelamin</label>
+                <select id="edit_guru_gender" name="gender" class="in" required>
+                    <option value="L">Laki-laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalEditGuru').close()">Batal</button>
+            <button type="button" class="btn b-pri" onclick="document.getElementById('formEditGuru').submit()">Simpan Perubahan</button>
+        </x-slot:footer>
+    </x-modal>
+
     {{-- Modal Upload Excel Guru --}}
     <x-modal id="modalImportGuru" title="Upload File Excel Data Guru">
         <form method="POST" action="{{ route('operator.teachers.import') }}" enctype="multipart/form-data" id="formImportGuru">
@@ -164,6 +217,20 @@
     </x-modal>
 
     <script>
+        function openEditGuruModal(button) {
+            const data = button.dataset;
+            const form = document.getElementById('formEditGuru');
+            form.action = data.updateUrl;
+            document.getElementById('edit_guru_name').value = data.name || '';
+            document.getElementById('edit_guru_username').value = data.username || '';
+            document.getElementById('edit_guru_password').value = '';
+            document.getElementById('edit_guru_nik').value = data.nik || '';
+            document.getElementById('edit_guru_nuptk').value = data.nuptk || '';
+            document.getElementById('edit_guru_nip').value = data.nip || '';
+            document.getElementById('edit_guru_gender').value = data.gender || 'L';
+            document.getElementById('modalEditGuru').showModal();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const selectAllGuru = document.getElementById('selectAllGuru');
             const teacherCheckboxes = document.querySelectorAll('.teacher-checkbox');

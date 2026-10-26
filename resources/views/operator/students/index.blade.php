@@ -21,6 +21,11 @@
     <x-card title="Data Siswa Madrasah">
         <x-slot:actions>
             <div class="grp">
+                @if($selectedClass && $selectedClass->level < 9)
+                    <button type="button" class="btn b-inf" onclick="document.getElementById('modalNaikKelas').showModal()">Naikkan Siswa dari {{ $selectedClass->name }}</button>
+                @elseif($selectedClass)
+                    <span class="n" style="align-self: center">Kelas tingkat akhir</span>
+                @endif
                 <form method="POST" action="{{ route('operator.students.bulk-destroy') }}" id="formBulkDeleteSiswa" style="display: inline" onsubmit="return confirmBulkDeleteSiswa(event)">
                     @csrf
                     @method('DELETE')
@@ -143,6 +148,43 @@
             </div>
         @endif
     </x-card>
+
+    @if($selectedClass && $selectedClass->level < 9)
+        <x-modal id="modalNaikKelas" title="Naikkan Siswa ke Tahun Ajaran Baru">
+            <form method="POST" action="{{ route('operator.students.promote') }}" id="formNaikKelas" onsubmit="return confirm('Naikkan semua siswa aktif ke kelas tujuan? Riwayat tahun ajaran asal tetap tersimpan.')">
+                @csrf
+                <input type="hidden" name="source_classroom_id" value="{{ $selectedClass->id }}">
+                <div class="alert a-lt" style="margin-bottom: 12px">
+                    Data siswa tidak dibuat ulang. Sistem menambahkan penempatan pada tahun tujuan dan mempertahankan riwayat kelas sebelumnya. Buat tahun ajaran dan kelas tujuan terlebih dahulu.
+                </div>
+                <div class="f">
+                    <label for="target_academic_year_id">Tahun Ajaran Tujuan</label>
+                    <select id="target_academic_year_id" name="target_academic_year_id" class="in" required>
+                        <option value="">- Pilih Tahun Ajaran -</option>
+                        @foreach($academicYears->where('id', '!=', $selectedYearId) as $year)
+                            <option value="{{ $year->id }}">{{ $year->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="f">
+                    <label for="target_classroom_id">Kelas Tujuan (tingkat {{ $selectedClass->level + 1 }})</label>
+                    <select id="target_classroom_id" name="target_classroom_id" class="in" required disabled>
+                        <option value="">- Pilih Tahun Ajaran Dahulu -</option>
+                        @foreach($promotionClassrooms as $classroom)
+                            <option value="{{ $classroom->id }}" data-year-id="{{ $classroom->academic_year_id }}" data-level="{{ $classroom->level }}" hidden disabled>
+                                {{ $classroom->academicYear->name }} · {{ $classroom->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <small id="promotionClassHint" class="n">Pilih kelas tingkat {{ $selectedClass->level + 1 }} pada tahun ajaran tujuan.</small>
+                </div>
+            </form>
+            <x-slot:footer>
+                <button type="button" class="btn b-sec" onclick="document.getElementById('modalNaikKelas').close()">Batal</button>
+                <button type="submit" form="formNaikKelas" class="btn b-pri">Naikkan Siswa</button>
+            </x-slot:footer>
+        </x-modal>
+    @endif
 
     {{-- Modal Tambah Siswa --}}
     <x-modal id="modalTambahSiswa" title="Tambah Data Siswa">
@@ -277,6 +319,40 @@
     </x-modal>
 
     <script>
+        @if($selectedClass && $selectedClass->level < 9)
+        const targetYearSelect = document.getElementById('target_academic_year_id');
+        const targetClassSelect = document.getElementById('target_classroom_id');
+        const promotionClassHint = document.getElementById('promotionClassHint');
+
+        if (targetYearSelect && targetClassSelect) {
+            targetYearSelect.addEventListener('change', function () {
+                const yearId = this.value;
+                let matchingClasses = 0;
+
+                Array.from(targetClassSelect.options).forEach(function (option) {
+                    if (!option.value) return;
+
+                    const matches = option.dataset.yearId === yearId
+                        && Number(option.dataset.level) === {{ $selectedClass->level + 1 }};
+                    option.hidden = !matches;
+                    option.disabled = !matches;
+                    if (matches) matchingClasses++;
+                });
+
+                targetClassSelect.value = '';
+                targetClassSelect.disabled = !yearId || matchingClasses === 0;
+                targetClassSelect.options[0].textContent = matchingClasses
+                    ? '- Pilih Kelas Tujuan -'
+                    : '- Kelas tingkat berikutnya belum tersedia -';
+                if (promotionClassHint) {
+                    promotionClassHint.textContent = matchingClasses
+                        ? 'Pilih kelas tingkat {{ $selectedClass->level + 1 }} pada tahun ajaran tujuan.'
+                        : 'Belum ada kelas tingkat {{ $selectedClass->level + 1 }} pada tahun ajaran ini.';
+                }
+            });
+        }
+        @endif
+
         function openEditModal(student, currentClassId) {
             document.getElementById('formEditSiswa').action = '/operator/siswa/' + student.id;
             document.getElementById('edit_nisn').value = student.nisn || '';

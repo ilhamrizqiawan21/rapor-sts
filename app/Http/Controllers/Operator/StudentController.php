@@ -39,6 +39,13 @@ class StudentController extends Controller
             ->orderBy('level')
             ->orderBy('name')
             ->get();
+        $selectedClass = $classrooms->firstWhere('id', (int) $selectedClassId);
+        $promotionClassrooms = Classroom::with('academicYear')
+            ->when($selectedYearId, fn ($q) => $q->where('academic_year_id', '!=', $selectedYearId))
+            ->orderBy('academic_year_id')
+            ->orderBy('level')
+            ->orderBy('name')
+            ->get();
 
         $students = Student::with(['enrollments' => function ($q) use ($selectedYearId) {
             $q->when($selectedYearId, fn ($sub) => $sub->where('academic_year_id', $selectedYearId))->with('classroom');
@@ -64,8 +71,10 @@ class StudentController extends Controller
             'students',
             'academicYears',
             'classrooms',
+            'promotionClassrooms',
             'selectedYearId',
             'selectedClassId',
+            'selectedClass',
             'search'
         ));
     }
@@ -126,6 +135,67 @@ class StudentController extends Controller
         ActivityLogger::log('update_student', "Memperbarui data siswa {$student->name}", $student);
 
         return redirect()->back()->with('success', "Data siswa {$student->name} berhasil diperbarui.");
+    }
+
+    public function promoteClass(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'source_classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
+            'target_academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
+            'target_classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
+        ]);
+
+        $sourceClassroom = Classroom::findOrFail($validated['source_classroom_id']);
+        $targetYear = AcademicYear::findOrFail($validated['target_academic_year_id']);
+        $targetClassroom = Classroom::findOrFail($validated['target_classroom_id']);
+
+        if ($sourceClassroom->academic_year_id === $targetYear->id) {
+            return back()->withErrors(['target_academic_year_id' => 'Pilih tahun ajaran yang berbeda dari tahun asal.']);
+        }
+
+        if ($targetClassroom->academic_year_id !== $targetYear->id) {
+            return back()->withErrors(['target_classroom_id' => 'Kelas tujuan harus berada pada tahun ajaran tujuan.']);
+        }
+
+        if ($targetClassroom->level !== $sourceClassroom->level + 1) {
+            return back()->withErrors(['target_classroom_id' => 'Kelas tujuan harus satu tingkat di atas kelas asal.']);
+        }
+
+        $studentIds = Enrollment::query()
+            ->where('academic_year_id', $sourceClassroom->academic_year_id)
+            ->where('classroom_id', $sourceClassroom->id)
+            ->whereHas('student', fn ($query) => $query->where('is_active', true))
+            ->pluck('student_id');
+
+        $promotedCount = DB::transaction(function () use ($studentIds, $targetYear, $targetClassroom) {
+            $alreadyEnrolledIds = Enrollment::query()
+                ->where('academic_year_id', $targetYear->id)
+                ->whereIn('student_id', $studentIds)
+                ->pluck('student_id');
+
+            $studentIdsToPromote = $studentIds->diff($alreadyEnrolledIds);
+
+            foreach ($studentIdsToPromote as $studentId) {
+                Enrollment::create([
+                    'academic_year_id' => $targetYear->id,
+                    'classroom_id' => $targetClassroom->id,
+                    'student_id' => $studentId,
+                ]);
+            }
+
+            return $studentIdsToPromote->count();
+        });
+
+        $skippedCount = $studentIds->count() - $promotedCount;
+        ActivityLogger::log(
+            'promote_students',
+            "Menaikkan {$promotedCount} siswa dari kelas {$sourceClassroom->name} ke {$targetClassroom->name} ({$targetYear->name})"
+        );
+
+        return redirect()->route('operator.students.index', [
+            'academic_year_id' => $targetYear->id,
+            'classroom_id' => $targetClassroom->id,
+        ])->with('success', "Berhasil menaikkan {$promotedCount} siswa ke {$targetClassroom->name}. {$skippedCount} siswa dilewati karena sudah terdaftar pada tahun tujuan.");
     }
 
     public function toggleStatus(Student $student): RedirectResponse

@@ -94,8 +94,8 @@
                             <div style="opacity: .88; font-size: 12px">Cetak PDF rapor siswa per kelas dengan kop & ttd</div>
                         </div>
                         <div style="background: rgba(0,0,0,0.12); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); font-size: 13px">
-                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Leger 2 Bagian</div>
-                            <div style="opacity: .88; font-size: 12px">Excel multi-sheet & PDF Pengetahuan + Keterampilan</div>
+                            <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Leger Kurikulum Merdeka</div>
+                            <div style="opacity: .88; font-size: 12px">Excel satu sheet, nilai akhir per mata pelajaran</div>
                         </div>
                         <div style="background: rgba(0,0,0,0.12); padding: 10px 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); font-size: 13px">
                             <div style="color: #f1c40f; font-weight: bold; margin-bottom: 2px">✓ Export Template Excel</div>

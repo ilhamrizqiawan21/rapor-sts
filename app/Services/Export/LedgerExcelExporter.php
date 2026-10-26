@@ -2,6 +2,7 @@
 
 namespace App\Services\Export;
 
+use App\Enums\Curriculum;
 use App\Models\Classroom;
 use App\Models\Period;
 use App\Services\Report\ReportCardBuilder;
@@ -12,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\PageSetup;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class LedgerExcelExporter
@@ -26,12 +28,27 @@ class LedgerExcelExporter
 
         $spreadsheet = new Spreadsheet;
 
-        // Sheet 1: Pengetahuan
-        $sheetPengetahuan = $spreadsheet->getActiveSheet();
-        $sheetPengetahuan->setTitle('Pengetahuan');
+        $sheet = $spreadsheet->getActiveSheet();
+        if ($classroom->curriculum === Curriculum::Merdeka) {
+            $sheet->setTitle('Leger');
+            $this->renderSheet(
+                sheet: $sheet,
+                title: 'LEGER NILAI',
+                classroom: $classroom,
+                period: $period,
+                data: $data,
+                rows: $data['rows'],
+                classAverages: $data['classAverages'],
+                overallAverage: $data['overallAverage']
+            );
+
+            return $spreadsheet;
+        }
+
+        $sheet->setTitle('Pengetahuan');
         $this->renderSheet(
-            sheet: $sheetPengetahuan,
-            title: 'LEGGER NILAI PENGETAHUAN',
+            sheet: $sheet,
+            title: 'LEGER NILAI PENGETAHUAN',
             classroom: $classroom,
             period: $period,
             data: $data,
@@ -40,12 +57,11 @@ class LedgerExcelExporter
             overallAverage: $data['overallAveragePengetahuan']
         );
 
-        // Sheet 2: Keterampilan
-        $sheetKeterampilan = $spreadsheet->createSheet();
-        $sheetKeterampilan->setTitle('Keterampilan');
+        $skillsSheet = $spreadsheet->createSheet();
+        $skillsSheet->setTitle('Keterampilan');
         $this->renderSheet(
-            sheet: $sheetKeterampilan,
-            title: 'LEGGER NILAI KETERAMPILAN',
+            sheet: $skillsSheet,
+            title: 'LEGER NILAI KETERAMPILAN',
             classroom: $classroom,
             period: $period,
             data: $data,
@@ -53,9 +69,6 @@ class LedgerExcelExporter
             classAverages: $data['classAveragesKeterampilan'],
             overallAverage: $data['overallAverageKeterampilan']
         );
-
-        // Set active sheet back to Sheet 1
-        $spreadsheet->setActiveSheetIndex(0);
 
         return $spreadsheet;
     }
@@ -162,12 +175,32 @@ class LedgerExcelExporter
         $lastColLetter = Coordinate::stringFromColumnIndex($colIdx - 1);
         $totalCols = $colIdx - 1;
 
+        // Identitas workbook dan tampilan lembar kerja.
+        $sheet->mergeCells("A1:{$lastColLetter}1");
+        $sheet->getStyle("A1:{$lastColLetter}7")->getFont()->setName('Arial');
+        $sheet->getStyle("A1:{$lastColLetter}1")->getFont()->setBold(true)->setSize(16);
+        $sheet->getStyle("A1:{$lastColLetter}1")
+            ->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)
+            ->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(1)->setRowHeight(28);
+        $sheet->getRowDimension(4)->setRowHeight(8);
+        $sheet->getRowDimension(5)->setRowHeight(8);
+
+        foreach (['A2', 'D2', 'A3', 'D3'] as $labelCell) {
+            $sheet->getStyle($labelCell)->getFont()->setBold(true);
+        }
+        $sheet->getStyle('A2:E3')->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(2)->setRowHeight(20);
+        $sheet->getRowDimension(3)->setRowHeight(20);
+
         // Styling Header Range
         $headerRange = "A6:{$lastColLetter}7";
-        $sheet->getStyle($headerRange)->getFont()->setBold(true);
+        $sheet->getStyle($headerRange)->getFont()->setBold(true)->setSize(10);
         $sheet->getStyle($headerRange)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF1F3F5');
         $sheet->getStyle($headerRange)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle($headerRange)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        $sheet->getRowDimension(6)->setRowHeight(22);
+        $sheet->getRowDimension(7)->setRowHeight(22);
 
         // Baris data mulai baris 8
         $currentRow = 8;
@@ -214,6 +247,9 @@ class LedgerExcelExporter
             $sheet->getStyle("{$colJumlahLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("{$colRerataLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle("{$colRankLetter}{$currentRow}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("A{$currentRow}:{$lastColLetter}{$currentRow}")
+                ->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+            $sheet->getRowDimension($currentRow)->setRowHeight(20);
 
             $currentRow++;
         }
@@ -243,14 +279,42 @@ class LedgerExcelExporter
         $sheet->getStyle("A{$avgRow}:{$lastColLetter}{$avgRow}")->getFill()
             ->setFillType(Fill::FILL_SOLID)
             ->getStartColor()->setARGB('FFF8F9FA');
+        $sheet->getStyle("A8:{$lastColLetter}{$avgRow}")->getFont()->setName('Arial')->setSize(10);
 
         // Border seluruh tabel
         $tableRange = "A6:{$lastColLetter}{$avgRow}";
         $sheet->getStyle($tableRange)->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-        // Auto size columns
+        // Lebar kolom tetap membuat tampilan stabil di Excel, WPS, dan hasil cetak.
+        $fixedWidths = [
+            1 => 6,  // No
+            2 => 13, // NIS
+            3 => 15, // NISN
+            4 => 28, // Nama
+            5 => 6,  // JK
+        ];
         for ($i = 1; $i <= $totalCols; $i++) {
-            $sheet->getColumnDimension(Coordinate::stringFromColumnIndex($i))->setAutoSize(true);
+            $letter = Coordinate::stringFromColumnIndex($i);
+            $width = $fixedWidths[$i] ?? 8;
+            if ($i === $colIdx - 3 || $i === $colIdx - 2) {
+                $width = 10;
+            } elseif ($i === $colIdx - 1) {
+                $width = 8;
+            }
+            $sheet->getColumnDimension($letter)->setAutoSize(false)->setWidth($width);
         }
+
+        $sheet->setShowGridlines(false);
+        $sheet->setPrintGridlines(false);
+        $sheet->getPageSetup()
+            ->setOrientation(PageSetup::ORIENTATION_LANDSCAPE)
+            ->setPaperSize(PageSetup::PAPERSIZE_A4)
+            ->setFitToPage(true)
+            ->setFitToWidth(1)
+            ->setFitToHeight(0)
+            ->setHorizontalCentered(true)
+            ->setRowsToRepeatAtTopByStartAndEnd(1, 7)
+            ->setPrintArea("A1:{$lastColLetter}{$avgRow}");
+        $sheet->getPageMargins()->setTop(0.4)->setBottom(0.4)->setLeft(0.3)->setRight(0.3);
     }
 }

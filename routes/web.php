@@ -99,6 +99,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::post('/siswa', [StudentController::class, 'store'])->name('students.store');
     Route::delete('/siswa/bulk-destroy', [StudentController::class, 'bulkDestroy'])->name('students.bulk-destroy');
     Route::put('/siswa/{student}', [StudentController::class, 'update'])->name('students.update');
+    Route::post('/siswa/naik-kelas', [StudentController::class, 'promoteClass'])->name('students.promote');
     Route::post('/siswa/{student}/toggle', [StudentController::class, 'toggleStatus'])->name('students.toggle');
     Route::get('/siswa/template', [StudentController::class, 'template'])->name('students.template');
     Route::post('/siswa/import', [StudentController::class, 'import'])->name('students.import');
