@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Operator\KktpDefaultRequest;
 use App\Models\AcademicYear;
 use App\Models\AppSetting;
+use App\Models\MadrasahProfile;
 use App\Models\Period;
 use App\Models\Subject;
 use App\Models\SubjectKktpDefault;
@@ -24,7 +25,12 @@ class KktpDefaultController extends Controller
         $academicYears = AcademicYear::orderBy('name', 'desc')->get();
 
         $selectedYearId = $request->query('academic_year_id', $activePeriod?->academic_year_id);
-        $selectedLevel = (int) $request->query('level', 7);
+        $profile = MadrasahProfile::first();
+        $levels = $profile?->classLevels() ?? range(1, 12);
+        $selectedLevel = (int) $request->query('level', $levels[0]);
+        if (! in_array($selectedLevel, $levels, true)) {
+            $selectedLevel = $levels[0];
+        }
 
         $setting = AppSetting::first();
         $globalKktp = $setting ? (float) $setting->default_kktp : 70.00;
@@ -48,7 +54,8 @@ class KktpDefaultController extends Controller
             'selectedLevel',
             'subjects',
             'kktpDefaults',
-            'globalKktp'
+            'globalKktp',
+            'levels'
         ));
     }
 

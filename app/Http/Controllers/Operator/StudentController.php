@@ -9,6 +9,7 @@ use App\Models\Classroom;
 use App\Models\CompetencyOverride;
 use App\Models\Enrollment;
 use App\Models\HomeroomRecord;
+use App\Models\MadrasahProfile;
 use App\Models\Period;
 use App\Models\StsScore;
 use App\Models\Student;
@@ -41,6 +42,9 @@ class StudentController extends Controller
             ->get();
         $selectedClass = $classrooms->firstWhere('id', (int) $selectedClassId);
         $selectedAcademicYear = $academicYears->firstWhere('id', (int) $selectedYearId);
+        $profile = MadrasahProfile::first();
+        $maximumClassLevel = $profile?->maximumClassLevel() ?? 12;
+        $canPromote = $selectedClass && $selectedClass->level < $maximumClassLevel;
         $selectedYearStart = $selectedAcademicYear
             ? (int) explode('/', $selectedAcademicYear->name)[0]
             : null;
@@ -50,6 +54,7 @@ class StudentController extends Controller
         $promotionAcademicYears = $nextAcademicYear ? collect([$nextAcademicYear]) : collect();
         $promotionClassrooms = Classroom::with('academicYear')
             ->when($nextAcademicYear, fn ($q) => $q->where('academic_year_id', $nextAcademicYear->id))
+            ->when($selectedClass && $selectedClass->level < $maximumClassLevel, fn ($q) => $q->where('level', $selectedClass->level + 1))
             ->when(! $nextAcademicYear, fn ($q) => $q->whereKey(0))
             ->orderBy('academic_year_id')
             ->orderBy('level')
@@ -85,6 +90,8 @@ class StudentController extends Controller
             'selectedClassId',
             'selectedClass',
             'promotionAcademicYears',
+            'maximumClassLevel',
+            'canPromote',
             'search'
         ));
     }
@@ -206,6 +213,8 @@ class StudentController extends Controller
         $sourceYear = AcademicYear::findOrFail($sourceClassroom->academic_year_id);
         $targetYear = AcademicYear::findOrFail($validated['target_academic_year_id']);
         $targetClassroom = Classroom::findOrFail($validated['target_classroom_id']);
+        $profile = MadrasahProfile::first();
+        $allowedLevels = $profile?->classLevels() ?? range(1, 12);
 
         if ($sourceClassroom->academic_year_id === $targetYear->id) {
             return back()->withErrors(['target_academic_year_id' => 'Pilih tahun ajaran yang berbeda dari tahun asal.']);
@@ -219,6 +228,10 @@ class StudentController extends Controller
 
         if ($targetClassroom->academic_year_id !== $targetYear->id) {
             return back()->withErrors(['target_classroom_id' => 'Kelas tujuan harus berada pada tahun ajaran tujuan.']);
+        }
+
+        if (! in_array($sourceClassroom->level, $allowedLevels, true) || ! in_array($targetClassroom->level, $allowedLevels, true)) {
+            return back()->withErrors(['target_classroom_id' => 'Tingkat kelas tidak sesuai dengan jenjang madrasah.']);
         }
 
         if ($targetClassroom->level !== $sourceClassroom->level + 1) {

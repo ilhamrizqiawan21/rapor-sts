@@ -11,11 +11,8 @@
                 <select id="tk" name="tingkat" class="in" style="min-width: 170px" onchange="document.getElementById('filterLevelForm').submit()">
                     <option value="">Semua tingkat</option>
                     @foreach($availableLevels as $lvl)
-                        @php
-                            $lvlRoman = match($lvl) { 7 => 'VII', 8 => 'VIII', 9 => 'IX', default => (string)$lvl };
-                        @endphp
                         <option value="{{ $lvl }}" {{ (string)$filterLevel === (string)$lvl ? 'selected' : '' }}>
-                            Tingkat {{ $lvlRoman }}
+                            Tingkat {{ \App\Models\MadrasahProfile::classLevelLabel((int) $lvl) }}
                         </option>
                     @endforeach
                 </select>

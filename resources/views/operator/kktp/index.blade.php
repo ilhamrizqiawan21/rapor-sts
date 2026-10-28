@@ -27,9 +27,9 @@
 
                 <label for="levelFilter" style="font-weight: 600">Tingkat:</label>
                 <select id="levelFilter" class="sel" style="min-width: 140px" onchange="location.href = '{{ route('operator.kktp.index') }}?academic_year_id={{ $selectedYearId }}&level=' + this.value">
-                    <option value="7" @selected($selectedLevel === 7)>Tingkat 7 (VII)</option>
-                    <option value="8" @selected($selectedLevel === 8)>Tingkat 8 (VIII)</option>
-                    <option value="9" @selected($selectedLevel === 9)>Tingkat 9 (IX)</option>
+                    @foreach($levels as $level)
+                        <option value="{{ $level }}" @selected($selectedLevel === $level)>Tingkat {{ \App\Models\MadrasahProfile::classLevelLabel($level) }}</option>
+                    @endforeach
                 </select>
             </div>
 

@@ -7,6 +7,8 @@
         <a href="{{ route('operator.dashboard') }}">Home</a> / <a href="#">Admin</a> / <span>Data Kelas</span>
     </x-slot:breadcrumb>
 
+    @php($firstClassLevel = (int) array_key_first($gradeLevels))
+
     @if(session('success'))
         <x-alert variant="info">{{ session('success') }}</x-alert>
     @endif
@@ -98,13 +100,13 @@
             <div class="f">
                 <label for="level">Tingkat</label>
                 <select id="level" name="level" class="in" required>
-                    <option value="7">7 (Tujuh / VII)</option>
-                    <option value="8">8 (Delapan / VIII)</option>
-                    <option value="9">9 (Sembilan / IX)</option>
+                    @foreach($gradeLevels as $level => $label)
+                        <option value="{{ $level }}" @selected((int) $level === $firstClassLevel)>{{ $label }}</option>
+                    @endforeach
                 </select>
             </div>
             <div class="f">
-                <label for="cname">Nama Kelas (contoh: VII.A)</label>
+                <label for="cname">Nama Kelas (contoh: <span id="classNameExample">{{ $classLevelConfig[$firstClassLevel]['prefix'] }}A</span>)</label>
                 <input id="cname" name="name" class="in" required>
             </div>
             <div class="f">
@@ -116,7 +118,7 @@
             </div>
             <div class="f">
                 <label for="phase">Fase</label>
-                <input id="phase" name="phase" class="in" value="D">
+                <input id="phase" name="phase" class="in" value="{{ $classLevelConfig[$firstClassLevel]['phase'] }}">
             </div>
             <div class="f">
                 <label for="homeroom_teacher_id">Wali Kelas</label>
@@ -142,20 +144,20 @@
             <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
             <div class="f">
                 <label for="blevel">Tingkat</label>
-                <select id="blevel" name="level" class="in" required onchange="document.getElementById('bprefix').value = (this.value == 7 ? 'VII.' : (this.value == 8 ? 'VIII.' : 'IX.'))">
-                    <option value="7">7 (VII)</option>
-                    <option value="8">8 (VIII)</option>
-                    <option value="9">9 (IX)</option>
-                </select>
+                    <select id="blevel" name="level" class="in" required>
+                        @foreach($gradeLevels as $level => $label)
+                            <option value="{{ $level }}" @selected((int) $level === $firstClassLevel)>{{ $label }}</option>
+                        @endforeach
+                    </select>
             </div>
             <div class="f">
                 <label for="bprefix">Awalan / Format Nama Kelas</label>
-                <input id="bprefix" name="prefix" class="in" value="VII." required>
+                <input id="bprefix" name="prefix" class="in" value="{{ $classLevelConfig[$firstClassLevel]['prefix'] }}" required>
             </div>
             <div class="f">
                 <label for="bparallels">Daftar Paralel (dipisahkan koma)</label>
                 <input id="bparallels" name="parallels" class="in" value="A, B, C, D" required>
-                <span class="hint">Contoh: "A, B, C, D" akan menghasilkan kelas VII.A, VII.B, VII.C, VII.D.</span>
+                <span class="hint">Contoh: "A, B, C, D" akan menghasilkan kelas dengan awalan tingkat yang dipilih.</span>
             </div>
             <div class="f">
                 <label for="bcurriculum">Kurikulum</label>
@@ -164,6 +166,10 @@
                     <option value="k13">Kurikulum 2013</option>
                 </select>
             </div>
+            <div class="f">
+                <label for="bphase">Fase</label>
+                <input id="bphase" name="phase" class="in" value="{{ $classLevelConfig[$firstClassLevel]['phase'] }}">
+            </div>
         </form>
 
         <x-slot:footer>
@@ -171,5 +177,31 @@
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahBatch').submit()">Buat Semua Kelas</button>
         </x-slot:footer>
     </x-modal>
+
+    <script>
+        const classLevelConfig = @json($classLevelConfig);
+
+        function syncClassLevelFields(level) {
+            const config = classLevelConfig[level];
+            if (!config) return;
+
+            const classNameExample = document.getElementById('classNameExample');
+            const singlePhase = document.getElementById('phase');
+            const batchPrefix = document.getElementById('bprefix');
+            const batchPhase = document.getElementById('bphase');
+
+            if (classNameExample) classNameExample.textContent = config.prefix + 'A';
+            if (singlePhase) singlePhase.value = config.phase;
+            if (batchPrefix) batchPrefix.value = config.prefix;
+            if (batchPhase) batchPhase.value = config.phase;
+        }
+
+        document.getElementById('level')?.addEventListener('change', function () {
+            syncClassLevelFields(this.value);
+        });
+        document.getElementById('blevel')?.addEventListener('change', function () {
+            syncClassLevelFields(this.value);
+        });
+    </script>
 </x-layout.app>
 

@@ -21,7 +21,7 @@
     <x-card title="Data Siswa Madrasah">
         <x-slot:actions>
             <div class="grp">
-                @if($selectedClass && $selectedClass->level < 9)
+                @if($canPromote)
                     <button type="button" class="btn b-inf" onclick="document.getElementById('modalNaikKelas').showModal()">Naikkan Siswa dari {{ $selectedClass->name }}</button>
                 @elseif($selectedClass)
                     <span class="n" style="align-self: center">Kelas tingkat akhir</span>
@@ -152,7 +152,7 @@
         @endif
     </x-card>
 
-    @if($selectedClass && $selectedClass->level < 9)
+    @if($canPromote)
         <x-modal id="modalNaikKelas" title="Naikkan Siswa ke Tahun Ajaran Baru">
             <form method="POST" action="{{ route('operator.students.promote') }}" id="formNaikKelas" onsubmit="return confirm('Naikkan semua siswa aktif ke kelas tujuan? Riwayat tahun ajaran asal tetap tersimpan.')">
                 @csrf
@@ -349,7 +349,7 @@
     @endif
 
     <script>
-        @if($selectedClass && $selectedClass->level < 9)
+        @if($canPromote)
         const targetYearSelect = document.getElementById('target_academic_year_id');
         const targetClassSelect = document.getElementById('target_classroom_id');
         const promotionClassHint = document.getElementById('promotionClassHint');

@@ -27,6 +27,19 @@ tanpa password atau dengan password internal) agar guru hanya mengisi kolom nila
 | Tanggal Lahir | ✓ | format tanggal Excel atau `DD-MM-YYYY` |
 | Alamat | | |
 
+**Mata pelajaran** — sheet `mapel`, template mengikuti kurikulum yang sedang dipilih
+| Kolom | Wajib | Catatan |
+|---|---|---|
+| Kode Mapel | ✓ | Maksimal 20 karakter; bersama kurikulum menjadi kunci update |
+| Nama Mata Pelajaran | ✓ | Maksimal 150 karakter |
+| Kode Mapel Induk | | Kosongkan untuk mapel mandiri/induk |
+| Kelompok (umum/mulok) | ✓ | Isi `umum` atau `mulok` |
+| Kurikulum (merdeka/k13) | ✓ | Isi `merdeka` atau `k13` |
+| Urutan Cetak | | Bilangan bulat minimal 0; kosong = 0 |
+| Status Aktif (1/0) | | Kosong = aktif |
+
+Baris mapel yang sudah ada diperbarui berdasarkan kombinasi kurikulum dan kode. Baris baru ditambahkan.
+
 ## 2. Template nilai (guru)
 
 **Sumatif LM** — satu file per mapel-kelas, satu sheet per LM (meniru RDM: "PH 2 dan seterusnya

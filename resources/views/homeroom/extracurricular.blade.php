@@ -1,16 +1,10 @@
-<x-layout.app :title="$isOperator ? 'Prestasi Operator · Ekstrakurikuler' : 'Wali Kelas · Ekstrakurikuler'" :userRole="$isOperator ? 'operator' : 'guru'">
-    @if($isOperator)
-        <x-slot:sidebar>
-            <x-sidebar.operator active="extracurriculars" />
-        </x-slot:sidebar>
-    @endif
+<x-layout.app title="Operator · Ekstrakurikuler" userRole="operator">
+    <x-slot:sidebar>
+        <x-sidebar.operator active="extracurriculars" />
+    </x-slot:sidebar>
 
     <x-slot:breadcrumb>
-        @if($isOperator)
-            <a href="{{ route('operator.dashboard') }}">Home</a> / <span>Siswa</span> / <span>Ekstrakurikuler</span>
-        @else
-            <a href="{{ route('guru.dashboard') }}">Home</a> / <span>Wali Kelas</span> / <span>Ekstrakurikuler</span>
-        @endif
+        <a href="{{ route('operator.dashboard') }}">Home</a> / <span>Siswa</span> / <span>Ekstrakurikuler</span>
     </x-slot:breadcrumb>
 
     @if(session('success'))
@@ -64,11 +58,9 @@
                 Tambahkan satu atau beberapa kegiatan per siswa. Predikat dan keterangan ini akan tampil di rapor jika bagian Ekstrakurikuler diaktifkan pada Pengaturan Cetak.
             </div>
 
-            <form method="POST" action="{{ $isOperator ? route('operator.extracurricular.update') : route('wali.ekstrakurikuler.update') }}" id="form-extracurricular">
+            <form method="POST" action="{{ route('operator.extracurricular.update') }}" id="form-extracurricular">
                 @csrf
-                @if($isOperator)
-                    <input type="hidden" name="classroom_id" value="{{ $classroom->id }}">
-                @endif
+                <input type="hidden" name="classroom_id" value="{{ $classroom->id }}">
                 <div class="tb">
                     <table class="t">
                         <thead>
@@ -76,6 +68,7 @@
                                 <th style="width: 36px">#</th>
                                 <th style="width: 230px">NISN / Nama</th>
                                 <th>Kegiatan Ekstrakurikuler</th>
+                                <th style="width: 220px">Guru Pembina</th>
                                 <th style="width: 150px">Predikat</th>
                                 <th>Keterangan</th>
                             </tr>
@@ -86,6 +79,7 @@
                                     $existing = $records->get($student->id, collect())
                                         ->map(fn ($record) => [
                                             'name' => $record->name,
+                                            'supervisor_id' => $record->supervisor_id,
                                             'predicate' => $record->predicate,
                                             'description' => $record->description,
                                         ])->all();
@@ -97,11 +91,17 @@
                                         <b>{{ $student->name }}</b><br>
                                         <span class="cs">{{ $student->nisn }}</span>
                                     </td>
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <div class="extra-list" data-student-id="{{ $student->id }}">
                                             @foreach($studentRecords as $recordIndex => $record)
-                                                <div class="extra-row" style="display: grid; grid-template-columns: minmax(180px, 1fr) 140px minmax(180px, 1fr) auto; gap: 8px; margin-bottom: 8px; align-items: start">
+                                                <div class="extra-row" style="display: grid; grid-template-columns: minmax(180px, 1fr) 220px 140px minmax(180px, 1fr) auto; gap: 8px; margin-bottom: 8px; align-items: start">
                                                     <input class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][name]" value="{{ $record['name'] ?? '' }}" placeholder="Contoh: Pramuka" maxlength="100" {{ $isLocked ? 'disabled' : '' }}>
+                                                    <select class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][supervisor_id]" {{ $isLocked ? 'disabled' : '' }}>
+                                                        <option value="">- Pilih guru pembina -</option>
+                                                        @foreach($teachers as $teacher)
+                                                            <option value="{{ $teacher->id }}" @selected((int) ($record['supervisor_id'] ?? 0) === $teacher->id)>{{ $teacher->name }}</option>
+                                                        @endforeach
+                                                    </select>
                                                     <select class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][predicate]" {{ $isLocked ? 'disabled' : '' }}>
                                                         @foreach(['Sangat Baik', 'Baik', 'Cukup', 'Kurang'] as $predicate)
                                                             <option value="{{ $predicate }}" @selected(($record['predicate'] ?? 'Baik') === $predicate)>{{ $predicate }}</option>
@@ -121,7 +121,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" style="text-align: center; padding: 24px; color: #6c757d">
+                                    <td colspan="6" style="text-align: center; padding: 24px; color: #6c757d">
                                         Belum ada siswa aktif terdaftar di kelas {{ $classroom->name }}.
                                     </td>
                                 </tr>
@@ -143,11 +143,16 @@
                         const index = list.querySelectorAll('.extra-row').length;
                         const row = document.createElement('div');
                         row.className = 'extra-row';
-                        row.style.cssText = 'display:grid;grid-template-columns:minmax(180px,1fr) 140px minmax(180px,1fr) auto;gap:8px;margin-bottom:8px;align-items:start';
+                        row.style.cssText = 'display:grid;grid-template-columns:minmax(180px,1fr) 220px 140px minmax(180px,1fr) auto;gap:8px;margin-bottom:8px;align-items:start';
                         row.innerHTML = '<input class="in" name="extracurriculars[' + studentId + '][' + index + '][name]" placeholder="Contoh: Pramuka" maxlength="100">' +
+                            '<select class="in supervisor-select" name="extracurriculars[' + studentId + '][' + index + '][supervisor_id]"></select>' +
                             '<select class="in" name="extracurriculars[' + studentId + '][' + index + '][predicate]"><option>Sangat Baik</option><option selected>Baik</option><option>Cukup</option><option>Kurang</option></select>' +
                             '<input class="in" name="extracurriculars[' + studentId + '][' + index + '][description]" placeholder="Keterangan (opsional)" maxlength="255">' +
                             '<button type="button" class="btn b-dan remove-extra" style="min-height:34px;padding:0 10px" aria-label="Hapus kegiatan">×</button>';
+                        const supervisorSelect = row.querySelector('.supervisor-select');
+                        supervisorSelect.appendChild(new Option('- Pilih guru pembina -', ''));
+                        @json($teachers->map(fn ($teacher) => ['id' => $teacher->id, 'name' => $teacher->name])->values())
+                            .forEach(function (teacher) { supervisorSelect.appendChild(new Option(teacher.name, teacher.id)); });
                         list.appendChild(row);
                         row.querySelector('.remove-extra').addEventListener('click', function () { row.remove(); });
                     });

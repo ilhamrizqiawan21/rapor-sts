@@ -29,6 +29,7 @@ use App\Http\Controllers\Report\ReportCardController;
 use App\Http\Controllers\Teacher\AssessmentController;
 use App\Http\Controllers\Teacher\CompetencyOverrideController;
 use App\Http\Controllers\Teacher\DashboardController as TeacherDashboardController;
+use App\Http\Controllers\Teacher\ExtracurricularController as TeacherExtracurricularController;
 use App\Http\Controllers\Teacher\ImportController;
 use App\Http\Controllers\Teacher\LearningScopeController;
 use App\Http\Controllers\Teacher\RdmExportController;
@@ -74,8 +75,11 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
 
     // Mata Pelajaran
     Route::get('/mapel', [SubjectController::class, 'index'])->name('subjects.index');
+    Route::get('/mapel/template', [SubjectController::class, 'template'])->name('subjects.template');
     Route::post('/mapel', [SubjectController::class, 'store'])->name('subjects.store');
+    Route::post('/mapel/import', [SubjectController::class, 'import'])->name('subjects.import');
     Route::put('/mapel/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
+    Route::patch('/mapel/{subject}/urutan', [SubjectController::class, 'move'])->name('subjects.move');
     Route::delete('/mapel/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
 
     // Kelas
@@ -177,6 +181,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::post('/mengajar/{teachingAssignment}/rdm/sumatif/fill', [RdmExportController::class, 'fillSummativeTemplate'])->name('rdm.sumatif.fill');
     Route::get('/mengajar/{teachingAssignment}/rdm/sts', [RdmExportController::class, 'exportSts'])->name('rdm.sts.export');
     Route::post('/mengajar/{teachingAssignment}/rdm/sts/fill', [RdmExportController::class, 'fillStsTemplate'])->name('rdm.sts.fill');
+
+    // Penilaian ekstrakurikuler oleh guru pembina
+    Route::get('/ekstrakurikuler', [TeacherExtracurricularController::class, 'index'])->name('ekstrakurikuler.index');
+    Route::post('/ekstrakurikuler', [TeacherExtracurricularController::class, 'update'])->name('ekstrakurikuler.update');
 });
 
 // Wali Kelas Routes (FR-WAL-*)
@@ -187,10 +195,6 @@ Route::middleware(['auth', 'role:guru'])->prefix('wali')->name('wali.')->group(f
     Route::post('/kehadiran/massal', [HomeroomRecordController::class, 'batchNote'])->name('kehadiran.batch_note');
     Route::get('/kehadiran/template', [HomeroomRecordController::class, 'template'])->name('kehadiran.template');
     Route::post('/kehadiran/import', [HomeroomRecordController::class, 'import'])->name('kehadiran.import');
-
-    // Ekstrakurikuler per siswa (v1.1)
-    Route::get('/ekstrakurikuler', [ExtracurricularController::class, 'index'])->name('ekstrakurikuler.index');
-    Route::post('/ekstrakurikuler', [ExtracurricularController::class, 'update'])->name('ekstrakurikuler.update');
 
     // Status Nilai & Kunci (Mockup 06)
     Route::get('/status', [HomeroomStatusController::class, 'index'])->name('status.index');

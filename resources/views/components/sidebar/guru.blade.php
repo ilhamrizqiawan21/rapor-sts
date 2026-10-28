@@ -46,16 +46,22 @@
             ->first();
     }
 
+    $hasExtracurricularAssignment = $user && $activePeriod
+        ? \App\Models\ExtracurricularRecord::where('period_id', $activePeriod->id)
+            ->where('supervisor_id', $user->id)
+            ->exists()
+        : false;
+
     $currentRoute = request()->route()?->getName();
     $activeKey = $active;
     if ($activeKey === 'dashboard' && !request()->routeIs('guru.dashboard')) {
         if (request()->routeIs('wali.kehadiran.*')) $activeKey = 'wali_kehadiran';
-        elseif (request()->routeIs('wali.ekstrakurikuler.*')) $activeKey = 'wali_ekstrakurikuler';
+        elseif (request()->routeIs('guru.ekstrakurikuler.*')) $activeKey = 'extracurricular';
         elseif (request()->routeIs('wali.status.*')) $activeKey = 'wali_status';
         elseif (request()->routeIs('wali.rapor.*')) $activeKey = 'wali_rapor';
     }
 
-    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_ekstrakurikuler', 'wali_status', 'wali_rapor']);
+    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']);
 @endphp
 
 <nav class="nav" aria-label="Menu guru">
@@ -103,9 +109,6 @@
                 <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $activeKey === 'wali_kehadiran' ? 'on' : '' }}">
                     <span>Kehadiran &amp; Catatan</span>
                 </a>
-                <a href="{{ route('wali.ekstrakurikuler.index') }}" class="sub {{ $activeKey === 'wali_ekstrakurikuler' ? 'on' : '' }}">
-                    <span>Ekstrakurikuler</span>
-                </a>
                 <a href="{{ route('wali.status.index') }}" class="sub {{ $activeKey === 'wali_status' ? 'on' : '' }}">
                     <span>Status Nilai</span>
                 </a>
@@ -114,6 +117,14 @@
                 </a>
             </div>
         </div>
+    @endif
+
+    @if($hasExtracurricularAssignment)
+        <div class="sec">Tugas Penilaian</div>
+        <a href="{{ route('guru.ekstrakurikuler.index') }}" class="{{ $activeKey === 'extracurricular' ? 'on' : '' }}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
+            <span>Penilaian Ekstrakurikuler</span>
+        </a>
     @endif
 
     <div class="sec">Akun</div>

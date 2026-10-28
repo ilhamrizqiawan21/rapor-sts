@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Homeroom;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Homeroom\ExtracurricularRequest;
 use App\Models\Classroom;
 use App\Models\ExtracurricularRecord;
 use App\Models\Period;
+use App\Models\User;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,6 +38,7 @@ class ExtracurricularController extends Controller
         $records = ExtracurricularRecord::query()
             ->where('period_id', $period->id)
             ->where('classroom_id', $classroom->id)
+            ->with('supervisor')
             ->orderBy('name')
             ->get()
             ->groupBy('student_id');
@@ -48,6 +51,11 @@ class ExtracurricularController extends Controller
             'period' => $period,
             'students' => $students,
             'records' => $records,
+            'teachers' => User::query()
+                ->where('role', Role::Guru->value)
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get(['id', 'name']),
             'isLocked' => $classroom->isLockedInPeriod($period->id),
             'isOperator' => $isOperator,
         ]);
@@ -79,6 +87,7 @@ class ExtracurricularController extends Controller
                         'period_id' => $period->id,
                         'classroom_id' => $classroom->id,
                         'student_id' => (int) $studentId,
+                        'supervisor_id' => (int) $record['supervisor_id'],
                         'name' => $name,
                         'predicate' => $record['predicate'],
                         'description' => filled($record['description'] ?? null)
@@ -119,13 +128,13 @@ class ExtracurricularController extends Controller
                 ->orderBy('level')
                 ->orderBy('name');
         } else {
-            $classroomQuery->where('homeroom_teacher_id', $user->id);
+            abort(403, 'Penilaian ekstrakurikuler hanya dapat dikelola operator dan guru pembina.');
         }
 
         $classroom = $classroomQuery->first();
 
         if (! $classroom) {
-            abort(403, 'Anda bukan wali kelas pada periode aktif ini.');
+            abort(403, 'Kelas tidak ditemukan pada periode aktif ini.');
         }
 
         return [$classroom, $period];

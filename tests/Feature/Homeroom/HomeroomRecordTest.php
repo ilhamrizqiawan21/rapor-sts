@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\ClassroomLock;
 use App\Models\Enrollment;
+use App\Models\ExtracurricularRecord;
 use App\Models\HomeroomRecord;
 use App\Models\Period;
 use App\Models\Student;
@@ -101,14 +102,15 @@ class HomeroomRecordTest extends TestCase
         ]);
     }
 
-    public function test_homeroom_teacher_can_save_multiple_extracurricular_records_per_student(): void
+    public function test_assigned_extracurricular_teacher_can_save_assessment(): void
     {
-        $teacher = User::factory()->guru()->create();
+        $homeroomTeacher = User::factory()->guru()->create();
+        $supervisor = User::factory()->guru()->create(['name' => 'Guru Pembina']);
         $year = AcademicYear::factory()->create(['name' => '2034/2035']);
         $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
         $classroom = Classroom::factory()->create([
             'academic_year_id' => $year->id,
-            'homeroom_teacher_id' => $teacher->id,
+            'homeroom_teacher_id' => $homeroomTeacher->id,
         ]);
         $student = Student::factory()->create(['name' => 'Siswa Ekstrakurikuler']);
         Enrollment::create([
@@ -116,21 +118,22 @@ class HomeroomRecordTest extends TestCase
             'classroom_id' => $classroom->id,
             'student_id' => $student->id,
         ]);
+        $record = ExtracurricularRecord::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'supervisor_id' => $supervisor->id,
+            'name' => 'Pramuka',
+            'predicate' => 'Baik',
+        ]);
 
         $response = $this->withSession(['period_id' => $period->id])
-            ->actingAs($teacher)->post(route('wali.ekstrakurikuler.update'), [
-                'extracurriculars' => [
-                    $student->id => [
-                        [
-                            'name' => 'Pramuka',
-                            'predicate' => 'Sangat Baik',
-                            'description' => 'Aktif mengikuti latihan.',
-                        ],
-                        [
-                            'name' => 'Tahfiz',
-                            'predicate' => 'Baik',
-                            'description' => 'Hafalan berkembang.',
-                        ],
+            ->actingAs($supervisor)->post(route('guru.ekstrakurikuler.update'), [
+                'classroom_id' => $classroom->id,
+                'records' => [
+                    $record->id => [
+                        'predicate' => 'Sangat Baik',
+                        'description' => 'Aktif mengikuti latihan.',
                     ],
                 ],
             ]);
@@ -143,23 +146,24 @@ class HomeroomRecordTest extends TestCase
             'student_id' => $student->id,
             'name' => 'Pramuka',
             'predicate' => 'Sangat Baik',
-        ]);
-        $this->assertDatabaseHas('extracurricular_records', [
-            'student_id' => $student->id,
-            'name' => 'Tahfiz',
-            'predicate' => 'Baik',
+            'supervisor_id' => $supervisor->id,
         ]);
 
         $this->withSession(['period_id' => $period->id])
-            ->actingAs($teacher)->get(route('wali.ekstrakurikuler.index'))
+            ->actingAs($supervisor)->get(route('guru.ekstrakurikuler.index'))
             ->assertOk()
             ->assertSee('Pramuka')
-            ->assertSee('Tahfiz');
+            ->assertSee('Anda adalah guru pembina');
+
+        $this->withSession(['period_id' => $period->id])
+            ->actingAs($homeroomTeacher)->get(route('guru.ekstrakurikuler.index'))
+            ->assertStatus(403);
     }
 
     public function test_operator_can_view_and_save_extracurricular_records_for_selected_classroom(): void
     {
         $operator = User::where('username', 'admin')->firstOrFail();
+        $supervisor = User::factory()->guru()->create(['name' => 'Pembina Operator']);
         $year = AcademicYear::factory()->create(['name' => '2044/2045']);
         $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
         $classroom = Classroom::factory()->create(['academic_year_id' => $year->id, 'name' => 'VII.A']);
@@ -174,7 +178,8 @@ class HomeroomRecordTest extends TestCase
             ->withSession(['period_id' => $period->id])
             ->get(route('operator.extracurricular.index', ['classroom_id' => $classroom->id]))
             ->assertOk()
-            ->assertSee('Siswa Operator Ekstra');
+            ->assertSee('Siswa Operator Ekstra')
+            ->assertSee('Pembina Operator');
 
         $this->actingAs($operator)
             ->withSession(['period_id' => $period->id])
@@ -183,6 +188,7 @@ class HomeroomRecordTest extends TestCase
                 'extracurriculars' => [
                     $student->id => [[
                         'name' => 'Pramuka',
+                        'supervisor_id' => $supervisor->id,
                         'predicate' => 'Sangat Baik',
                         'description' => 'Aktif.',
                     ]],
@@ -195,6 +201,7 @@ class HomeroomRecordTest extends TestCase
             'classroom_id' => $classroom->id,
             'student_id' => $student->id,
             'name' => 'Pramuka',
+            'supervisor_id' => $supervisor->id,
         ]);
     }
 

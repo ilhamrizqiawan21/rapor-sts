@@ -2,9 +2,11 @@
 
 namespace App\Services\Import;
 
+use App\Enums\Curriculum;
 use App\Models\Classroom;
 use App\Models\HomeroomRecord;
 use App\Models\Period;
+use App\Models\Subject;
 use App\Models\TeachingAssignment;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -13,6 +15,56 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class TemplateBuilder
 {
+    public function buildSubjectTemplate(Curriculum $curriculum): Spreadsheet
+    {
+        $subjects = Subject::with('parent')
+            ->where('curriculum', $curriculum)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $spreadsheet = new Spreadsheet;
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('mapel');
+
+        $sheet->setCellValue('A1', 'TEMPLATE IMPORT DATA MATA PELAJARAN — '.$curriculum->label());
+        $sheet->mergeCells('A1:G1');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+
+        $sheet->setCellValue('A2', 'Petunjuk: Tambahkan baris baru mulai baris kosong berikutnya. Kode mapel + kurikulum menjadi kunci update. Kode mapel induk boleh dikosongkan. Status aktif diisi 1 atau 0.');
+        $sheet->mergeCells('A2:G2');
+        $sheet->getStyle('A2')->getFont()->setItalic(true)->setSize(11);
+
+        $headers = ['Kode Mapel', 'Nama Mata Pelajaran', 'Kode Mapel Induk', 'Kelompok (umum/mulok)', 'Kurikulum (merdeka/k13)', 'Urutan Cetak', 'Status Aktif (1/0)'];
+        $cols = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+        foreach ($headers as $idx => $header) {
+            $cell = $cols[$idx].'3';
+            $sheet->setCellValue($cell, $header);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF1F3F5');
+            $sheet->getStyle($cell)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+        }
+
+        $row = 4;
+        foreach ($subjects as $subject) {
+            $sheet->setCellValueExplicit('A'.$row, $subject->code, DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('B'.$row, $subject->name, DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('C'.$row, $subject->parent?->code ?? '', DataType::TYPE_STRING);
+            $sheet->setCellValue('D'.$row, $subject->group);
+            $sheet->setCellValue('E'.$row, $subject->curriculum->value);
+            $sheet->setCellValue('F'.$row, $subject->sort_order);
+            $sheet->setCellValue('G'.$row, $subject->is_active ? 1 : 0);
+            $row++;
+        }
+
+        foreach ($cols as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        return $spreadsheet;
+    }
+
     public function buildTeacherTemplate(): Spreadsheet
     {
         $spreadsheet = new Spreadsheet;

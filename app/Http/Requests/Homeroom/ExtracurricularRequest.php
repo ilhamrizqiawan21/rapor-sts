@@ -2,26 +2,31 @@
 
 namespace App\Http\Requests\Homeroom;
 
+use App\Enums\Role;
 use App\Models\Classroom;
 use App\Models\Enrollment;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ExtracurricularRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isGuru() || $this->user()?->isOperator();
+        return $this->user()?->isOperator() ?? false;
     }
 
     public function rules(): array
     {
         return [
-            'classroom_id' => $this->user()?->isOperator()
-                ? ['required', 'integer', 'exists:classrooms,id']
-                : ['nullable', 'integer', 'exists:classrooms,id'],
+            'classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
             'extracurriculars' => ['nullable', 'array'],
             'extracurriculars.*' => ['array'],
             'extracurriculars.*.*.name' => ['nullable', 'string', 'max:100'],
+            'extracurriculars.*.*.supervisor_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where('role', Role::Guru->value)->where('is_active', true),
+            ],
             'extracurriculars.*.*.predicate' => ['nullable', 'required_with:extracurriculars.*.*.name', 'in:Sangat Baik,Baik,Cukup,Kurang'],
             'extracurriculars.*.*.description' => ['nullable', 'string', 'max:255'],
         ];
@@ -31,6 +36,7 @@ class ExtracurricularRequest extends FormRequest
     {
         return [
             'extracurriculars.*.*.name.max' => 'Nama ekstrakurikuler maksimal 100 karakter.',
+            'extracurriculars.*.*.supervisor_id.exists' => 'Guru pembina harus merupakan guru aktif.',
             'extracurriculars.*.*.predicate.required_with' => 'Predikat wajib dipilih jika nama ekstrakurikuler diisi.',
             'extracurriculars.*.*.predicate.in' => 'Predikat ekstrakurikuler tidak valid.',
             'extracurriculars.*.*.description.max' => 'Keterangan ekstrakurikuler maksimal 255 karakter.',
@@ -49,10 +55,6 @@ class ExtracurricularRequest extends FormRequest
             if ($period && $this->user()?->isOperator()) {
                 $classroom = Classroom::where('academic_year_id', $period->academic_year_id)
                     ->whereKey((int) $this->input('classroom_id'))
-                    ->first();
-            } elseif ($period) {
-                $classroom = Classroom::where('academic_year_id', $period->academic_year_id)
-                    ->where('homeroom_teacher_id', $this->user()?->id)
                     ->first();
             }
 
@@ -83,6 +85,16 @@ class ExtracurricularRequest extends FormRequest
                 if ($names->count() !== $names->unique()->count()) {
                     $validator->errors()->add('extracurriculars', 'Nama ekstrakurikuler tidak boleh duplikat untuk siswa yang sama.');
                     break;
+                }
+            }
+
+            foreach ((array) $this->input('extracurriculars', []) as $studentRecords) {
+                foreach ((array) $studentRecords as $record) {
+                    if (filled($record['name'] ?? null) && blank($record['supervisor_id'] ?? null)) {
+                        $validator->errors()->add('extracurriculars', 'Guru pembina wajib dipilih untuk setiap kegiatan.');
+
+                        return;
+                    }
                 }
             }
         });

@@ -13,10 +13,21 @@
     @if(session('error'))
         <x-alert variant="warning">{{ session('error') }}</x-alert>
     @endif
+    @if($errors->any())
+        <x-alert variant="warning">
+            @foreach($errors->all() as $err)
+                <div>{!! nl2br(e(str_replace("<br>", "\n", $err))) !!}</div>
+            @endforeach
+        </x-alert>
+    @endif
 
     <x-card title="Daftar Mata Pelajaran">
         <x-slot:actions>
-            <button type="button" class="btn b-pri" onclick="document.getElementById('modalTambahMapel').showModal()">+ Tambah Mapel</button>
+            <div class="grp">
+                <button type="button" class="btn b-pri" onclick="document.getElementById('modalTambahMapel').showModal()">+ Tambah Mapel</button>
+                <button type="button" class="btn b-suc" onclick="document.getElementById('modalImportMapel').showModal()">Upload Excel</button>
+                <a href="{{ route('operator.subjects.template', ['curriculum' => $curriculum]) }}" class="btn b-war">Unduh Template</a>
+            </div>
         </x-slot:actions>
 
         <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px">
@@ -38,7 +49,7 @@
                         <th>Kelompok</th>
                         <th>Urutan</th>
                         <th>Status</th>
-                        <th style="width: 120px">Aksi</th>
+                        <th style="width: 190px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -60,11 +71,25 @@
                                 @endif
                             </td>
                             <td>
-                                <form method="POST" action="{{ route('operator.subjects.destroy', $s) }}" onsubmit="return confirm('Hapus mata pelajaran {{ $s->name }}?')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
-                                </form>
+                                <div class="grp" style="gap: 4px">
+                                    <form method="POST" action="{{ route('operator.subjects.move', $s) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="direction" value="up">
+                                        <button type="submit" class="btn b-sec" style="min-height: 28px; padding: 0 8px; font-size: 14px" title="Naikkan urutan" aria-label="Naikkan urutan {{ $s->name }}" @disabled($idx === 0)>↑</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('operator.subjects.move', $s) }}">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="direction" value="down">
+                                        <button type="submit" class="btn b-sec" style="min-height: 28px; padding: 0 8px; font-size: 14px" title="Turunkan urutan" aria-label="Turunkan urutan {{ $s->name }}" @disabled($idx === $subjects->count() - 1)>↓</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('operator.subjects.destroy', $s) }}" onsubmit="return confirm('Hapus mata pelajaran {{ $s->name }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn b-dan" style="min-height: 28px; padding: 0 8px; font-size: 12px">Hapus</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -115,6 +140,25 @@
         <x-slot:footer>
             <button type="button" class="btn b-sec" onclick="document.getElementById('modalTambahMapel').close()">Batal</button>
             <button type="button" class="btn b-pri" onclick="document.getElementById('formTambahMapel').submit()">Simpan</button>
+        </x-slot:footer>
+    </x-modal>
+
+    {{-- Modal Upload Excel Mapel --}}
+    <x-modal id="modalImportMapel" title="Upload File Excel Mata Pelajaran">
+        <form method="POST" action="{{ route('operator.subjects.import') }}" enctype="multipart/form-data" id="formImportMapel">
+            @csrf
+            <div class="alert a-lt" style="margin-bottom: 12px">
+                Gunakan template resmi dari tombol <b>Unduh Template</b>. Data lama akan diperbarui berdasarkan kombinasi kurikulum dan kode mapel; baris baru akan ditambahkan. Format .xlsx, maksimal 2 MB.
+            </div>
+            <div class="f">
+                <label for="mapelFile">Pilih File Excel (.xlsx)</label>
+                <input id="mapelFile" name="file" type="file" accept=".xlsx" class="in" style="padding: 4px 10px" required>
+            </div>
+        </form>
+
+        <x-slot:footer>
+            <button type="button" class="btn b-sec" onclick="document.getElementById('modalImportMapel').close()">Batal</button>
+            <button type="button" class="btn b-suc" onclick="document.getElementById('formImportMapel').submit()">Upload & Proses</button>
         </x-slot:footer>
     </x-modal>
 </x-layout.app>

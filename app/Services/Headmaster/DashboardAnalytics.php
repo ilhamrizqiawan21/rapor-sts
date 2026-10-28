@@ -4,6 +4,7 @@ namespace App\Services\Headmaster;
 
 use App\Enums\Achievement;
 use App\Models\Classroom;
+use App\Models\MadrasahProfile;
 use App\Models\Period;
 use App\Models\TeachingAssignment;
 use App\Services\Grading\AchievementResolver;
@@ -248,12 +249,7 @@ class DashboardAnalytics
                     : 0;
             }
 
-            $levelRoman = match ($lvl) {
-                7 => 'VII',
-                8 => 'VIII',
-                9 => 'IX',
-                default => (string) $lvl,
-            };
+            $levelRoman = MadrasahProfile::classLevelRoman((int) $lvl);
 
             $achievementDistribution[] = [
                 'level' => $lvl,

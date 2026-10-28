@@ -8,6 +8,7 @@ use App\Http\Requests\Operator\ClassroomBatchRequest;
 use App\Http\Requests\Operator\ClassroomRequest;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
+use App\Models\MadrasahProfile;
 use App\Models\User;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
@@ -31,13 +32,32 @@ class ClassroomController extends Controller
             ->get();
 
         $teachers = User::where('role', Role::Guru)->where('is_active', true)->orderBy('name')->get();
+        $profile = MadrasahProfile::first();
+        $gradeLevels = collect($profile?->classLevels() ?? range(1, 12))
+            ->mapWithKeys(fn (int $level): array => [$level => MadrasahProfile::classLevelLabel($level)])
+            ->all();
+        $classLevelConfig = collect(array_keys($gradeLevels))
+            ->mapWithKeys(fn (int $level): array => [$level => [
+                'prefix' => MadrasahProfile::classLevelRoman($level).'.',
+                'phase' => MadrasahProfile::phaseForClassLevel($level),
+            ]])
+            ->all();
 
-        return view('operator.classrooms.index', compact('classrooms', 'academicYears', 'selectedYearId', 'teachers'));
+        return view('operator.classrooms.index', compact(
+            'classrooms',
+            'academicYears',
+            'selectedYearId',
+            'teachers',
+            'gradeLevels',
+            'classLevelConfig'
+        ));
     }
 
     public function store(ClassroomRequest $request): RedirectResponse
     {
-        $classroom = Classroom::create($request->validated());
+        $data = $request->validated();
+        $data['phase'] ??= MadrasahProfile::phaseForClassLevel((int) $data['level']);
+        $classroom = Classroom::create($data);
 
         ActivityLogger::log('create_classroom', "Menambahkan kelas {$classroom->name}", $classroom);
 
@@ -52,7 +72,7 @@ class ClassroomController extends Controller
         $level = $validated['level'];
         $prefix = trim($validated['prefix']);
         $curriculum = $validated['curriculum'];
-        $phase = $validated['phase'] ?? 'D';
+        $phase = $validated['phase'] ?? MadrasahProfile::phaseForClassLevel($level);
 
         // Parsing daftar paralel (misal: "A, B, C, D" atau "A;B;C")
         $parallels = preg_split('/[\s,;]+/', $validated['parallels'], -1, PREG_SPLIT_NO_EMPTY);

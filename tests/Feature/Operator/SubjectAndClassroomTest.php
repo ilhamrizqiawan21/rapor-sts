@@ -5,7 +5,9 @@ namespace Tests\Feature\Operator;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
+use App\Models\MadrasahProfile;
 use App\Models\Student;
+use App\Models\Subject;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,6 +53,39 @@ class SubjectAndClassroomTest extends TestCase
         $response->assertSessionHasErrors('code');
     }
 
+    public function test_operator_can_move_subject_order_up_and_down(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $first = Subject::create([
+            'code' => 'ORD1',
+            'name' => 'Mapel Urutan Satu',
+            'group' => 'umum',
+            'curriculum' => 'merdeka',
+            'sort_order' => 90,
+            'is_active' => true,
+        ]);
+        $second = Subject::create([
+            'code' => 'ORD2',
+            'name' => 'Mapel Urutan Dua',
+            'group' => 'umum',
+            'curriculum' => 'merdeka',
+            'sort_order' => 91,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($operator)
+            ->patch(route('operator.subjects.move', $first), ['direction' => 'down'])
+            ->assertRedirect(route('operator.subjects.index', ['curriculum' => 'merdeka']));
+
+        $this->assertGreaterThan($second->fresh()->sort_order, $first->fresh()->sort_order);
+
+        $this->actingAs($operator)
+            ->patch(route('operator.subjects.move', $first), ['direction' => 'up'])
+            ->assertRedirect(route('operator.subjects.index', ['curriculum' => 'merdeka']));
+
+        $this->assertLessThan($second->fresh()->sort_order, $first->fresh()->sort_order);
+    }
+
     public function test_operator_can_create_batch_classrooms(): void
     {
         $operator = User::where('username', 'admin')->first();
@@ -69,6 +104,47 @@ class SubjectAndClassroomTest extends TestCase
         $this->assertDatabaseHas('classrooms', ['academic_year_id' => $year->id, 'name' => 'VII.A']);
         $this->assertDatabaseHas('classrooms', ['academic_year_id' => $year->id, 'name' => 'VII.B']);
         $this->assertDatabaseHas('classrooms', ['academic_year_id' => $year->id, 'name' => 'VII.C']);
+    }
+
+    public function test_classroom_levels_follow_madrasah_jenjang_from_mi_to_ma(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $profile = MadrasahProfile::firstOrFail();
+        $year = AcademicYear::factory()->create();
+
+        foreach ([
+            ['MI', 1, 'I.A', 6, 'VI.A'],
+            ['MTs', 7, 'VII.A', 9, 'IX.A'],
+            ['MA', 10, 'X.A', 12, 'XII.A'],
+        ] as [$jenjang, $firstLevel, $firstName, $lastLevel, $lastName]) {
+            $profile->update(['level' => $jenjang]);
+
+            $this->actingAs($operator)
+                ->get(route('operator.classrooms.index', ['academic_year_id' => $year->id]))
+                ->assertOk()
+                ->assertSee(MadrasahProfile::classLevelLabel($firstLevel))
+                ->assertSee(MadrasahProfile::classLevelLabel($lastLevel));
+
+            $this->actingAs($operator)->post(route('operator.classrooms.store'), [
+                'academic_year_id' => $year->id,
+                'level' => $firstLevel,
+                'name' => $firstName,
+                'curriculum' => 'merdeka',
+            ])->assertRedirect();
+
+            $this->assertDatabaseHas('classrooms', [
+                'academic_year_id' => $year->id,
+                'name' => $firstName,
+                'phase' => MadrasahProfile::phaseForClassLevel($firstLevel),
+            ]);
+
+            $this->actingAs($operator)->post(route('operator.classrooms.store'), [
+                'academic_year_id' => $year->id,
+                'level' => $firstLevel - 1,
+                'name' => $lastName,
+                'curriculum' => 'merdeka',
+            ])->assertSessionHasErrors('level');
+        }
     }
 
     public function test_cannot_delete_classroom_with_enrolled_students(): void
