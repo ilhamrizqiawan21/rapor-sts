@@ -55,12 +55,6 @@
                     </div>
                 </div>
 
-                <div class="f">
-                    <label for="wm">Watermark</label>
-                    <input id="wm" name="watermark_text" class="in" placeholder="Contoh: ASLI, RAHASIA" value="{{ old('watermark_text', $setting->watermark_text) }}">
-                    <span class="hint">Kosongkan jika tidak ingin watermark di rapor. Catatan: Bila kelas belum dikunci, rapor otomatis diberi watermark "DRAFT".</span>
-                </div>
-
                 <fieldset style="border: 1px solid #dee2e6; border-radius: 4px; padding: 12px 16px; margin: 0">
                     <legend class="lbl" style="padding: 0 6px; font-weight: 600">Bagian yang ditampilkan di rapor STS</legend>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 16px">

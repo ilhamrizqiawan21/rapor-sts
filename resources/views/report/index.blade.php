@@ -16,7 +16,7 @@
 
     @if(! $isLocked)
         <div class="alert a-lt" style="margin-bottom: 16px">
-            <b>Informasi:</b> Kelas ini <b>belum dikunci</b>. Rapor tetap dapat dicetak untuk keperluan peninjauan, namun akan memuat watermark <b>"DRAFT"</b> hingga kelas dikunci oleh wali kelas.
+            <b>Informasi:</b> Kelas ini <b>belum dikunci</b>. Rapor tetap dapat dicetak untuk keperluan peninjauan.
         </div>
     @endif
 

@@ -145,5 +145,4 @@ Halaman 2
 6. QR verifikasi opsional di kiri bawah (v1.1 — isi URL verifikasi; di v1 cukup tidak tampil).
 7. Footer sama seperti halaman 1, "Halaman 2".
 
-Watermark teks (bila diisi) diagonal, abu 10% opacity. Bila kelas belum dikunci: watermark "DRAFT".
 Ukuran kertas dari pengaturan (A4 210×297 mm, F4 215×330 mm), margin 12 mm.

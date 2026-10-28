@@ -19,7 +19,6 @@ class PrintSettingRequest extends FormRequest
             'print_date' => ['required', 'date'],
             'score_label' => ['required', 'string', 'max:100'],
             'paper_size' => ['required', 'in:A4,F4'],
-            'watermark_text' => ['nullable', 'string', 'max:255'],
             'sections' => ['nullable', 'array'],
         ];
     }

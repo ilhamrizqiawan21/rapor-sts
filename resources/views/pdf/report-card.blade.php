@@ -23,19 +23,6 @@
         .page-break {
             page-break-after: always;
         }
-        .watermark {
-            position: fixed;
-            top: 35%;
-            left: 5%;
-            width: 90%;
-            text-align: center;
-            font-size: 72pt;
-            color: rgba(180, 180, 180, 0.16);
-            font-weight: bold;
-            transform: rotate(-35deg);
-            z-index: -1000;
-        }
-
         /* Kop */
         .kop-table {
             width: 100%;
@@ -163,10 +150,6 @@
     </style>
 </head>
 <body>
-
-@if($watermarkText)
-    <div class="watermark">{{ $watermarkText }}</div>
-@endif
 
 @foreach($studentsData as $studentIdx => $sData)
     @php

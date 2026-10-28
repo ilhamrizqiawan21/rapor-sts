@@ -46,7 +46,6 @@ class DemoSeeder extends Seeder
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
-                'watermark_text' => null,
                 'sections' => [
                     'show_total' => false,
                     'show_notes' => true,

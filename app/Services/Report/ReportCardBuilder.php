@@ -36,7 +36,6 @@ class ReportCardBuilder
      *     period: Period,
      *     isLocked: bool,
      *     isDraft: bool,
-     *     watermarkText: ?string,
      *     formattedDate: string,
      *     studentsData: Collection<int, array>
      * }
@@ -59,7 +58,6 @@ class ReportCardBuilder
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
-                'watermark_text' => null,
                 'sections' => [
                     'show_competency' => true,
                     'show_attendance' => true,
@@ -83,8 +81,6 @@ class ReportCardBuilder
 
         $isLocked = $classroom->isLockedInPeriod($period->id);
         $isDraft = ! $isLocked;
-
-        $watermarkText = $isDraft ? 'DRAFT' : ($printSetting->watermark_text ?: null);
 
         $formattedDate = Carbon::parse($printSetting->print_date)->translatedFormat('d F Y');
 
@@ -263,7 +259,6 @@ class ReportCardBuilder
             'period' => $period,
             'isLocked' => $isLocked,
             'isDraft' => $isDraft,
-            'watermarkText' => $watermarkText,
             'formattedDate' => $formattedDate,
             'studentsData' => $studentsData,
         ];

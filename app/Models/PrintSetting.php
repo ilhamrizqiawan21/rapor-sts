@@ -17,7 +17,6 @@ class PrintSetting extends Model
         'print_date',
         'score_label',
         'paper_size',
-        'watermark_text',
         'sections',
     ];
 

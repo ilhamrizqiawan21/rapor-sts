@@ -48,7 +48,7 @@ tahap sebelumnya direview dan di-merge. Centang `[x]` saat selesai. "Selesai" be
 - [x] Kehadiran & catatan + massal + upload (FR-WAL-02/03).
 - [x] Status nilai, kunci/buka, batal kirim (FR-WAL-04/05, FR-NIL-11).
 - [x] Pengaturan cetak (FR-RAP-01).
-- [x] PDF rapor per siswa & semua (04-DESIGN §6), watermark DRAFT.
+- [x] PDF rapor per siswa & semua (04-DESIGN §6), tanpa watermark.
 - [x] Leger PDF & Excel: format resmi madrasah (PAI group QH/AA/FIK/SKI, Mulok BSUN, Pengetahuan & Keterampilan, identitas JK, NIS, Nisn, kop resmi & ttd titimangsa).
 - [x] Test: data rapor (ReportCardBuilder) sesuai contoh; kunci hanya jika semua terkirim.
 - Selesai bila: PDF contoh dari DemoSeeder dibandingkan berdampingan dengan mockup 14–15 oleh pemilik.

@@ -189,7 +189,7 @@ erDiagram
         date print_date
         string score_label "Nilai STS"
         string paper_size "A4|F4"
-        string watermark_text "nullable"
+        string watermark_text "nullable, legacy/unused"
         json sections "flag tampil per bagian"
     }
     activity_logs {

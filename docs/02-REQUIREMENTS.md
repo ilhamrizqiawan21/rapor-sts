@@ -97,12 +97,12 @@ Setiap kebutuhan punya ID. Test dan commit sebaiknya menyebut ID terkait (mis. `
 - **FR-WAL-05** Kunci nilai kelas: hanya bisa jika semua mapel terkirim. Setelah dikunci, tidak ada
   perubahan nilai/kehadiran/catatan di kelas itu kecuali dibuka lagi oleh wali kelas/operator.
 - **FR-WAL-06** Cetak rapor STS: per siswa, semua siswa (satu PDF gabungan), dan leger (PDF & Excel).
-  Cetak tetap boleh sebelum dikunci, tetapi PDF diberi watermark "DRAFT" bila belum dikunci.
+  Cetak tetap boleh sebelum dikunci untuk keperluan peninjauan.
 
 ### A8. Operator — rapor (RAP)
 
 - **FR-RAP-01** Pengaturan cetak: judul rapor, tempat cetak, tanggal cetak, label kolom nilai,
-  ukuran kertas (A4/F4), watermark teks opsional, bagian yang tampil (capaian kompetensi,
+  ukuran kertas (A4/F4), bagian yang tampil (capaian kompetensi,
   ketidakhadiran, catatan wali kelas, tanggapan orang tua, baris jumlah, QR verifikasi).
   Ekstrakurikuler & prestasi disembunyikan di v1.
 - **FR-RAP-02** Nilai KKM/KKTP default per mapel per tingkat (dipakai sebagai default saat guru

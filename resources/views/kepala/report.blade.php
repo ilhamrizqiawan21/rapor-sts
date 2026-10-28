@@ -5,7 +5,7 @@
 
     @if(! $isLocked && $selectedClassroom)
         <div class="alert a-lt" style="margin-bottom: 16px">
-            <b>Informasi:</b> Kelas {{ $selectedClassroom->name }} <b>belum dikunci</b> oleh wali kelas. Rapor yang dicetak memuat watermark <b>"DRAFT"</b>.
+            <b>Informasi:</b> Kelas {{ $selectedClassroom->name }} <b>belum dikunci</b> oleh wali kelas. Rapor tetap dapat dicetak untuk keperluan peninjauan.
         </div>
     @endif
 

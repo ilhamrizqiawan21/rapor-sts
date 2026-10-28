@@ -39,6 +39,7 @@ class PrintSettingTest extends TestCase
         $response->assertSee('Pengaturan Cetak Rapor STS');
         $response->assertSee('Capaian Kompetensi');
         $response->assertSee('value="Nilai Akhir"', false);
+        $response->assertDontSee('Watermark');
     }
 
     public function test_operator_can_update_print_settings(): void
@@ -53,7 +54,6 @@ class PrintSettingTest extends TestCase
             'print_date' => '2026-11-01',
             'score_label' => 'Nilai STS',
             'paper_size' => 'F4',
-            'watermark_text' => 'CONFIDENTIAL',
             'sections' => [
                 'show_competency' => '1',
                 'show_attendance' => '1',
@@ -70,7 +70,6 @@ class PrintSettingTest extends TestCase
             'report_title' => 'RAPOR TENGAH SEMESTER',
             'print_place' => 'Cimahi',
             'paper_size' => 'F4',
-            'watermark_text' => 'CONFIDENTIAL',
         ]);
 
         $setting = PrintSetting::where('period_id', $period->id)->first();

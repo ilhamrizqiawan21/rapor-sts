@@ -130,7 +130,7 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertDatabaseHas('print_settings', ['period_id' => $period->id]);
 
         $this->assertTrue($data['isDraft']);
-        $this->assertEquals('DRAFT', $data['watermarkText']);
+        $this->assertArrayNotHasKey('watermarkText', $data);
         $this->assertCount(1, $data['studentsData']);
 
         $studentData = $data['studentsData']->first();
@@ -147,6 +147,8 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertStringContainsString('Pramuka', $rendered);
         $this->assertStringContainsString('Olimpiade Matematika', $rendered);
         $this->assertStringContainsString('Peringkat kelas:', $rendered);
+        $this->assertStringNotContainsString('class="watermark"', $rendered);
+        $this->assertStringNotContainsString('DRAFT', $rendered);
 
         // Pastikan ada header PAI dan baris sub-mapel A. Al Qur'an Hadis
         $subjectRows = collect($studentData['subjectRows']);

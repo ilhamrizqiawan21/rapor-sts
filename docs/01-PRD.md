@@ -46,7 +46,7 @@ Masuk:
   cetak rapor STS (per siswa & semua), leger PDF/Excel.
 - Kepala madrasah: dashboard pemantauan, rekap nilai (leger), lihat rapor, unduh rekap.
 - Pengaturan cetak: judul rapor, tempat & tanggal cetak, label kolom nilai, ukuran kertas,
-  watermark, bagian yang tampil.
+  bagian yang tampil.
 - Backup database (unduh .sql) oleh operator.
 
 Tidak masuk v1 (lihat ADR-003):

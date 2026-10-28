@@ -26,7 +26,6 @@ class PrintSettingController extends Controller
                 'print_date' => now()->toDateString(),
                 'score_label' => 'Nilai Akhir',
                 'paper_size' => 'A4',
-                'watermark_text' => null,
                 'sections' => [
                     'show_competency' => true,
                     'show_attendance' => true,
@@ -70,7 +69,6 @@ class PrintSettingController extends Controller
                 'print_date' => $validated['print_date'],
                 'score_label' => $validated['score_label'],
                 'paper_size' => $validated['paper_size'],
-                'watermark_text' => $validated['watermark_text'] ?? null,
                 'sections' => $sections,
             ]
         );
