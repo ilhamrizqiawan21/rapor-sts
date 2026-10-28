@@ -50,11 +50,12 @@
     $activeKey = $active;
     if ($activeKey === 'dashboard' && !request()->routeIs('guru.dashboard')) {
         if (request()->routeIs('wali.kehadiran.*')) $activeKey = 'wali_kehadiran';
+        elseif (request()->routeIs('wali.ekstrakurikuler.*')) $activeKey = 'wali_ekstrakurikuler';
         elseif (request()->routeIs('wali.status.*')) $activeKey = 'wali_status';
         elseif (request()->routeIs('wali.rapor.*')) $activeKey = 'wali_rapor';
     }
 
-    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']);
+    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_ekstrakurikuler', 'wali_status', 'wali_rapor']);
 @endphp
 
 <nav class="nav" aria-label="Menu guru">
@@ -101,6 +102,9 @@
             <div class="nav-sub">
                 <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $activeKey === 'wali_kehadiran' ? 'on' : '' }}">
                     <span>Kehadiran &amp; Catatan</span>
+                </a>
+                <a href="{{ route('wali.ekstrakurikuler.index') }}" class="sub {{ $activeKey === 'wali_ekstrakurikuler' ? 'on' : '' }}">
+                    <span>Ekstrakurikuler</span>
                 </a>
                 <a href="{{ route('wali.status.index') }}" class="sub {{ $activeKey === 'wali_status' ? 'on' : '' }}">
                     <span>Status Nilai</span>

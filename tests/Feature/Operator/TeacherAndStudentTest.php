@@ -6,9 +6,11 @@ use App\Enums\Role;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
+use App\Models\LearningScope;
 use App\Models\Period;
 use App\Models\Student;
 use App\Models\Subject;
+use App\Models\SummativeScore;
 use App\Models\TeachingAssignment;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
@@ -364,5 +366,118 @@ class TeacherAndStudentTest extends TestCase
             'student_id' => $student->id,
             'classroom_id' => $classroom->id,
         ]);
+    }
+
+    public function test_operator_can_move_student_within_same_year_without_losing_scores(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $year = AcademicYear::factory()->create(['name' => '2035/2036']);
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => false]);
+        $sourceClassroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'name' => 'VII.A',
+        ]);
+        $targetClassroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'name' => 'VII.B',
+        ]);
+        $student = Student::factory()->create();
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $sourceClassroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        $assignment = TeachingAssignment::create([
+            'period_id' => $period->id,
+            'classroom_id' => $sourceClassroom->id,
+            'subject_id' => Subject::firstOrFail()->id,
+            'teacher_id' => User::factory()->guru()->create()->id,
+            'hours_per_week' => 2,
+            'weight_summative' => 100,
+            'weight_sts' => 0,
+            'kktp' => 70,
+        ]);
+        $scope = LearningScope::create([
+            'teaching_assignment_id' => $assignment->id,
+            'code' => 'LM1',
+            'sequence' => 1,
+            'summary' => 'Materi uji',
+            'kktp' => 70,
+        ]);
+        $score = SummativeScore::create([
+            'learning_scope_id' => $scope->id,
+            'student_id' => $student->id,
+            'score' => 88,
+        ]);
+
+        $response = $this->actingAs($operator)->post(route('operator.students.move', $student), [
+            'academic_year_id' => $year->id,
+            'source_classroom_id' => $sourceClassroom->id,
+            'target_classroom_id' => $targetClassroom->id,
+        ]);
+
+        $response->assertRedirect(route('operator.students.index', [
+            'academic_year_id' => $year->id,
+            'classroom_id' => $targetClassroom->id,
+        ]));
+        $this->assertDatabaseHas('enrollments', [
+            'academic_year_id' => $year->id,
+            'classroom_id' => $targetClassroom->id,
+            'student_id' => $student->id,
+        ]);
+        $this->assertDatabaseHas('summative_scores', ['id' => $score->id, 'score' => 88]);
+        $this->assertDatabaseHas('activity_logs', [
+            'action' => 'move_student',
+            'subject_id' => $student->id,
+        ]);
+    }
+
+    public function test_operator_can_promote_active_students_to_the_next_year(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $sourceYear = AcademicYear::factory()->create(['name' => '2030/2031']);
+        $targetYear = AcademicYear::factory()->create(['name' => '2031/2032']);
+        $sourceClassroom = Classroom::factory()->create([
+            'academic_year_id' => $sourceYear->id,
+            'level' => 7,
+            'name' => 'VII.A',
+        ]);
+        $targetClassroom = Classroom::factory()->create([
+            'academic_year_id' => $targetYear->id,
+            'level' => 8,
+            'name' => 'VIII.A',
+        ]);
+        $activeStudent = Student::factory()->create(['is_active' => true]);
+        $inactiveStudent = Student::factory()->create(['is_active' => false]);
+
+        foreach ([$activeStudent, $inactiveStudent] as $student) {
+            Enrollment::create([
+                'academic_year_id' => $sourceYear->id,
+                'classroom_id' => $sourceClassroom->id,
+                'student_id' => $student->id,
+            ]);
+        }
+
+        $response = $this->actingAs($operator)->post(route('operator.students.promote'), [
+            'source_classroom_id' => $sourceClassroom->id,
+            'target_academic_year_id' => $targetYear->id,
+            'target_classroom_id' => $targetClassroom->id,
+        ]);
+
+        $response->assertRedirect(route('operator.students.index', [
+            'academic_year_id' => $targetYear->id,
+            'classroom_id' => $targetClassroom->id,
+        ]));
+        $this->assertDatabaseHas('enrollments', [
+            'academic_year_id' => $targetYear->id,
+            'classroom_id' => $targetClassroom->id,
+            'student_id' => $activeStudent->id,
+        ]);
+        $this->assertDatabaseMissing('enrollments', [
+            'academic_year_id' => $targetYear->id,
+            'student_id' => $inactiveStudent->id,
+        ]);
+        $this->assertDatabaseHas('activity_logs', ['action' => 'promote_students']);
     }
 }

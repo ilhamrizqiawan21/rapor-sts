@@ -55,6 +55,11 @@ class Classroom extends Model
         return $this->hasMany(ClassroomLock::class);
     }
 
+    public function extracurricularRecords(): HasMany
+    {
+        return $this->hasMany(ExtracurricularRecord::class);
+    }
+
     public function isLockedInPeriod(int $periodId): bool
     {
         return $this->locks()->where('period_id', $periodId)->exists();

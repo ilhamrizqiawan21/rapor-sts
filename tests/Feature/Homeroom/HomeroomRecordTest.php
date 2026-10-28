@@ -101,6 +101,62 @@ class HomeroomRecordTest extends TestCase
         ]);
     }
 
+    public function test_homeroom_teacher_can_save_multiple_extracurricular_records_per_student(): void
+    {
+        $teacher = User::factory()->guru()->create();
+        $year = AcademicYear::factory()->create(['name' => '2034/2035']);
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'homeroom_teacher_id' => $teacher->id,
+        ]);
+        $student = Student::factory()->create(['name' => 'Siswa Ekstrakurikuler']);
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        $response = $this->withSession(['period_id' => $period->id])
+            ->actingAs($teacher)->post(route('wali.ekstrakurikuler.update'), [
+                'extracurriculars' => [
+                    $student->id => [
+                        [
+                            'name' => 'Pramuka',
+                            'predicate' => 'Sangat Baik',
+                            'description' => 'Aktif mengikuti latihan.',
+                        ],
+                        [
+                            'name' => 'Tahfiz',
+                            'predicate' => 'Baik',
+                            'description' => 'Hafalan berkembang.',
+                        ],
+                    ],
+                ],
+            ]);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success');
+        $this->assertDatabaseHas('extracurricular_records', [
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'name' => 'Pramuka',
+            'predicate' => 'Sangat Baik',
+        ]);
+        $this->assertDatabaseHas('extracurricular_records', [
+            'student_id' => $student->id,
+            'name' => 'Tahfiz',
+            'predicate' => 'Baik',
+        ]);
+
+        $this->withSession(['period_id' => $period->id])
+            ->actingAs($teacher)->get(route('wali.ekstrakurikuler.index'))
+            ->assertOk()
+            ->assertSee('Pramuka')
+            ->assertSee('Tahfiz');
+    }
+
     public function test_homeroom_teacher_can_fill_batch_notes_without_overwriting_existing(): void
     {
         $teacher = User::factory()->guru()->create();

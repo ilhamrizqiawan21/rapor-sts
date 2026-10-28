@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Homeroom\ExtracurricularController;
 use App\Http\Controllers\Homeroom\HomeroomRecordController;
 use App\Http\Controllers\Homeroom\LockController as HomeroomLockController;
 use App\Http\Controllers\Homeroom\StatusController as HomeroomStatusController;
@@ -100,6 +101,7 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::delete('/siswa/bulk-destroy', [StudentController::class, 'bulkDestroy'])->name('students.bulk-destroy');
     Route::put('/siswa/{student}', [StudentController::class, 'update'])->name('students.update');
     Route::post('/siswa/naik-kelas', [StudentController::class, 'promoteClass'])->name('students.promote');
+    Route::post('/siswa/{student}/pindah-kelas', [StudentController::class, 'moveClass'])->name('students.move');
     Route::post('/siswa/{student}/toggle', [StudentController::class, 'toggleStatus'])->name('students.toggle');
     Route::get('/siswa/template', [StudentController::class, 'template'])->name('students.template');
     Route::post('/siswa/import', [StudentController::class, 'import'])->name('students.import');
@@ -180,6 +182,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('wali')->name('wali.')->group(f
     Route::post('/kehadiran/massal', [HomeroomRecordController::class, 'batchNote'])->name('kehadiran.batch_note');
     Route::get('/kehadiran/template', [HomeroomRecordController::class, 'template'])->name('kehadiran.template');
     Route::post('/kehadiran/import', [HomeroomRecordController::class, 'import'])->name('kehadiran.import');
+
+    // Ekstrakurikuler per siswa (v1.1)
+    Route::get('/ekstrakurikuler', [ExtracurricularController::class, 'index'])->name('ekstrakurikuler.index');
+    Route::post('/ekstrakurikuler', [ExtracurricularController::class, 'update'])->name('ekstrakurikuler.update');
 
     // Status Nilai & Kunci (Mockup 06)
     Route::get('/status', [HomeroomStatusController::class, 'index'])->name('status.index');

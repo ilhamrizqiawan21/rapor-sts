@@ -82,11 +82,11 @@
                         </label>
                         <label class="chk">
                             <input type="checkbox" name="sections[show_extracurricular]" value="1" {{ $setting->isSectionVisible('show_extracurricular', false) ? 'checked' : '' }}>
-                            Ekstrakurikuler (v1.1)
+                            Ekstrakurikuler
                         </label>
                         <label class="chk">
                             <input type="checkbox" name="sections[show_achievement]" value="1" {{ $setting->isSectionVisible('show_achievement', false) ? 'checked' : '' }}>
-                            Prestasi (v1.1)
+                            Prestasi (peringkat)
                         </label>
                         <label class="chk">
                             <input type="checkbox" name="sections[show_total_score]" value="1" {{ $setting->isSectionVisible('show_total_score', false) ? 'checked' : '' }}>

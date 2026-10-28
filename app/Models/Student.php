@@ -53,4 +53,9 @@ class Student extends Model
     {
         return $this->hasMany(HomeroomRecord::class);
     }
+
+    public function extracurricularRecords(): HasMany
+    {
+        return $this->hasMany(ExtracurricularRecord::class);
+    }
 }

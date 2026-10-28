@@ -10,8 +10,8 @@ use App\Models\CompetencyOverride;
 use App\Models\Enrollment;
 use App\Models\HomeroomRecord;
 use App\Models\Period;
-use App\Models\Student;
 use App\Models\StsScore;
+use App\Models\Student;
 use App\Models\SummativeScore;
 use App\Services\ActivityLogger;
 use App\Services\Import\StudentImporter;
@@ -135,6 +135,53 @@ class StudentController extends Controller
         ActivityLogger::log('update_student', "Memperbarui data siswa {$student->name}", $student);
 
         return redirect()->back()->with('success', "Data siswa {$student->name} berhasil diperbarui.");
+    }
+
+    public function moveClass(Request $request, Student $student): RedirectResponse
+    {
+        $validated = $request->validate([
+            'academic_year_id' => ['required', 'integer', 'exists:academic_years,id'],
+            'source_classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
+            'target_classroom_id' => ['required', 'integer', 'exists:classrooms,id'],
+        ]);
+
+        $sourceClassroom = Classroom::findOrFail($validated['source_classroom_id']);
+        $targetClassroom = Classroom::findOrFail($validated['target_classroom_id']);
+
+        if ($sourceClassroom->academic_year_id !== (int) $validated['academic_year_id']) {
+            return back()->withErrors(['source_classroom_id' => 'Kelas asal tidak sesuai tahun ajaran yang dipilih.']);
+        }
+
+        if ($targetClassroom->academic_year_id !== (int) $validated['academic_year_id']) {
+            return back()->withErrors(['target_classroom_id' => 'Kelas tujuan harus berada pada tahun ajaran yang sama.']);
+        }
+
+        if ($sourceClassroom->id === $targetClassroom->id) {
+            return back()->withErrors(['target_classroom_id' => 'Pilih kelas tujuan yang berbeda dari kelas asal.']);
+        }
+
+        $enrollment = Enrollment::query()
+            ->where('academic_year_id', $validated['academic_year_id'])
+            ->where('classroom_id', $sourceClassroom->id)
+            ->where('student_id', $student->id)
+            ->first();
+
+        if (! $enrollment) {
+            return back()->withErrors(['student_id' => 'Siswa tidak terdaftar pada kelas asal.']);
+        }
+
+        $enrollment->update(['classroom_id' => $targetClassroom->id]);
+
+        ActivityLogger::log(
+            'move_student',
+            "Memindahkan siswa {$student->name} dari kelas {$sourceClassroom->name} ke {$targetClassroom->name}",
+            $student
+        );
+
+        return redirect()->route('operator.students.index', [
+            'academic_year_id' => $validated['academic_year_id'],
+            'classroom_id' => $targetClassroom->id,
+        ])->with('success', "Siswa {$student->name} berhasil dipindahkan ke {$targetClassroom->name}. Nilai dari kelas asal tetap tersimpan.");
     }
 
     public function promoteClass(Request $request): RedirectResponse

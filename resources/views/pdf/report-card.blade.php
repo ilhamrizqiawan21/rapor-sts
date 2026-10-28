@@ -338,6 +338,42 @@
             <div class="box" style="height: 52px"></div>
         @endif
 
+        @if($printSetting->isSectionVisible('show_extracurricular', false))
+            <div class="sec-title">Ekstrakurikuler</div>
+            <table class="r-table">
+                <thead>
+                    <tr>
+                        <th style="width: 24px">No</th>
+                        <th>Kegiatan</th>
+                        <th style="width: 95px">Predikat</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($sData['extracurriculars'] as $extraIndex => $extra)
+                        <tr>
+                            <td style="text-align: center">{{ $extraIndex + 1 }}</td>
+                            <td>{{ $extra->name }}</td>
+                            <td style="text-align: center">{{ $extra->predicate }}</td>
+                            <td>{{ $extra->description ?: '–' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center">–</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        @endif
+
+        @if($printSetting->isSectionVisible('show_achievement', false))
+            <div class="sec-title">Prestasi Akademik</div>
+            <div class="box">
+                Peringkat kelas:
+                <b>{{ $sData['rank'] ? $sData['rank'].' dari '.$sData['rank_total'].' siswa' : '–' }}</b>
+            </div>
+        @endif
+
         {{-- Tanda Tangan --}}
         <table class="sig-table">
             <tr>

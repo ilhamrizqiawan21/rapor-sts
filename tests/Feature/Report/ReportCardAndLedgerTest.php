@@ -5,9 +5,11 @@ namespace Tests\Feature\Report;
 use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\Enrollment;
+use App\Models\ExtracurricularRecord;
 use App\Models\HomeroomRecord;
 use App\Models\LearningScope;
 use App\Models\Period;
+use App\Models\PrintSetting;
 use App\Models\Student;
 use App\Models\Subject;
 use App\Models\SummativeScore;
@@ -33,7 +35,7 @@ class ReportCardAndLedgerTest extends TestCase
     public function test_report_card_builder_prepares_accurate_data(): void
     {
         $teacher = User::factory()->guru()->create();
-        $year = AcademicYear::factory()->create();
+        $year = AcademicYear::factory()->create(['name' => '2032/2033']);
         $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
         $classroom = Classroom::factory()->create([
             'academic_year_id' => $year->id,
@@ -53,6 +55,22 @@ class ReportCardAndLedgerTest extends TestCase
             'permit' => 2,
             'absent' => 0,
             'note' => 'Belajar lebih giat.',
+        ]);
+        ExtracurricularRecord::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'name' => 'Pramuka',
+            'predicate' => 'Sangat Baik',
+            'description' => 'Aktif.',
+        ]);
+        PrintSetting::create([
+            'period_id' => $period->id,
+            'print_date' => '2026-10-28',
+            'sections' => [
+                'show_extracurricular' => true,
+                'show_achievement' => true,
+            ],
         ]);
 
         // Cari sub-mapel PAI dan mapel mandiri
@@ -83,11 +101,22 @@ class ReportCardAndLedgerTest extends TestCase
             'student_id' => $student->id,
             'score' => 85,
         ]);
+        $secondStudent = Student::factory()->create(['name' => 'Siswa Peringkat Dua', 'nisn' => '1234567891']);
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $secondStudent->id,
+        ]);
+        SummativeScore::create([
+            'learning_scope_id' => $scope->id,
+            'student_id' => $secondStudent->id,
+            'score' => 75,
+        ]);
 
         $builder = new ReportCardBuilder;
         $data = $builder->buildClassReportData($classroom, $period, $student);
 
-        $this->assertDatabaseMissing('print_settings', ['period_id' => $period->id]);
+        $this->assertDatabaseHas('print_settings', ['period_id' => $period->id]);
 
         $this->assertTrue($data['isDraft']);
         $this->assertEquals('DRAFT', $data['watermarkText']);
@@ -98,6 +127,13 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertEquals(1, $studentData['sick']);
         $this->assertEquals(2, $studentData['permit']);
         $this->assertEquals('Belajar lebih giat.', $studentData['note']);
+        $this->assertSame(1, $studentData['rank']);
+        $this->assertSame(2, $studentData['rank_total']);
+        $this->assertSame('Pramuka', $studentData['extracurriculars']->first()->name);
+
+        $rendered = view('pdf.report-card', $data)->render();
+        $this->assertStringContainsString('Pramuka', $rendered);
+        $this->assertStringContainsString('Peringkat kelas:', $rendered);
 
         // Pastikan ada header PAI dan baris sub-mapel A. Al Qur'an Hadis
         $subjectRows = collect($studentData['subjectRows']);

@@ -3,6 +3,7 @@
 namespace App\Services\Report;
 
 use App\Models\Classroom;
+use App\Models\ExtracurricularRecord;
 use App\Models\HomeroomRecord;
 use App\Models\MadrasahProfile;
 use App\Models\Period;
@@ -117,15 +118,19 @@ class ReportCardBuilder
             ->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE)
             ->values();
 
-        if ($targetStudent) {
-            $enrolledStudents = $enrolledStudents->filter(fn ($s) => $s->id === $targetStudent->id)->values();
-        }
-
         // Ambil catatan & kehadiran wali kelas
         $homeroomRecords = HomeroomRecord::where('period_id', $period->id)
             ->where('classroom_id', $classroom->id)
             ->get()
             ->keyBy('student_id');
+
+        $extracurricularRecords = ExtracurricularRecord::query()
+            ->where('period_id', $period->id)
+            ->where('classroom_id', $classroom->id)
+            ->whereIn('student_id', $enrolledStudents->pluck('id'))
+            ->orderBy('name')
+            ->get()
+            ->groupBy('student_id');
 
         $studentsData = collect();
 
@@ -215,7 +220,30 @@ class ReportCardBuilder
                 'permit' => $homeroomRecord ? $homeroomRecord->permit : 0,
                 'absent' => $homeroomRecord ? $homeroomRecord->absent : 0,
                 'note' => $homeroomRecord?->note ?? '',
+                'extracurriculars' => $extracurricularRecords->get($student->id, collect()),
             ]);
+        }
+
+        $sortedForRank = $studentsData
+            ->filter(fn ($studentData) => $studentData['totalScore'] !== null)
+            ->sortByDesc('totalScore')
+            ->values();
+        $ranksByStudentId = [];
+        foreach ($sortedForRank as $rank => $studentData) {
+            $ranksByStudentId[$studentData['student']->id] = $rank + 1;
+        }
+
+        $studentsData = $studentsData->map(function (array $studentData) use ($ranksByStudentId, $sortedForRank) {
+            $studentData['rank'] = $ranksByStudentId[$studentData['student']->id] ?? null;
+            $studentData['rank_total'] = $sortedForRank->count();
+
+            return $studentData;
+        });
+
+        if ($targetStudent) {
+            $studentsData = $studentsData
+                ->filter(fn ($studentData) => $studentData['student']->id === $targetStudent->id)
+                ->values();
         }
 
         return [

@@ -119,6 +119,9 @@
                             <td>
                                 <div style="display: flex; gap: 4px; flex-wrap: wrap">
                                     <button type="button" class="btn b-pri" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick='openEditModal(@json($s), {{ $currentClass?->id ?? "null" }})'>Edit</button>
+                                    @if($currentClass)
+                                        <button type="button" class="btn b-inf" style="min-height: 28px; padding: 0 8px; font-size: 12px" onclick='openMoveModal({{ $s->id }}, @json($s->name), {{ $currentClass->id }})'>Pindah</button>
+                                    @endif
                                     <form method="POST" action="{{ route('operator.students.toggle', $s) }}" style="display: inline">
                                         @csrf
                                         <button type="submit" class="btn {{ $s->is_active ? 'b-war' : 'b-suc' }}" style="min-height: 28px; padding: 0 8px; font-size: 12px" title="{{ $s->is_active ? 'Nonaktifkan Siswa' : 'Aktifkan Siswa' }}">
@@ -318,6 +321,33 @@
         </x-slot:footer>
     </x-modal>
 
+    @if($selectedYearId)
+        <x-modal id="modalPindahKelas" title="Pindah Kelas Siswa">
+            <form method="POST" action="" id="formPindahKelas">
+                @csrf
+                <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
+                <input type="hidden" name="source_classroom_id" id="move_source_classroom_id">
+                <div class="alert a-lt" style="margin-bottom: 12px">
+                    Nilai yang sudah masuk tetap terikat pada kelas dan penugasan asal. Hanya penempatan siswa pada tahun ajaran ini yang berubah.
+                </div>
+                <p id="move_student_label" style="margin-top: 0"></p>
+                <div class="f">
+                    <label for="move_target_classroom_id">Kelas Tujuan</label>
+                    <select id="move_target_classroom_id" name="target_classroom_id" class="in" required>
+                        <option value="">- Pilih Kelas Tujuan -</option>
+                        @foreach($classrooms as $classroom)
+                            <option value="{{ $classroom->id }}">{{ $classroom->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </form>
+            <x-slot:footer>
+                <button type="button" class="btn b-sec" onclick="document.getElementById('modalPindahKelas').close()">Batal</button>
+                <button type="submit" form="formPindahKelas" class="btn b-pri">Pindahkan Siswa</button>
+            </x-slot:footer>
+        </x-modal>
+    @endif
+
     <script>
         @if($selectedClass && $selectedClass->level < 9)
         const targetYearSelect = document.getElementById('target_academic_year_id');
@@ -364,6 +394,14 @@
             document.getElementById('edit_classroom_id').value = currentClassId || '';
             document.getElementById('edit_address').value = student.address || '';
             document.getElementById('modalEditSiswa').showModal();
+        }
+
+        function openMoveModal(studentId, studentName, sourceClassroomId) {
+            document.getElementById('formPindahKelas').action = '/operator/siswa/' + studentId + '/pindah-kelas';
+            document.getElementById('move_source_classroom_id').value = sourceClassroomId;
+            document.getElementById('move_target_classroom_id').value = '';
+            document.getElementById('move_student_label').textContent = 'Siswa: ' + studentName;
+            document.getElementById('modalPindahKelas').showModal();
         }
 
         document.addEventListener('DOMContentLoaded', function () {

@@ -47,6 +47,11 @@ class Period extends Model
         return $this->hasMany(ClassroomLock::class);
     }
 
+    public function extracurricularRecords(): HasMany
+    {
+        return $this->hasMany(ExtracurricularRecord::class);
+    }
+
     public function printSetting(): HasOne
     {
         return $this->hasOne(PrintSetting::class);
