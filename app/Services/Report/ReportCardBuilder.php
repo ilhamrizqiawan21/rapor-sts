@@ -2,6 +2,7 @@
 
 namespace App\Services\Report;
 
+use App\Models\AchievementRecord;
 use App\Models\Classroom;
 use App\Models\ExtracurricularRecord;
 use App\Models\HomeroomRecord;
@@ -132,6 +133,14 @@ class ReportCardBuilder
             ->get()
             ->groupBy('student_id');
 
+        $achievementRecords = AchievementRecord::query()
+            ->where('period_id', $period->id)
+            ->where('classroom_id', $classroom->id)
+            ->whereIn('student_id', $enrolledStudents->pluck('id'))
+            ->orderBy('name')
+            ->get()
+            ->groupBy('student_id');
+
         $studentsData = collect();
 
         foreach ($enrolledStudents as $student) {
@@ -221,6 +230,7 @@ class ReportCardBuilder
                 'absent' => $homeroomRecord ? $homeroomRecord->absent : 0,
                 'note' => $homeroomRecord?->note ?? '',
                 'extracurriculars' => $extracurricularRecords->get($student->id, collect()),
+                'achievements' => $achievementRecords->get($student->id, collect()),
             ]);
         }
 

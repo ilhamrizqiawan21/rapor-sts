@@ -367,8 +367,34 @@
         @endif
 
         @if($printSetting->isSectionVisible('show_achievement', false))
-            <div class="sec-title">Prestasi Akademik</div>
-            <div class="box">
+            <div class="sec-title">Prestasi Siswa</div>
+            <table class="r-table">
+                <thead>
+                    <tr>
+                        <th style="width: 24px">No</th>
+                        <th>Prestasi</th>
+                        <th style="width: 105px">Tingkat</th>
+                        <th style="width: 85px">Peringkat</th>
+                        <th>Penyelenggara</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($sData['achievements'] as $achievementIndex => $achievement)
+                        <tr>
+                            <td style="text-align: center">{{ $achievementIndex + 1 }}</td>
+                            <td>{{ $achievement->name }}</td>
+                            <td style="text-align: center">{{ $achievement->level }}</td>
+                            <td style="text-align: center">{{ $achievement->rank ?: '–' }}</td>
+                            <td>{{ $achievement->organizer ?: '–' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center">Belum ada prestasi siswa.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+            <div class="box" style="margin-top: 6px">
                 Peringkat kelas:
                 <b>{{ $sData['rank'] ? $sData['rank'].' dari '.$sData['rank_total'].' siswa' : '–' }}</b>
             </div>

@@ -23,7 +23,7 @@ class AuthTest extends TestCase
 
     public function test_login_screen_can_be_rendered(): void
     {
-        $year = AcademicYear::factory()->create(['name' => '2026/2027']);
+        $year = AcademicYear::factory()->create(['name' => '2028/2029']);
         Period::factory()->create([
             'academic_year_id' => $year->id,
             'semester' => Semester::Ganjil,
@@ -42,7 +42,7 @@ class AuthTest extends TestCase
 
     public function test_users_can_authenticate_and_period_is_stored_in_session(): void
     {
-        $year = AcademicYear::factory()->create(['name' => '2026/2027']);
+        $year = AcademicYear::factory()->create(['name' => '2028/2029']);
         $period = Period::factory()->create([
             'academic_year_id' => $year->id,
             'semester' => Semester::Ganjil,

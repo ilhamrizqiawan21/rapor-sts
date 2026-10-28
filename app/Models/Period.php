@@ -52,6 +52,11 @@ class Period extends Model
         return $this->hasMany(ExtracurricularRecord::class);
     }
 
+    public function achievementRecords(): HasMany
+    {
+        return $this->hasMany(AchievementRecord::class);
+    }
+
     public function printSetting(): HasOne
     {
         return $this->hasOne(PrintSetting::class);

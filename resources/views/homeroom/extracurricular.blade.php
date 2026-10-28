@@ -1,6 +1,16 @@
-<x-layout.app title="Wali Kelas · Ekstrakurikuler" userRole="guru">
+<x-layout.app :title="$isOperator ? 'Prestasi Operator · Ekstrakurikuler' : 'Wali Kelas · Ekstrakurikuler'" :userRole="$isOperator ? 'operator' : 'guru'">
+    @if($isOperator)
+        <x-slot:sidebar>
+            <x-sidebar.operator active="extracurriculars" />
+        </x-slot:sidebar>
+    @endif
+
     <x-slot:breadcrumb>
-        <a href="{{ route('guru.dashboard') }}">Home</a> / <span>Wali Kelas</span> / <span>Ekstrakurikuler</span>
+        @if($isOperator)
+            <a href="{{ route('operator.dashboard') }}">Home</a> / <span>Siswa</span> / <span>Ekstrakurikuler</span>
+        @else
+            <a href="{{ route('guru.dashboard') }}">Home</a> / <span>Wali Kelas</span> / <span>Ekstrakurikuler</span>
+        @endif
     </x-slot:breadcrumb>
 
     @if(session('success'))
@@ -19,7 +29,7 @@
         </x-alert>
     @endif
 
-    @if($classroom->isLockedInPeriod($period->id))
+    @if($isLocked)
         <div class="alert" style="background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; margin-bottom: 16px">
             <b>Perhatian:</b> Kelas {{ $classroom->name }} telah dikunci. Data ekstrakurikuler hanya dapat dilihat sampai kunci dibuka.
         </div>
@@ -31,18 +41,34 @@
                 <div class="ct">Ekstrakurikuler Siswa</div>
                 <div class="cs">{{ $classroom->name }} · {{ $students->count() }} siswa · {{ $period->academicYear->name }}</div>
             </div>
-            @if(! $classroom->isLockedInPeriod($period->id))
+            @if(! $isLocked)
                 <button type="submit" form="form-extracurricular" class="btn b-pri">Simpan</button>
             @endif
         </div>
 
         <div class="cb">
+            @if($isOperator)
+                <form method="GET" action="{{ route('operator.extracurricular.index') }}" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 14px">
+                    <label for="extracurricularClassFilter" style="font-weight: 600">Kelas:</label>
+                    <select id="extracurricularClassFilter" name="classroom_id" class="sel" style="min-width: 220px" onchange="this.form.submit()">
+                        @foreach($classrooms as $availableClassroom)
+                            <option value="{{ $availableClassroom->id }}" @selected($availableClassroom->id === $classroom->id)>
+                                {{ $availableClassroom->name }} · {{ $availableClassroom->academicYear->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            @endif
+
             <div class="alert a-lt" style="margin-bottom: 14px">
                 Tambahkan satu atau beberapa kegiatan per siswa. Predikat dan keterangan ini akan tampil di rapor jika bagian Ekstrakurikuler diaktifkan pada Pengaturan Cetak.
             </div>
 
-            <form method="POST" action="{{ route('wali.ekstrakurikuler.update') }}" id="form-extracurricular">
+            <form method="POST" action="{{ $isOperator ? route('operator.extracurricular.update') : route('wali.ekstrakurikuler.update') }}" id="form-extracurricular">
                 @csrf
+                @if($isOperator)
+                    <input type="hidden" name="classroom_id" value="{{ $classroom->id }}">
+                @endif
                 <div class="tb">
                     <table class="t">
                         <thead>
@@ -75,20 +101,20 @@
                                         <div class="extra-list" data-student-id="{{ $student->id }}">
                                             @foreach($studentRecords as $recordIndex => $record)
                                                 <div class="extra-row" style="display: grid; grid-template-columns: minmax(180px, 1fr) 140px minmax(180px, 1fr) auto; gap: 8px; margin-bottom: 8px; align-items: start">
-                                                    <input class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][name]" value="{{ $record['name'] ?? '' }}" placeholder="Contoh: Pramuka" maxlength="100" {{ $classroom->isLockedInPeriod($period->id) ? 'disabled' : '' }}>
-                                                    <select class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][predicate]" {{ $classroom->isLockedInPeriod($period->id) ? 'disabled' : '' }}>
+                                                    <input class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][name]" value="{{ $record['name'] ?? '' }}" placeholder="Contoh: Pramuka" maxlength="100" {{ $isLocked ? 'disabled' : '' }}>
+                                                    <select class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][predicate]" {{ $isLocked ? 'disabled' : '' }}>
                                                         @foreach(['Sangat Baik', 'Baik', 'Cukup', 'Kurang'] as $predicate)
                                                             <option value="{{ $predicate }}" @selected(($record['predicate'] ?? 'Baik') === $predicate)>{{ $predicate }}</option>
                                                         @endforeach
                                                     </select>
-                                                    <input class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][description]" value="{{ $record['description'] ?? '' }}" placeholder="Keterangan (opsional)" maxlength="255" {{ $classroom->isLockedInPeriod($period->id) ? 'disabled' : '' }}>
-                                                    @if(! $classroom->isLockedInPeriod($period->id))
+                                                    <input class="in" name="extracurriculars[{{ $student->id }}][{{ $recordIndex }}][description]" value="{{ $record['description'] ?? '' }}" placeholder="Keterangan (opsional)" maxlength="255" {{ $isLocked ? 'disabled' : '' }}>
+                                                    @if(! $isLocked)
                                                         <button type="button" class="btn b-dan remove-extra" style="min-height: 34px; padding: 0 10px" aria-label="Hapus kegiatan">×</button>
                                                     @endif
                                                 </div>
                                             @endforeach
                                         </div>
-                                        @if(! $classroom->isLockedInPeriod($period->id))
+                                        @if(! $isLocked)
                                             <button type="button" class="btn b-sec add-extra" data-student-id="{{ $student->id }}" style="min-height: 30px; padding: 0 10px">+ Tambah kegiatan</button>
                                         @endif
                                     </td>
@@ -107,7 +133,7 @@
         </div>
     </div>
 
-    @if(! $classroom->isLockedInPeriod($period->id))
+    @if(! $isLocked)
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 document.querySelectorAll('.add-extra').forEach(function (button) {

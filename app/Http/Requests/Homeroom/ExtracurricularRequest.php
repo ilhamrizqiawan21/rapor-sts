@@ -10,12 +10,15 @@ class ExtracurricularRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isGuru() ?? false;
+        return $this->user()?->isGuru() || $this->user()?->isOperator();
     }
 
     public function rules(): array
     {
         return [
+            'classroom_id' => $this->user()?->isOperator()
+                ? ['required', 'integer', 'exists:classrooms,id']
+                : ['nullable', 'integer', 'exists:classrooms,id'],
             'extracurriculars' => ['nullable', 'array'],
             'extracurriculars.*' => ['array'],
             'extracurriculars.*.*.name' => ['nullable', 'string', 'max:100'],
@@ -42,13 +45,20 @@ class ExtracurricularRequest extends FormRequest
             }
 
             $period = app()->bound('activePeriod') ? app('activePeriod') : null;
-            $classroom = $period
-                ? Classroom::where('academic_year_id', $period->academic_year_id)
+            $classroom = null;
+            if ($period && $this->user()?->isOperator()) {
+                $classroom = Classroom::where('academic_year_id', $period->academic_year_id)
+                    ->whereKey((int) $this->input('classroom_id'))
+                    ->first();
+            } elseif ($period) {
+                $classroom = Classroom::where('academic_year_id', $period->academic_year_id)
                     ->where('homeroom_teacher_id', $this->user()?->id)
-                    ->first()
-                : null;
+                    ->first();
+            }
 
             if (! $classroom) {
+                $validator->errors()->add('classroom_id', 'Kelas tidak sesuai dengan periode aktif.');
+
                 return;
             }
 
@@ -61,7 +71,7 @@ class ExtracurricularRequest extends FormRequest
                 ->all();
 
             if (array_diff($studentIds, $validStudentIds)) {
-                $validator->errors()->add('extracurriculars', 'Terdapat siswa yang bukan anggota kelas Anda.');
+                $validator->errors()->add('extracurriculars', 'Terdapat siswa yang bukan anggota kelas yang dipilih.');
             }
 
             foreach ((array) $this->input('extracurriculars', []) as $studentRecords) {

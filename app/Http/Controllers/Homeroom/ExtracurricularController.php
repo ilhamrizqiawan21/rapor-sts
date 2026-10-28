@@ -9,14 +9,16 @@ use App\Models\ExtracurricularRecord;
 use App\Models\Period;
 use App\Services\ActivityLogger;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class ExtracurricularController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        [$classroom, $period] = $this->homeroomContext();
+        $isOperator = $request->user()?->isOperator() ?? false;
+        [$classroom, $period] = $this->classroomContext($isOperator ? $request->integer('classroom_id') : null);
         $this->authorize('viewHomeroom', $classroom);
 
         $classroom->loadMissing([
@@ -38,12 +40,23 @@ class ExtracurricularController extends Controller
             ->get()
             ->groupBy('student_id');
 
-        return view('homeroom.extracurricular', compact('classroom', 'period', 'students', 'records'));
+        return view('homeroom.extracurricular', [
+            'classroom' => $classroom,
+            'classrooms' => $isOperator
+                ? Classroom::with('academicYear')->where('academic_year_id', $period->academic_year_id)->orderBy('level')->orderBy('name')->get()
+                : collect([$classroom]),
+            'period' => $period,
+            'students' => $students,
+            'records' => $records,
+            'isLocked' => $classroom->isLockedInPeriod($period->id),
+            'isOperator' => $isOperator,
+        ]);
     }
 
     public function update(ExtracurricularRequest $request): RedirectResponse
     {
-        [$classroom, $period] = $this->homeroomContext();
+        $isOperator = $request->user()?->isOperator() ?? false;
+        [$classroom, $period] = $this->classroomContext($isOperator ? $request->integer('classroom_id') : null);
         $this->authorize('updateHomeroom', $classroom);
 
         $submitted = $request->validated('extracurriculars', []);
@@ -88,7 +101,7 @@ class ExtracurricularController extends Controller
     /**
      * @return array{0: Classroom, 1: Period}
      */
-    private function homeroomContext(): array
+    private function classroomContext(?int $classroomId = null): array
     {
         $user = auth()->user();
         /** @var Period|null $period */
@@ -98,10 +111,18 @@ class ExtracurricularController extends Controller
             abort(403, 'Periode aktif tidak ditemukan.');
         }
 
-        $classroom = Classroom::query()
-            ->where('academic_year_id', $period->academic_year_id)
-            ->where('homeroom_teacher_id', $user->id)
-            ->first();
+        $classroomQuery = Classroom::query()->where('academic_year_id', $period->academic_year_id);
+
+        if ($user->isOperator()) {
+            $classroomQuery
+                ->when($classroomId, fn ($query) => $query->whereKey($classroomId))
+                ->orderBy('level')
+                ->orderBy('name');
+        } else {
+            $classroomQuery->where('homeroom_teacher_id', $user->id);
+        }
+
+        $classroom = $classroomQuery->first();
 
         if (! $classroom) {
             abort(403, 'Anda bukan wali kelas pada periode aktif ini.');

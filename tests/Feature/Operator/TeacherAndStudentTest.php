@@ -480,4 +480,40 @@ class TeacherAndStudentTest extends TestCase
         ]);
         $this->assertDatabaseHas('activity_logs', ['action' => 'promote_students']);
     }
+
+    public function test_operator_cannot_promote_students_to_a_non_consecutive_academic_year(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $sourceYear = AcademicYear::factory()->create(['name' => '2040/2041']);
+        $targetYear = AcademicYear::factory()->create(['name' => '2042/2043']);
+        $sourceClassroom = Classroom::factory()->create([
+            'academic_year_id' => $sourceYear->id,
+            'level' => 7,
+            'name' => 'VII.A',
+        ]);
+        $targetClassroom = Classroom::factory()->create([
+            'academic_year_id' => $targetYear->id,
+            'level' => 8,
+            'name' => 'VIII.A',
+        ]);
+        $student = Student::factory()->create(['is_active' => true]);
+        Enrollment::create([
+            'academic_year_id' => $sourceYear->id,
+            'classroom_id' => $sourceClassroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        $this->actingAs($operator)
+            ->post(route('operator.students.promote'), [
+                'source_classroom_id' => $sourceClassroom->id,
+                'target_academic_year_id' => $targetYear->id,
+                'target_classroom_id' => $targetClassroom->id,
+            ])
+            ->assertSessionHasErrors('target_academic_year_id');
+
+        $this->assertDatabaseMissing('enrollments', [
+            'academic_year_id' => $targetYear->id,
+            'student_id' => $student->id,
+        ]);
+    }
 }

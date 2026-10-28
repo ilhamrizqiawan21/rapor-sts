@@ -40,8 +40,17 @@ class StudentController extends Controller
             ->orderBy('name')
             ->get();
         $selectedClass = $classrooms->firstWhere('id', (int) $selectedClassId);
+        $selectedAcademicYear = $academicYears->firstWhere('id', (int) $selectedYearId);
+        $selectedYearStart = $selectedAcademicYear
+            ? (int) explode('/', $selectedAcademicYear->name)[0]
+            : null;
+        $nextAcademicYear = $selectedYearStart
+            ? $academicYears->firstWhere('name', ($selectedYearStart + 1).'/'.($selectedYearStart + 2))
+            : null;
+        $promotionAcademicYears = $nextAcademicYear ? collect([$nextAcademicYear]) : collect();
         $promotionClassrooms = Classroom::with('academicYear')
-            ->when($selectedYearId, fn ($q) => $q->where('academic_year_id', '!=', $selectedYearId))
+            ->when($nextAcademicYear, fn ($q) => $q->where('academic_year_id', $nextAcademicYear->id))
+            ->when(! $nextAcademicYear, fn ($q) => $q->whereKey(0))
             ->orderBy('academic_year_id')
             ->orderBy('level')
             ->orderBy('name')
@@ -75,6 +84,7 @@ class StudentController extends Controller
             'selectedYearId',
             'selectedClassId',
             'selectedClass',
+            'promotionAcademicYears',
             'search'
         ));
     }
@@ -193,11 +203,18 @@ class StudentController extends Controller
         ]);
 
         $sourceClassroom = Classroom::findOrFail($validated['source_classroom_id']);
+        $sourceYear = AcademicYear::findOrFail($sourceClassroom->academic_year_id);
         $targetYear = AcademicYear::findOrFail($validated['target_academic_year_id']);
         $targetClassroom = Classroom::findOrFail($validated['target_classroom_id']);
 
         if ($sourceClassroom->academic_year_id === $targetYear->id) {
             return back()->withErrors(['target_academic_year_id' => 'Pilih tahun ajaran yang berbeda dari tahun asal.']);
+        }
+
+        $sourceYearStart = (int) explode('/', $sourceYear->name)[0];
+        $targetYearStart = (int) explode('/', $targetYear->name)[0];
+        if ($targetYearStart !== $sourceYearStart + 1) {
+            return back()->withErrors(['target_academic_year_id' => 'Tahun ajaran tujuan harus satu tahun setelah tahun asal.']);
         }
 
         if ($targetClassroom->academic_year_id !== $targetYear->id) {

@@ -12,6 +12,8 @@
         elseif (request()->routeIs('operator.teachers.*')) $activeKey = 'teachers';
         elseif (request()->routeIs('operator.mengajar.*')) $activeKey = 'mengajar';
         elseif (request()->routeIs('operator.students.*')) $activeKey = 'students';
+        elseif (request()->routeIs('operator.achievements.*')) $activeKey = 'achievements';
+        elseif (request()->routeIs('operator.extracurricular.*')) $activeKey = 'extracurriculars';
         elseif (request()->routeIs('operator.kktp.*')) $activeKey = 'kktp';
         elseif (request()->routeIs('operator.print-settings.*')) $activeKey = 'print_settings';
         elseif (request()->routeIs('operator.status.*')) $activeKey = 'status_nilai';
@@ -20,7 +22,7 @@
 
     $lembagaOpen = in_array($activeKey, ['lembaga', 'subjects', 'classrooms']);
     $guruOpen = in_array($activeKey, ['teachers', 'mengajar']);
-    $siswaOpen = ($activeKey === 'students');
+    $siswaOpen = in_array($activeKey, ['students', 'achievements', 'extracurriculars']);
     $raporOpen = in_array($activeKey, ['kktp', 'print_settings', 'status_nilai', 'cetak_rapor']);
 @endphp
 
@@ -84,6 +86,12 @@
         <div class="nav-sub">
             <a href="{{ route('operator.students.index') }}" class="sub {{ $activeKey === 'students' ? 'on' : '' }}">
                 <span>Data Siswa</span>
+            </a>
+            <a href="{{ route('operator.achievements.index') }}" class="sub {{ $activeKey === 'achievements' ? 'on' : '' }}">
+                <span>Prestasi Siswa</span>
+            </a>
+            <a href="{{ route('operator.extracurricular.index') }}" class="sub {{ $activeKey === 'extracurriculars' ? 'on' : '' }}">
+                <span>Ekstrakurikuler</span>
             </a>
         </div>
     </div>

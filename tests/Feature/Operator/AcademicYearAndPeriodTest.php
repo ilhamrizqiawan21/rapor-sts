@@ -42,7 +42,7 @@ class AcademicYearAndPeriodTest extends TestCase
     {
         $operator = User::where('username', 'admin')->first();
 
-        $year = AcademicYear::factory()->create(['name' => '2026/2027']);
+        $year = AcademicYear::factory()->create(['name' => '2028/2029']);
         $p1 = Period::create(['academic_year_id' => $year->id, 'semester' => 1, 'is_active' => true]);
         $p2 = Period::create(['academic_year_id' => $year->id, 'semester' => 2, 'is_active' => false]);
 

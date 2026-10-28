@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Report;
 
+use App\Enums\Curriculum;
 use App\Models\AcademicYear;
+use App\Models\AchievementRecord;
 use App\Models\Classroom;
 use App\Models\Enrollment;
 use App\Models\ExtracurricularRecord;
@@ -63,6 +65,15 @@ class ReportCardAndLedgerTest extends TestCase
             'name' => 'Pramuka',
             'predicate' => 'Sangat Baik',
             'description' => 'Aktif.',
+        ]);
+        AchievementRecord::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'name' => 'Olimpiade Matematika',
+            'level' => 'Kabupaten/Kota',
+            'rank' => 'Juara 1',
+            'organizer' => 'Dinas Pendidikan',
         ]);
         PrintSetting::create([
             'period_id' => $period->id,
@@ -130,9 +141,11 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertSame(1, $studentData['rank']);
         $this->assertSame(2, $studentData['rank_total']);
         $this->assertSame('Pramuka', $studentData['extracurriculars']->first()->name);
+        $this->assertSame('Olimpiade Matematika', $studentData['achievements']->first()->name);
 
         $rendered = view('pdf.report-card', $data)->render();
         $this->assertStringContainsString('Pramuka', $rendered);
+        $this->assertStringContainsString('Olimpiade Matematika', $rendered);
         $this->assertStringContainsString('Peringkat kelas:', $rendered);
 
         // Pastikan ada header PAI dan baris sub-mapel A. Al Qur'an Hadis
@@ -155,6 +168,7 @@ class ReportCardAndLedgerTest extends TestCase
             'academic_year_id' => $year->id,
             'homeroom_teacher_id' => $teacher->id,
             'name' => 'VII.A',
+            'curriculum' => Curriculum::K13,
         ]);
 
         $student = Student::factory()->create(['name' => 'Ahmad Siswa', 'nisn' => '0012345678']);
@@ -177,6 +191,7 @@ class ReportCardAndLedgerTest extends TestCase
             'academic_year_id' => $year->id,
             'homeroom_teacher_id' => $teacher->id,
             'name' => 'VII.A',
+            'curriculum' => Curriculum::K13,
         ]);
 
         $student = Student::factory()->create(['name' => 'Siswa Satu', 'nisn' => '1111111111']);
@@ -199,6 +214,7 @@ class ReportCardAndLedgerTest extends TestCase
             'academic_year_id' => $year->id,
             'homeroom_teacher_id' => $teacher->id,
             'name' => 'VII.A',
+            'curriculum' => Curriculum::K13,
         ]);
 
         $student = Student::factory()->create(['name' => '=1+1', 'nisn' => '1111111111']);
@@ -224,7 +240,7 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertTrue($loadedExcel->sheetNameExists('Keterampilan'));
 
         $sheetP = $loadedExcel->getSheetByName('Pengetahuan');
-        $this->assertEquals('LEGGER NILAI PENGETAHUAN', $sheetP->getCell('A1')->getValue());
+        $this->assertEquals('LEGER NILAI PENGETAHUAN', $sheetP->getCell('A1')->getValue());
         $this->assertEquals('No', $sheetP->getCell('A6')->getValue());
         $this->assertEquals('NIS', $sheetP->getCell('B6')->getValue());
         $this->assertEquals('Nisn', $sheetP->getCell('C6')->getValue());
@@ -234,7 +250,7 @@ class ReportCardAndLedgerTest extends TestCase
         $this->assertSame(DataType::TYPE_STRING, $sheetP->getCell('D8')->getDataType());
 
         $sheetK = $loadedExcel->getSheetByName('Keterampilan');
-        $this->assertEquals('LEGGER NILAI KETERAMPILAN', $sheetK->getCell('A1')->getValue());
+        $this->assertEquals('LEGER NILAI KETERAMPILAN', $sheetK->getCell('A1')->getValue());
 
         unlink($tempExcel);
     }

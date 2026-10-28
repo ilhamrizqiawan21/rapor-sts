@@ -164,7 +164,7 @@
                     <label for="target_academic_year_id">Tahun Ajaran Tujuan</label>
                     <select id="target_academic_year_id" name="target_academic_year_id" class="in" required>
                         <option value="">- Pilih Tahun Ajaran -</option>
-                        @foreach($academicYears->where('id', '!=', $selectedYearId) as $year)
+                        @foreach($promotionAcademicYears as $year)
                             <option value="{{ $year->id }}">{{ $year->name }}</option>
                         @endforeach
                     </select>
@@ -384,7 +384,8 @@
         @endif
 
         function openEditModal(student, currentClassId) {
-            document.getElementById('formEditSiswa').action = '/operator/siswa/' + student.id;
+            const editStudentUrlTemplate = @json(route('operator.students.update', ['student' => '__student__']));
+            document.getElementById('formEditSiswa').action = editStudentUrlTemplate.replace('__student__', student.id);
             document.getElementById('edit_nisn').value = student.nisn || '';
             document.getElementById('edit_nis').value = student.nis || '';
             document.getElementById('edit_name').value = student.name || '';
@@ -397,7 +398,8 @@
         }
 
         function openMoveModal(studentId, studentName, sourceClassroomId) {
-            document.getElementById('formPindahKelas').action = '/operator/siswa/' + studentId + '/pindah-kelas';
+            const moveStudentUrlTemplate = @json(route('operator.students.move', ['student' => '__student__']));
+            document.getElementById('formPindahKelas').action = moveStudentUrlTemplate.replace('__student__', studentId);
             document.getElementById('move_source_classroom_id').value = sourceClassroomId;
             document.getElementById('move_target_classroom_id').value = '';
             document.getElementById('move_student_label').textContent = 'Siswa: ' + studentName;

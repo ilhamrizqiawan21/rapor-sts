@@ -157,6 +157,47 @@ class HomeroomRecordTest extends TestCase
             ->assertSee('Tahfiz');
     }
 
+    public function test_operator_can_view_and_save_extracurricular_records_for_selected_classroom(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $year = AcademicYear::factory()->create(['name' => '2044/2045']);
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id, 'name' => 'VII.A']);
+        $student = Student::factory()->create(['name' => 'Siswa Operator Ekstra']);
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+        ]);
+
+        $this->actingAs($operator)
+            ->withSession(['period_id' => $period->id])
+            ->get(route('operator.extracurricular.index', ['classroom_id' => $classroom->id]))
+            ->assertOk()
+            ->assertSee('Siswa Operator Ekstra');
+
+        $this->actingAs($operator)
+            ->withSession(['period_id' => $period->id])
+            ->post(route('operator.extracurricular.update'), [
+                'classroom_id' => $classroom->id,
+                'extracurriculars' => [
+                    $student->id => [[
+                        'name' => 'Pramuka',
+                        'predicate' => 'Sangat Baik',
+                        'description' => 'Aktif.',
+                    ]],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('extracurricular_records', [
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'name' => 'Pramuka',
+        ]);
+    }
+
     public function test_homeroom_teacher_can_fill_batch_notes_without_overwriting_existing(): void
     {
         $teacher = User::factory()->guru()->create();

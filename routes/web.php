@@ -11,6 +11,7 @@ use App\Http\Controllers\Kepala\LegerController as KepalaLegerController;
 use App\Http\Controllers\Kepala\ReportController as KepalaReportController;
 use App\Http\Controllers\Kepala\TeacherPerformanceController;
 use App\Http\Controllers\Operator\AcademicYearController;
+use App\Http\Controllers\Operator\AchievementController;
 use App\Http\Controllers\Operator\BackupController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
@@ -97,6 +98,10 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
 
     // Siswa & Enrollment
     Route::get('/siswa', [StudentController::class, 'index'])->name('students.index');
+    Route::get('/prestasi', [AchievementController::class, 'index'])->name('achievements.index');
+    Route::post('/prestasi', [AchievementController::class, 'update'])->name('achievements.update');
+    Route::get('/ekstrakurikuler', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
+    Route::post('/ekstrakurikuler', [ExtracurricularController::class, 'update'])->name('extracurricular.update');
     Route::post('/siswa', [StudentController::class, 'store'])->name('students.store');
     Route::delete('/siswa/bulk-destroy', [StudentController::class, 'bulkDestroy'])->name('students.bulk-destroy');
     Route::put('/siswa/{student}', [StudentController::class, 'update'])->name('students.update');

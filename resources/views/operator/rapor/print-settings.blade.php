@@ -86,7 +86,7 @@
                         </label>
                         <label class="chk">
                             <input type="checkbox" name="sections[show_achievement]" value="1" {{ $setting->isSectionVisible('show_achievement', false) ? 'checked' : '' }}>
-                            Prestasi (peringkat)
+                            Prestasi Siswa &amp; Peringkat
                         </label>
                         <label class="chk">
                             <input type="checkbox" name="sections[show_total_score]" value="1" {{ $setting->isSectionVisible('show_total_score', false) ? 'checked' : '' }}>

@@ -25,7 +25,7 @@ class SetActivePeriod
             }
 
             if (! $activePeriod) {
-                $activePeriod = Period::with('academicYear')->where('is_active', true)->first();
+                $activePeriod = Period::with('academicYear')->where('is_active', true)->orderByDesc('id')->first();
                 if ($activePeriod) {
                     $request->session()->put('period_id', $activePeriod->id);
                 }
