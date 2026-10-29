@@ -337,7 +337,7 @@
                         <tr>
                             <td style="text-align: center">{{ $extraIndex + 1 }}</td>
                             <td>{{ $extra->name }}</td>
-                            <td style="text-align: center">{{ $extra->predicate }}</td>
+                            <td style="text-align: center">{{ ['A' => 'A — Sangat Baik', 'B' => 'B — Baik', 'C' => 'C — Cukup', 'D' => 'D — Kurang'][$extra->predicate] ?? $extra->predicate }}</td>
                             <td>{{ $extra->description ?: '–' }}</td>
                         </tr>
                     @empty

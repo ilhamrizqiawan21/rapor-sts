@@ -54,7 +54,7 @@
                     @forelse($classrooms as $idx => $c)
                         <tr>
                             <td>{{ $idx + 1 }}</td>
-                            <td>Tingkat {{ $c->level }}</td>
+                            <td>Tingkat {{ \App\Models\MadrasahProfile::classLevelRoman($c->level) }}</td>
                             <td><b>{{ $c->name }}</b></td>
                             <td>{{ $c->curriculum->label() }}</td>
                             <td>{{ $c->phase ?? '-' }}</td>
@@ -98,10 +98,10 @@
             @csrf
             <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
             <div class="f">
-                <label for="level">Tingkat</label>
+                <label for="level">Tingkat (angka Romawi)</label>
                 <select id="level" name="level" class="in" required>
                     @foreach($gradeLevels as $level => $label)
-                        <option value="{{ $level }}" @selected((int) $level === $firstClassLevel)>{{ $label }}</option>
+                        <option value="{{ \App\Models\MadrasahProfile::classLevelRoman((int) $level) }}" aria-label="{{ $label }}" @selected((int) $level === $firstClassLevel)>{{ \App\Models\MadrasahProfile::classLevelRoman((int) $level) }}</option>
                     @endforeach
                 </select>
             </div>
@@ -143,12 +143,12 @@
             @csrf
             <input type="hidden" name="academic_year_id" value="{{ $selectedYearId }}">
             <div class="f">
-                <label for="blevel">Tingkat</label>
-                    <select id="blevel" name="level" class="in" required>
-                        @foreach($gradeLevels as $level => $label)
-                            <option value="{{ $level }}" @selected((int) $level === $firstClassLevel)>{{ $label }}</option>
-                        @endforeach
-                    </select>
+                <label for="blevel">Tingkat (angka Romawi)</label>
+                <select id="blevel" name="level" class="in" required>
+                    @foreach($gradeLevels as $level => $label)
+                        <option value="{{ \App\Models\MadrasahProfile::classLevelRoman((int) $level) }}" aria-label="{{ $label }}" @selected((int) $level === $firstClassLevel)>{{ \App\Models\MadrasahProfile::classLevelRoman((int) $level) }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="f">
                 <label for="bprefix">Awalan / Format Nama Kelas</label>
@@ -182,7 +182,11 @@
         const classLevelConfig = @json($classLevelConfig);
 
         function syncClassLevelFields(level) {
-            const config = classLevelConfig[level];
+            const normalizedLevel = String(level).trim().toUpperCase();
+            const levelKey = Object.keys(classLevelConfig).find(function (key) {
+                return key === normalizedLevel || classLevelConfig[key].roman === normalizedLevel;
+            });
+            const config = classLevelConfig[levelKey];
             if (!config) return;
 
             const classNameExample = document.getElementById('classNameExample');

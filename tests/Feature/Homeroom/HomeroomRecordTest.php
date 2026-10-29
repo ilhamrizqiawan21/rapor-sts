@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\Classroom;
 use App\Models\ClassroomLock;
 use App\Models\Enrollment;
+use App\Models\ExtracurricularActivity;
 use App\Models\ExtracurricularRecord;
 use App\Models\HomeroomRecord;
 use App\Models\Period;
@@ -118,11 +119,18 @@ class HomeroomRecordTest extends TestCase
             'classroom_id' => $classroom->id,
             'student_id' => $student->id,
         ]);
+        $activity = ExtracurricularActivity::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'name' => 'Pramuka',
+            'supervisor_id' => $supervisor->id,
+        ]);
         $record = ExtracurricularRecord::create([
             'period_id' => $period->id,
             'classroom_id' => $classroom->id,
             'student_id' => $student->id,
             'supervisor_id' => $supervisor->id,
+            'extracurricular_activity_id' => $activity->id,
             'name' => 'Pramuka',
             'predicate' => 'Baik',
         ]);
@@ -202,6 +210,108 @@ class HomeroomRecordTest extends TestCase
             'student_id' => $student->id,
             'name' => 'Pramuka',
             'supervisor_id' => $supervisor->id,
+        ]);
+    }
+
+    public function test_one_extracurricular_activity_uses_one_supervisor_for_multiple_students(): void
+    {
+        $operator = User::where('username', 'admin')->firstOrFail();
+        $supervisor = User::factory()->guru()->create(['name' => 'Pembina Pramuka']);
+        $year = AcademicYear::factory()->create();
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+        $students = Student::factory()->count(2)->create();
+
+        foreach ($students as $student) {
+            Enrollment::create([
+                'academic_year_id' => $year->id,
+                'classroom_id' => $classroom->id,
+                'student_id' => $student->id,
+            ]);
+        }
+
+        $response = $this->actingAs($operator)
+            ->withSession(['period_id' => $period->id])
+            ->post(route('operator.extracurricular.update'), [
+                'classroom_id' => $classroom->id,
+                'activities' => [
+                    'pramuka' => [
+                        'name' => 'Pramuka',
+                        'supervisor_id' => $supervisor->id,
+                    ],
+                ],
+                'student_records' => $students->mapWithKeys(fn ($student) => [
+                    $student->id => [
+                        'record' => [
+                            'activity_key' => 'pramuka',
+                            'predicate' => 'Baik',
+                            'description' => null,
+                        ],
+                    ],
+                ])->all(),
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseCount('extracurricular_activities', 1);
+        $this->assertDatabaseCount('extracurricular_records', 2);
+        $this->assertDatabaseHas('extracurricular_activities', [
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'name' => 'Pramuka',
+            'supervisor_id' => $supervisor->id,
+        ]);
+        $this->assertSame(
+            [$supervisor->id],
+            ExtracurricularRecord::query()->pluck('supervisor_id')->unique()->all()
+        );
+    }
+
+    public function test_teacher_without_activity_supervisor_assignment_cannot_update_activity_assessment(): void
+    {
+        $assignedTeacher = User::factory()->guru()->create();
+        $otherTeacher = User::factory()->guru()->create();
+        $year = AcademicYear::factory()->create();
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create(['academic_year_id' => $year->id]);
+        $student = Student::factory()->create();
+        Enrollment::create([
+            'academic_year_id' => $year->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+        ]);
+        $activity = ExtracurricularActivity::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'name' => 'Paskibra',
+            'supervisor_id' => $assignedTeacher->id,
+        ]);
+        $record = ExtracurricularRecord::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'student_id' => $student->id,
+            'supervisor_id' => $assignedTeacher->id,
+            'extracurricular_activity_id' => $activity->id,
+            'name' => 'Paskibra',
+            'predicate' => 'Baik',
+        ]);
+
+        $response = $this->withSession(['period_id' => $period->id])
+            ->actingAs($otherTeacher)
+            ->post(route('guru.ekstrakurikuler.update'), [
+                'classroom_id' => $classroom->id,
+                'records' => [
+                    $record->id => [
+                        'predicate' => 'Sangat Baik',
+                        'description' => 'Tidak berwenang.',
+                    ],
+                ],
+            ]);
+
+        $response->assertSessionHasErrors('classroom_id');
+        $this->assertDatabaseHas('extracurricular_records', [
+            'id' => $record->id,
+            'predicate' => 'Baik',
+            'description' => null,
         ]);
     }
 

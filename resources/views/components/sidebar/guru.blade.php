@@ -47,9 +47,12 @@
     }
 
     $hasExtracurricularAssignment = $user && $activePeriod
-        ? \App\Models\ExtracurricularRecord::where('period_id', $activePeriod->id)
+        ? \App\Models\ExtracurricularActivityDefinition::where('period_id', $activePeriod->id)
             ->where('supervisor_id', $user->id)
             ->exists()
+            || \App\Models\ExtracurricularRecord::where('period_id', $activePeriod->id)
+                ->whereHas('activity', fn ($query) => $query->where('supervisor_id', $user->id))
+                ->exists()
         : false;
 
     $currentRoute = request()->route()?->getName();

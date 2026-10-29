@@ -39,6 +39,7 @@ class ClassroomController extends Controller
         $classLevelConfig = collect(array_keys($gradeLevels))
             ->mapWithKeys(fn (int $level): array => [$level => [
                 'prefix' => MadrasahProfile::classLevelRoman($level).'.',
+                'roman' => MadrasahProfile::classLevelRoman($level),
                 'phase' => MadrasahProfile::phaseForClassLevel($level),
             ]])
             ->all();

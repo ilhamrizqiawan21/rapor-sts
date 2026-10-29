@@ -36,10 +36,23 @@ class ClassroomRequest extends FormRequest
         ];
     }
 
+    protected function prepareForValidation(): void
+    {
+        $level = trim((string) $this->input('level'));
+        $romanLevels = collect(range(1, 12))
+            ->mapWithKeys(fn (int $classLevel): array => [MadrasahProfile::classLevelRoman($classLevel) => $classLevel])
+            ->all();
+
+        if ($level !== '' && isset($romanLevels[strtoupper($level)])) {
+            $this->merge(['level' => $romanLevels[strtoupper($level)]]);
+        }
+    }
+
     public function messages(): array
     {
         return [
             'level.in' => 'Tingkat kelas harus sesuai jenjang madrasah yang dipilih.',
+            'level.integer' => 'Tingkat kelas harus berupa angka Romawi yang valid.',
         ];
     }
 }

@@ -22,7 +22,7 @@
 
     $lembagaOpen = in_array($activeKey, ['lembaga', 'subjects', 'classrooms']);
     $guruOpen = in_array($activeKey, ['teachers', 'mengajar']);
-    $siswaOpen = in_array($activeKey, ['students', 'achievements', 'extracurriculars']);
+    $siswaOpen = in_array($activeKey, ['students', 'achievements']);
     $raporOpen = in_array($activeKey, ['kktp', 'print_settings', 'status_nilai', 'cetak_rapor']);
 @endphp
 
@@ -90,11 +90,14 @@
             <a href="{{ route('operator.achievements.index') }}" class="sub {{ $activeKey === 'achievements' ? 'on' : '' }}">
                 <span>Prestasi Siswa</span>
             </a>
-            <a href="{{ route('operator.extracurricular.index') }}" class="sub {{ $activeKey === 'extracurriculars' ? 'on' : '' }}">
-                <span>Ekstrakurikuler</span>
-            </a>
         </div>
     </div>
+
+    <div class="sec">Kegiatan</div>
+    <a href="{{ route('operator.extracurricular.activities.index') }}" class="{{ $activeKey === 'extracurriculars' ? 'on' : '' }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h5M8 16h8"/></svg>
+        <span>Ekstrakurikuler</span>
+    </a>
 
     {{-- Rapor --}}
     <div class="nav-group {{ $raporOpen ? 'open' : '' }}">

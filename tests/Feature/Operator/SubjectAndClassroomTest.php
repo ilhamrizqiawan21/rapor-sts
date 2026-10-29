@@ -127,10 +127,10 @@ class SubjectAndClassroomTest extends TestCase
 
             $this->actingAs($operator)->post(route('operator.classrooms.store'), [
                 'academic_year_id' => $year->id,
-                'level' => $firstLevel,
+                'level' => MadrasahProfile::classLevelRoman($firstLevel),
                 'name' => $firstName,
                 'curriculum' => 'merdeka',
-            ])->assertRedirect();
+            ])->assertRedirect()->assertSessionDoesntHaveErrors();
 
             $this->assertDatabaseHas('classrooms', [
                 'academic_year_id' => $year->id,

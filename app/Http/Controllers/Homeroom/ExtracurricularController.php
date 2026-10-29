@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Homeroom\ExtracurricularRequest;
 use App\Models\Classroom;
+use App\Models\ExtracurricularActivity;
 use App\Models\ExtracurricularRecord;
 use App\Models\Period;
 use App\Models\User;
@@ -38,10 +39,17 @@ class ExtracurricularController extends Controller
         $records = ExtracurricularRecord::query()
             ->where('period_id', $period->id)
             ->where('classroom_id', $classroom->id)
-            ->with('supervisor')
+            ->with(['activity.supervisor', 'supervisor'])
             ->orderBy('name')
             ->get()
             ->groupBy('student_id');
+
+        $activities = ExtracurricularActivity::query()
+            ->where('period_id', $period->id)
+            ->where('classroom_id', $classroom->id)
+            ->with('supervisor')
+            ->orderBy('name')
+            ->get();
 
         return view('homeroom.extracurricular', [
             'classroom' => $classroom,
@@ -51,6 +59,7 @@ class ExtracurricularController extends Controller
             'period' => $period,
             'students' => $students,
             'records' => $records,
+            'activities' => $activities,
             'teachers' => User::query()
                 ->where('role', Role::Guru->value)
                 ->where('is_active', true)
@@ -67,19 +76,42 @@ class ExtracurricularController extends Controller
         [$classroom, $period] = $this->classroomContext($isOperator ? $request->integer('classroom_id') : null);
         $this->authorize('updateHomeroom', $classroom);
 
-        $submitted = $request->validated('extracurriculars', []);
+        $activities = $request->validated('activities', []);
+        $studentRecords = $request->validated('student_records', []);
 
-        DB::transaction(function () use ($submitted, $classroom, $period) {
+        DB::transaction(function () use ($activities, $studentRecords, $classroom, $period) {
             ExtracurricularRecord::query()
                 ->where('period_id', $period->id)
                 ->where('classroom_id', $classroom->id)
                 ->delete();
 
-            foreach ($submitted as $studentId => $studentRecords) {
-                foreach ($studentRecords as $record) {
-                    $name = trim((string) ($record['name'] ?? ''));
+            ExtracurricularActivity::query()
+                ->where('period_id', $period->id)
+                ->where('classroom_id', $classroom->id)
+                ->delete();
 
-                    if ($name === '') {
+            $activityModels = [];
+
+            foreach ($activities as $activityKey => $activity) {
+                $name = trim((string) ($activity['name'] ?? ''));
+
+                if ($name === '') {
+                    continue;
+                }
+
+                $activityModels[(string) $activityKey] = ExtracurricularActivity::create([
+                    'period_id' => $period->id,
+                    'classroom_id' => $classroom->id,
+                    'name' => $name,
+                    'supervisor_id' => (int) $activity['supervisor_id'],
+                ]);
+            }
+
+            foreach ($studentRecords as $studentId => $records) {
+                foreach ($records as $record) {
+                    $activity = $activityModels[(string) ($record['activity_key'] ?? '')] ?? null;
+
+                    if (! $activity) {
                         continue;
                     }
 
@@ -87,8 +119,9 @@ class ExtracurricularController extends Controller
                         'period_id' => $period->id,
                         'classroom_id' => $classroom->id,
                         'student_id' => (int) $studentId,
-                        'supervisor_id' => (int) $record['supervisor_id'],
-                        'name' => $name,
+                        'supervisor_id' => $activity->supervisor_id,
+                        'extracurricular_activity_id' => $activity->id,
+                        'name' => $activity->name,
                         'predicate' => $record['predicate'],
                         'description' => filled($record['description'] ?? null)
                             ? trim($record['description'])

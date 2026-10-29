@@ -15,6 +15,7 @@ use App\Http\Controllers\Operator\AchievementController;
 use App\Http\Controllers\Operator\BackupController;
 use App\Http\Controllers\Operator\ClassroomController;
 use App\Http\Controllers\Operator\DashboardController as OperatorDashboardController;
+use App\Http\Controllers\Operator\ExtracurricularController as OperatorExtracurricularController;
 use App\Http\Controllers\Operator\KktpDefaultController;
 use App\Http\Controllers\Operator\PeriodController;
 use App\Http\Controllers\Operator\PrintSettingController;
@@ -104,6 +105,9 @@ Route::middleware(['auth', 'role:operator'])->prefix('operator')->name('operator
     Route::get('/siswa', [StudentController::class, 'index'])->name('students.index');
     Route::get('/prestasi', [AchievementController::class, 'index'])->name('achievements.index');
     Route::post('/prestasi', [AchievementController::class, 'update'])->name('achievements.update');
+    Route::get('/kegiatan-ekstrakurikuler', [OperatorExtracurricularController::class, 'index'])->name('extracurricular.activities.index');
+    Route::post('/kegiatan-ekstrakurikuler', [OperatorExtracurricularController::class, 'update'])->name('extracurricular.activities.update');
+    Route::delete('/kegiatan-ekstrakurikuler/{activity}', [OperatorExtracurricularController::class, 'destroy'])->name('extracurricular.activities.destroy');
     Route::get('/ekstrakurikuler', [ExtracurricularController::class, 'index'])->name('extracurricular.index');
     Route::post('/ekstrakurikuler', [ExtracurricularController::class, 'update'])->name('extracurricular.update');
     Route::post('/siswa', [StudentController::class, 'store'])->name('students.store');

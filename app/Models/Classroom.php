@@ -60,6 +60,11 @@ class Classroom extends Model
         return $this->hasMany(ExtracurricularRecord::class);
     }
 
+    public function extracurricularActivities(): HasMany
+    {
+        return $this->hasMany(ExtracurricularActivity::class);
+    }
+
     public function achievementRecords(): HasMany
     {
         return $this->hasMany(AchievementRecord::class);

@@ -15,6 +15,8 @@ class ExtracurricularRecord extends Model
         'classroom_id',
         'student_id',
         'supervisor_id',
+        'extracurricular_activity_id',
+        'activity_definition_id',
         'name',
         'predicate',
         'description',
@@ -38,5 +40,15 @@ class ExtracurricularRecord extends Model
     public function supervisor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'supervisor_id');
+    }
+
+    public function activity(): BelongsTo
+    {
+        return $this->belongsTo(ExtracurricularActivity::class, 'extracurricular_activity_id');
+    }
+
+    public function definition(): BelongsTo
+    {
+        return $this->belongsTo(ExtracurricularActivityDefinition::class, 'activity_definition_id');
     }
 }
