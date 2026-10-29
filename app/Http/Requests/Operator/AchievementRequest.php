@@ -10,7 +10,20 @@ class AchievementRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->isOperator() ?? false;
+        $user = $this->user();
+
+        if (! $user) {
+            return false;
+        }
+
+        if ($user->isOperator()) {
+            return true;
+        }
+
+        $period = app()->bound('activePeriod') ? app('activePeriod') : null;
+
+        return $period
+            && $user->isHomeroomTeacher((int) $this->input('classroom_id'), $period->academic_year_id);
     }
 
     public function rules(): array

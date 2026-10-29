@@ -58,13 +58,14 @@
     $currentRoute = request()->route()?->getName();
     $activeKey = $active;
     if ($activeKey === 'dashboard' && !request()->routeIs('guru.dashboard')) {
+        if (request()->routeIs('wali.prestasi.*')) $activeKey = 'wali_prestasi';
         if (request()->routeIs('wali.kehadiran.*')) $activeKey = 'wali_kehadiran';
         elseif (request()->routeIs('guru.ekstrakurikuler.*')) $activeKey = 'extracurricular';
         elseif (request()->routeIs('wali.status.*')) $activeKey = 'wali_status';
         elseif (request()->routeIs('wali.rapor.*')) $activeKey = 'wali_rapor';
     }
 
-    $waliOpen = in_array($activeKey, ['wali', 'wali_kehadiran', 'wali_status', 'wali_rapor']);
+    $waliOpen = in_array($activeKey, ['wali', 'wali_prestasi', 'wali_kehadiran', 'wali_status', 'wali_rapor']);
 @endphp
 
 <nav class="nav" aria-label="Menu guru">
@@ -109,6 +110,9 @@
                 <svg class="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
             </button>
             <div class="nav-sub">
+                <a href="{{ route('wali.prestasi.index') }}" class="sub {{ $activeKey === 'wali_prestasi' ? 'on' : '' }}">
+                    <span>Prestasi Siswa</span>
+                </a>
                 <a href="{{ route('wali.kehadiran.index') }}" class="sub {{ $activeKey === 'wali_kehadiran' ? 'on' : '' }}">
                     <span>Kehadiran &amp; Catatan</span>
                 </a>

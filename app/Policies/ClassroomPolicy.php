@@ -41,6 +41,35 @@ class ClassroomPolicy
     }
 
     /**
+     * Boleh melihat data prestasi siswa pada kelas ini:
+     * - Operator, atau wali kelas dari kelas ini.
+     */
+    public function viewAchievements(User $user, Classroom $classroom): bool
+    {
+        if ($user->isOperator()) {
+            return true;
+        }
+
+        return $user->isGuru() && $classroom->homeroom_teacher_id === $user->id;
+    }
+
+    /**
+     * Boleh mengubah data prestasi siswa pada kelas ini:
+     * - Operator, atau wali kelas dari kelas ini
+     * - Kelas belum dikunci pada periode aktif
+     */
+    public function updateAchievements(User $user, Classroom $classroom, ?Period $period = null): bool
+    {
+        if (! $user->isOperator() && (! $user->isGuru() || $classroom->homeroom_teacher_id !== $user->id)) {
+            return false;
+        }
+
+        $activePeriod = $period ?? (app()->bound('activePeriod') ? app('activePeriod') : null);
+
+        return ! $activePeriod || ! $classroom->isLockedInPeriod($activePeriod->id);
+    }
+
+    /**
      * Boleh mengunci nilai kelas:
      * - Hanya wali kelas dari kelas ini atau operator
      */

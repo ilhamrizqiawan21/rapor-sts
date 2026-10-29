@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Homeroom\AchievementController as HomeroomAchievementController;
 use App\Http\Controllers\Homeroom\ExtracurricularController;
 use App\Http\Controllers\Homeroom\HomeroomRecordController;
 use App\Http\Controllers\Homeroom\LockController as HomeroomLockController;
@@ -193,6 +194,10 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 
 // Wali Kelas Routes (FR-WAL-*)
 Route::middleware(['auth', 'role:guru'])->prefix('wali')->name('wali.')->group(function () {
+    // Prestasi siswa
+    Route::get('/prestasi', [HomeroomAchievementController::class, 'index'])->name('prestasi.index');
+    Route::post('/prestasi', [HomeroomAchievementController::class, 'update'])->name('prestasi.update');
+
     // Kehadiran & Catatan (Mockup 13)
     Route::get('/kehadiran', [HomeroomRecordController::class, 'index'])->name('kehadiran.index');
     Route::post('/kehadiran', [HomeroomRecordController::class, 'update'])->name('kehadiran.update');
