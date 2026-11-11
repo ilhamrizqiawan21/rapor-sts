@@ -22,6 +22,7 @@ class ExtracurricularActivityDefinitionRequest extends FormRequest
             'activities.*' => ['array'],
             'activities.*.id' => ['nullable', 'integer', 'exists:extracurricular_activity_definitions,id'],
             'activities.*.name' => ['required', 'string', 'max:100'],
+            'activities.*.is_mandatory' => ['nullable'],
             'activities.*.supervisor_id' => [
                 'required',
                 'integer',

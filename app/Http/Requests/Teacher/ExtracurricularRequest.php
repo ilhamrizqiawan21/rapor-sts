@@ -23,8 +23,8 @@ class ExtracurricularRequest extends FormRequest
             'participant_ids' => ['nullable', 'array'],
             'participant_ids.*' => ['integer', 'exists:students,id'],
             'records' => ['nullable', 'array'],
-            'records.*.grade' => ['nullable', 'in:A,B,C,D'],
-            'records.*.predicate' => ['nullable', 'in:Sangat Baik,Baik,Cukup,Kurang'],
+            'records.*.grade' => ['nullable', 'string', 'in:A,B,C,D,Sangat Baik,Baik,Cukup,Kurang'],
+            'records.*.predicate' => ['nullable', 'string', 'in:A,B,C,D,Sangat Baik,Baik,Cukup,Kurang'],
             'records.*.description' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -89,6 +89,23 @@ class ExtracurricularRequest extends FormRequest
             ->map(fn ($id): int => (int) $id)
             ->unique()
             ->values();
+
+        if ($activity->isMandatory()) {
+            $allStudentIds = Enrollment::query()
+                ->where('academic_year_id', $period->academic_year_id)
+                ->where('classroom_id', $classroom->id)
+                ->whereHas('student', fn ($q) => $q->where('is_active', true))
+                ->pluck('student_id');
+
+            if ($participantIds->isEmpty()) {
+                $participantIds = $allStudentIds;
+            }
+
+            if ($allStudentIds->diff($participantIds)->isNotEmpty()) {
+                $validator->errors()->add('participant_ids', 'Semua siswa dalam kelas wajib diikutsertakan pada kegiatan wajib.');
+            }
+        }
+
         $validParticipantIds = Enrollment::query()
             ->where('academic_year_id', $period->academic_year_id)
             ->where('classroom_id', $classroom->id)
@@ -108,12 +125,17 @@ class ExtracurricularRequest extends FormRequest
         }
 
         if ($participantIds->diff($recordIds)->isNotEmpty()) {
-            $validator->errors()->add('records', 'Setiap peserta harus memiliki nilai A, B, C, atau D.');
+            $validator->errors()->add('records', $activity->isMandatory()
+                ? 'Semua siswa wajib diisi nilainya (A, B, C, atau D) untuk kegiatan ekstrakurikuler wajib.'
+                : 'Setiap peserta harus memiliki nilai A, B, C, atau D.');
         }
 
         foreach ((array) $this->input('records', []) as $record) {
-            if (blank($record['grade'] ?? null)) {
-                $validator->errors()->add('records', 'Setiap peserta harus memiliki nilai A, B, C, atau D.');
+            $grade = $record['grade'] ?? $record['predicate'] ?? null;
+            if (blank($grade)) {
+                $validator->errors()->add('records', $activity->isMandatory()
+                    ? 'Semua siswa wajib diisi nilainya (A, B, C, atau D) untuk kegiatan ekstrakurikuler wajib.'
+                    : 'Setiap peserta harus memiliki nilai A, B, C, atau D.');
 
                 break;
             }

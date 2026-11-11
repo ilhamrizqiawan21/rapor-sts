@@ -57,6 +57,7 @@ class ExtracurricularController extends Controller
                 $definition->fill([
                     'name' => $name,
                     'supervisor_id' => (int) $activity['supervisor_id'],
+                    'is_mandatory' => ! empty($activity['is_mandatory']),
                 ])->save();
 
                 $definition->records()->update([

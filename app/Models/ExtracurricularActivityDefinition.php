@@ -15,7 +15,25 @@ class ExtracurricularActivityDefinition extends Model
         'period_id',
         'name',
         'supervisor_id',
+        'is_mandatory',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_mandatory' => 'boolean',
+        ];
+    }
+
+    public function isMandatory(): bool
+    {
+        return (bool) $this->is_mandatory;
+    }
+
+    public function typeLabel(): string
+    {
+        return $this->isMandatory() ? 'Wajib' : 'Pilihan';
+    }
 
     public function period(): BelongsTo
     {

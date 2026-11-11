@@ -190,6 +190,9 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     // Penilaian ekstrakurikuler oleh guru pembina
     Route::get('/ekstrakurikuler', [TeacherExtracurricularController::class, 'index'])->name('ekstrakurikuler.index');
     Route::post('/ekstrakurikuler', [TeacherExtracurricularController::class, 'update'])->name('ekstrakurikuler.update');
+    Route::post('/ekstrakurikuler/anggota', [TeacherExtracurricularController::class, 'updateMembers'])->name('ekstrakurikuler.members.update');
+    Route::get('/ekstrakurikuler/export', [TeacherExtracurricularController::class, 'export'])->name('ekstrakurikuler.export');
+    Route::post('/ekstrakurikuler/import', [TeacherExtracurricularController::class, 'import'])->name('ekstrakurikuler.import');
 });
 
 // Wali Kelas Routes (FR-WAL-*)

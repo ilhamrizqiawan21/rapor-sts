@@ -28,11 +28,12 @@
             (string) $activity->id => [
                 'id' => $activity->id,
                 'name' => $activity->name,
+                'is_mandatory' => $activity->is_mandatory,
                 'supervisor_id' => $activity->supervisor_id,
             ],
         ])->all());
         if (blank($activityRows)) {
-            $activityRows = ['new-0' => ['name' => '', 'supervisor_id' => '']];
+            $activityRows = ['new-0' => ['name' => '', 'is_mandatory' => false, 'supervisor_id' => '']];
         }
     @endphp
 
@@ -54,11 +55,15 @@
                 @csrf
                 <div id="activity-definitions">
                     @foreach($activityRows as $activityKey => $activity)
-                        <div class="activity-row" style="display: grid; grid-template-columns: minmax(220px, 1fr) minmax(240px, 1fr) auto; gap: 8px; margin-bottom: 8px; align-items: start">
+                        <div class="activity-row" style="display: grid; grid-template-columns: minmax(200px, 1fr) 150px minmax(220px, 1fr) auto; gap: 8px; margin-bottom: 8px; align-items: start">
                             @if(! empty($activity['id']))
                                 <input type="hidden" name="activities[{{ $activityKey }}][id]" value="{{ $activity['id'] }}">
                             @endif
                             <input class="in" name="activities[{{ $activityKey }}][name]" value="{{ $activity['name'] ?? '' }}" placeholder="Contoh: Pramuka" maxlength="100" required>
+                            <select class="in" name="activities[{{ $activityKey }}][is_mandatory]">
+                                <option value="0" @selected(!($activity['is_mandatory'] ?? false))>Pilihan</option>
+                                <option value="1" @selected(!empty($activity['is_mandatory']))>Wajib</option>
+                            </select>
                             <select class="in" name="activities[{{ $activityKey }}][supervisor_id]" required>
                                 <option value="">- Pilih guru pembina -</option>
                                 @foreach($teachers as $teacher)
@@ -90,6 +95,7 @@
                         <tr>
                             <th style="width: 42px">#</th>
                             <th>Kegiatan</th>
+                            <th style="width: 110px">Sifat</th>
                             <th>Guru Pembina</th>
                             <th style="width: 150px">Peserta</th>
                         </tr>
@@ -99,12 +105,19 @@
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td><b>{{ $activity->name }}</b></td>
+                                <td>
+                                    @if($activity->isMandatory())
+                                        <span class="badge" style="background: #e8f4fd; color: #0d6efd; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-size: 12px">Wajib</span>
+                                    @else
+                                        <span class="badge" style="background: #f1f3f5; color: #495057; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-size: 12px">Pilihan</span>
+                                    @endif
+                                </td>
                                 <td>{{ $activity->supervisor?->name ?? '-' }}</td>
                                 <td>{{ $activity->records_count ?? $activity->records()->count() }} siswa</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" style="text-align: center; padding: 24px; color: #6c757d">Belum ada kegiatan ekstrakurikuler.</td>
+                                <td colspan="5" style="text-align: center; padding: 24px; color: #6c757d">Belum ada kegiatan ekstrakurikuler.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -123,11 +136,12 @@
                 const key = 'new-' + (Date.now() + counter++);
                 const row = document.createElement('div');
                 row.className = 'activity-row';
-                row.style.cssText = 'display:grid;grid-template-columns:minmax(220px,1fr) minmax(240px,1fr) auto;gap:8px;margin-bottom:8px;align-items:start';
+                row.style.cssText = 'display:grid;grid-template-columns:minmax(200px,1fr) 150px minmax(220px,1fr) auto;gap:8px;margin-bottom:8px;align-items:start';
                 row.innerHTML = '<input class="in" name="activities[' + key + '][name]" placeholder="Contoh: Pramuka" maxlength="100" required>' +
+                    '<select class="in" name="activities[' + key + '][is_mandatory]"><option value="0">Pilihan</option><option value="1">Wajib</option></select>' +
                     '<select class="in" name="activities[' + key + '][supervisor_id]" required><option value="">- Pilih guru pembina -</option></select>' +
                     '<button type="button" class="btn b-dan remove-activity" style="min-height:34px;padding:0 10px" aria-label="Hapus kegiatan">×</button>';
-                const select = row.querySelector('select');
+                const select = row.querySelectorAll('select')[1];
                 teachers.forEach(function (teacher) { select.appendChild(new Option(teacher.name, teacher.id)); });
                 definitions.appendChild(row);
                 row.querySelector('.remove-activity').addEventListener('click', function () { row.remove(); });
