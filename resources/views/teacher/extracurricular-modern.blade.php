@@ -90,7 +90,7 @@
 
                 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 130px">
                     <label for="levelFilter" style="font-weight: 600; font-size: 13px; color: #495057">Tingkat</label>
-                    <select id="levelFilter" name="level" class="sel" onchange="document.getElementById('filterForm').submit()">
+                    <select id="levelFilter" name="level" class="sel" onchange="onLevelChange(this.value)">
                         @foreach($levels as $lvl)
                             <option value="{{ $lvl }}" @selected((int)$lvl === (int)$selectedLevel)>
                                 {{ \App\Models\MadrasahProfile::classLevelRoman((int)$lvl) }}
@@ -370,6 +370,15 @@
                 info.textContent = 'Showing 1 to ' + visibleCount + ' of ' + rows.length + ' entries' + (query ? ' (filtered)' : '');
             }
         });
+
+        // Handle Tingkat filter change cleanly without keeping old classroom_id
+        function onLevelChange(val) {
+            const classSelect = document.getElementById('classroomFilter');
+            if (classSelect) {
+                classSelect.disabled = true;
+            }
+            document.getElementById('filterForm').submit();
+        }
 
         // Copy Table to Clipboard
         function copyTableToClipboard() {
