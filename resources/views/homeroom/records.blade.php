@@ -25,7 +25,7 @@
         </div>
     @endif
 
-    <div class="card homeroom-records">
+    <div class="card">
         <div class="ch">
             <div>
                 <div class="ct">Kehadiran &amp; Catatan Wali Kelas</div>
@@ -48,7 +48,7 @@
 
             <form id="form-records" method="POST" action="{{ route('wali.kehadiran.update') }}">
                 @csrf
-                <div class="tb records-table-wrap">
+                <div class="tb">
                     <table class="t records-table">
                         <thead>
                             <tr>
@@ -70,32 +70,28 @@
                                     $absent = old("records.{$idx}.absent", $rec ? $rec->absent : 0);
                                     $note = old("records.{$idx}.note", $rec?->note ?? '');
                                 @endphp
-                                <tr class="record-row">
-                                    <td class="record-col-number">{{ $idx + 1 }}</td>
-                                    <td class="record-col-nisn">
+                                <tr class="records-student">
+                                    <td>{{ $idx + 1 }}</td>
+                                    <td>
                                         <input type="hidden" name="records[{{ $idx }}][student_id]" value="{{ $student->id }}">
-                                        <span class="record-label">NISN:</span> {{ $student->nisn }}
+                                        {{ $student->nisn }}
                                     </td>
-                                    <td class="record-col-name"><b>{{ $student->name }}</b></td>
-                                    <td class="record-col-sick" style="text-align: center">
-                                        <label class="record-label" for="attendance-{{ $idx }}-sick">Sakit</label>
-                                        <input id="attendance-{{ $idx }}-sick" class="in num" type="number" min="0" step="1" inputmode="numeric" name="records[{{ $idx }}][sick]" value="{{ $sick }}" aria-label="Sakit {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
+                                    <td><b>{{ $student->name }}</b></td>
+                                    <td style="text-align: center">
+                                        <input class="in num" type="number" min="0" name="records[{{ $idx }}][sick]" value="{{ $sick }}" aria-label="Sakit {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
                                     </td>
-                                    <td class="record-col-permit" style="text-align: center">
-                                        <label class="record-label" for="attendance-{{ $idx }}-permit">Izin</label>
-                                        <input id="attendance-{{ $idx }}-permit" class="in num" type="number" min="0" step="1" inputmode="numeric" name="records[{{ $idx }}][permit]" value="{{ $permit }}" aria-label="Izin {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
+                                    <td style="text-align: center">
+                                        <input class="in num" type="number" min="0" name="records[{{ $idx }}][permit]" value="{{ $permit }}" aria-label="Izin {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
                                     </td>
-                                    <td class="record-col-absent" style="text-align: center">
-                                        <label class="record-label" for="attendance-{{ $idx }}-absent">Alpa</label>
-                                        <input id="attendance-{{ $idx }}-absent" class="in num" type="number" min="0" step="1" inputmode="numeric" name="records[{{ $idx }}][absent]" value="{{ $absent }}" aria-label="Alpa {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
+                                    <td style="text-align: center">
+                                        <input class="in num" type="number" min="0" name="records[{{ $idx }}][absent]" value="{{ $absent }}" aria-label="Alpa {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>
                                     </td>
-                                    <td class="record-col-note">
-                                        <label class="record-label" for="attendance-{{ $idx }}-note">Catatan Wali Kelas</label>
-                                        <textarea id="attendance-{{ $idx }}-note" class="in" name="records[{{ $idx }}][note]" maxlength="500" placeholder="Catatan untuk siswa (maks 500 karakter)" aria-label="Catatan {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>{{ $note }}</textarea>
+                                    <td>
+                                        <textarea class="in" name="records[{{ $idx }}][note]" maxlength="500" placeholder="Catatan untuk siswa (maks 500 karakter)" aria-label="Catatan {{ $student->name }}" {{ $isLocked ? 'disabled' : '' }}>{{ $note }}</textarea>
                                     </td>
                                 </tr>
                             @empty
-                                <tr class="record-empty-row">
+                                <tr>
                                     <td colspan="7" style="text-align: center; padding: 24px; color: #6c757d">
                                         Belum ada siswa aktif terdaftar di kelas {{ $classroom->name }}.
                                     </td>
