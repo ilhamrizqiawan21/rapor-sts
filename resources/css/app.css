@@ -1056,6 +1056,156 @@ a.pgn-i:hover { background: #eef0fc; border-color: var(--primary); }
   .backup-restore-options { padding: 16px 18px 18px; }
 }
 
+
+/* Kehadiran wali kelas: preserve the desktop table, use editable student cards on phones. */
+.record-label {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .homeroom-records {
+    min-width: 0;
+  }
+
+  .homeroom-records .acts {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .homeroom-records .acts .btn {
+    flex: 1 1 135px;
+    min-height: 44px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .homeroom-records .cb {
+    padding: 12px;
+  }
+
+  .homeroom-records .records-table-wrap {
+    overflow-x: visible;
+    min-width: 0;
+  }
+
+  .homeroom-records .records-table,
+  .homeroom-records .records-table tbody {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .homeroom-records .records-table thead {
+    display: none;
+  }
+
+  .homeroom-records .records-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .homeroom-records .records-table .record-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px 9px;
+    padding: 14px 12px;
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+  }
+
+  .homeroom-records .records-table .record-row > td,
+  .homeroom-records .records-table .record-row:nth-child(even) > td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .homeroom-records .record-col-number,
+  .homeroom-records .record-col-name,
+  .homeroom-records .record-col-nisn,
+  .homeroom-records .record-col-note {
+    grid-column: 1 / -1;
+  }
+
+  .homeroom-records .record-col-number {
+    order: -3;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .homeroom-records .record-col-number::before {
+    content: "Siswa #";
+  }
+
+  .homeroom-records .record-col-name {
+    order: -2;
+    font-size: 15px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .homeroom-records .record-col-nisn {
+    order: -1;
+    color: var(--muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .homeroom-records .record-label {
+    display: block;
+    margin-bottom: 5px;
+    color: #495057;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  .homeroom-records .record-col-nisn .record-label {
+    display: inline;
+    margin: 0;
+  }
+
+  .homeroom-records .record-col-sick,
+  .homeroom-records .record-col-permit,
+  .homeroom-records .record-col-absent {
+    text-align: left !important;
+  }
+
+  .homeroom-records .record-row .in {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .homeroom-records .record-row input[type="number"] {
+    height: 44px;
+    padding: 0 4px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .homeroom-records .record-col-note textarea {
+    height: auto;
+    min-height: 96px;
+    font-size: 16px;
+  }
+
+  .homeroom-records .records-table .record-empty-row {
+    display: block;
+  }
+
+  .homeroom-records .records-table .record-empty-row > td {
+    display: block;
+  }
+}
+
 /* Dialog / Modal */
 dialog.modal-dialog {
   padding: 0;

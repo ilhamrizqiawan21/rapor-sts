@@ -59,6 +59,17 @@ class HomeroomRecordTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Kehadiran &amp; Catatan Wali Kelas', false);
         $response->assertSee('Ahmad Siswa');
+        $response->assertSee('class="card homeroom-records"', false);
+        $response->assertSee('class="t records-table"', false);
+        $response->assertSee('for="attendance-0-sick"', false);
+        $response->assertSee('for="attendance-0-permit"', false);
+        $response->assertSee('for="attendance-0-absent"', false);
+        $response->assertSee('for="attendance-0-note"', false);
+
+        // Responsive cards reuse the same inputs, avoiding duplicate form submissions.
+        foreach (['student_id', 'sick', 'permit', 'absent', 'note'] as $field) {
+            $this->assertSame(1, substr_count($response->getContent(), 'name="records[0]['.$field.']"'));
+        }
     }
 
     public function test_homeroom_teacher_can_update_attendance_and_notes(): void
