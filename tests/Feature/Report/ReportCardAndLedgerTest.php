@@ -304,4 +304,51 @@ class ReportCardAndLedgerTest extends TestCase
 
         $response->assertNotFound();
     }
+
+    public function test_report_card_pdf_renders_arabic_competency_description_with_dejavu_fallback(): void
+    {
+        $teacher = User::factory()->guru()->create();
+        $year = AcademicYear::factory()->create();
+        $period = Period::factory()->create(['academic_year_id' => $year->id, 'is_active' => true]);
+        $classroom = Classroom::factory()->create([
+            'academic_year_id' => $year->id,
+            'homeroom_teacher_id' => $teacher->id,
+            'name' => 'VII.A',
+        ]);
+        $student = Student::factory()->create(['name' => 'Ahmad']);
+        Enrollment::create(['academic_year_id' => $year->id, 'classroom_id' => $classroom->id, 'student_id' => $student->id]);
+
+        $subject = Subject::where('name', 'Bahasa Arab')->first() ?? Subject::firstOrFail();
+        $ta = TeachingAssignment::create([
+            'period_id' => $period->id,
+            'classroom_id' => $classroom->id,
+            'subject_id' => $subject->id,
+            'teacher_id' => $teacher->id,
+            'hours_per_week' => 2,
+            'weight_summative' => 100,
+            'weight_sts' => 0,
+            'kktp' => 75,
+        ]);
+
+        $scope = LearningScope::create([
+            'teaching_assignment_id' => $ta->id,
+            'code' => 'LM1',
+            'summary' => 'Membaca dan mengidentifikasi kosa kata dalam bacaan dengan tema التحيات والتعارف',
+            'kktp' => 75,
+            'sequence' => 1,
+        ]);
+        SummativeScore::create([
+            'learning_scope_id' => $scope->id,
+            'student_id' => $student->id,
+            'score' => 80,
+        ]);
+
+        $response = $this->actingAs($teacher)->get(route('rapor.student.pdf', [$classroom, $student]));
+        $response->assertStatus(200);
+        $response->assertHeader('content-type', 'application/pdf');
+
+        $pdfBytes = $response->getContent();
+        $this->assertStringStartsWith('%PDF-', $pdfBytes);
+        $this->assertStringContainsString('DejaVuSans', $pdfBytes);
+    }
 }

@@ -8,7 +8,7 @@
             margin: 12mm 14mm 12mm 14mm;
         }
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Arial, Helvetica, 'DejaVu Sans', sans-serif;
             font-size: 11px;
             color: #000;
             line-height: 1.25;
@@ -239,20 +239,20 @@
                         <tr style="background-color: #f2f2f2">
                             <td style="text-align: center; font-weight: bold">{{ $sRow['number'] }}</td>
                             <td colspan="{{ $printSetting->isSectionVisible('show_competency', true) ? 3 : 2 }}" style="font-weight: bold">
-                                {{ $sRow['subject_name'] }}
+                                {{ \App\Support\ArabicTextShaper::shapeForPdf($sRow['subject_name']) }}
                             </td>
                         </tr>
                     @else
                         <tr>
                             <td style="text-align: center">{{ $sRow['number'] }}</td>
                             <td style="{{ $sRow['letter'] ? 'padding-left: 14px; font-style: italic;' : '' }}">
-                                {{ $sRow['letter'] }} {{ $sRow['subject_name'] }}
+                                {{ $sRow['letter'] }} {{ \App\Support\ArabicTextShaper::shapeForPdf($sRow['subject_name']) }}
                             </td>
                             <td style="text-align: center; font-weight: bold">
                                 {{ $sRow['formatted_score'] }}
                             </td>
                             @if($printSetting->isSectionVisible('show_competency', true))
-                                <td class="cap">{{ $sRow['description'] }}</td>
+                                <td class="cap">{{ \App\Support\ArabicTextShaper::shapeForPdf($sRow['description']) }}</td>
                             @endif
                         </tr>
                     @endif
@@ -311,7 +311,7 @@
         @if($printSetting->isSectionVisible('show_note', true))
             <div class="sec-title">Catatan Wali Kelas</div>
             <div class="box">
-                {{ $sData['note'] ?: '–' }}
+                {{ $sData['note'] ? \App\Support\ArabicTextShaper::shapeForPdf($sData['note']) : '–' }}
             </div>
         @endif
 
@@ -336,9 +336,9 @@
                     @forelse($sData['extracurriculars'] as $extraIndex => $extra)
                         <tr>
                             <td style="text-align: center">{{ $extraIndex + 1 }}</td>
-                            <td>{{ $extra->name }}</td>
+                            <td>{{ \App\Support\ArabicTextShaper::shapeForPdf($extra->name) }}</td>
                             <td style="text-align: center">{{ ['A' => 'A — Sangat Baik', 'B' => 'B — Baik', 'C' => 'C — Cukup', 'D' => 'D — Kurang'][$extra->predicate] ?? $extra->predicate }}</td>
-                            <td>{{ $extra->description ?: '–' }}</td>
+                            <td>{{ $extra->description ? \App\Support\ArabicTextShaper::shapeForPdf($extra->description) : '–' }}</td>
                         </tr>
                     @empty
                         <tr>
@@ -365,10 +365,10 @@
                     @forelse($sData['achievements'] as $achievementIndex => $achievement)
                         <tr>
                             <td style="text-align: center">{{ $achievementIndex + 1 }}</td>
-                            <td>{{ $achievement->name }}</td>
+                            <td>{{ \App\Support\ArabicTextShaper::shapeForPdf($achievement->name) }}</td>
                             <td style="text-align: center">{{ $achievement->level }}</td>
                             <td style="text-align: center">{{ $achievement->rank ?: '–' }}</td>
-                            <td>{{ $achievement->organizer ?: '–' }}</td>
+                            <td>{{ $achievement->organizer ? \App\Support\ArabicTextShaper::shapeForPdf($achievement->organizer) : '–' }}</td>
                         </tr>
                     @empty
                         <tr>

@@ -9,7 +9,7 @@
             size: landscape;
         }
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Arial, Helvetica, 'DejaVu Sans', sans-serif;
             font-size: 9px;
             color: #000;
             line-height: 1.15;
